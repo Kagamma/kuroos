@@ -1,7 +1,6 @@
 #pragma option X
 #pragma option LST
 #pragma option J0
-? resize 0
 
 #imagebase 0x04000000
 
