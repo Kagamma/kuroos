@@ -1,3 +1,5 @@
+<img height="300" src="https://i.imgur.com/AKzAEAK.png" />   <img height="300" src="https://i.imgur.com/CZ9bwY2.png" />
+
 #### How to build
 - If you are on Windows, run `build.bat` and it will create a `kos.iso` at root directory.
 
