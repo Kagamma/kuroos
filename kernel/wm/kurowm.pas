@@ -177,7 +177,7 @@ end;
 constructor TKuroObject.Init;
 begin
   inherited;
-  PID := 0;
+  PID := TaskCurrent^.PID;
 end;
 
 destructor TKuroObject.Done;
@@ -360,7 +360,8 @@ begin
           V^.ProcessMessages(M, true);
           if V^.IsRenderUpdate then
             IsRenderUpdate := true;
-          if V^.IsClosed then
+          // Look for task, if it's not available, clean up window
+          if V^.IsClosed or (FindProcess(V^.PID) = nil) then
           begin
             Delete(i);
             Dispose(V, Done);

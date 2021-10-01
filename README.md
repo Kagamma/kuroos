@@ -18,4 +18,3 @@
 #### Things that need more work
 - All process runs at ring 0 at the moment
 - Memory manager is pretty barebone. Process is allocated an entire map (4MB) of memory, without any ways to request for more memory
-- If a process is forced to kill via 'kill' command, the window manager still keeps it's window around
