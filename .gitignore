@@ -1,0 +1,9 @@
+*.o
+*.ppu
+*.bak
+*.iso
+*.bin
+*.kex
+*.obj
+kos
+.vscode

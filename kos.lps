@@ -1,0 +1,529 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="9"/>
+    <BuildModes Active="Default"/>
+    <Units Count="50">
+      <Unit0>
+        <Filename Value="kos.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="67" Y="3"/>
+        <UsageCount Value="192"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="kernel\console.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="96"/>
+        <CursorPos X="47" Y="93"/>
+        <UsageCount Value="192"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="kernel\gdt.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="47"/>
+        <CursorPos X="58" Y="49"/>
+        <UsageCount Value="192"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="kernel\idt.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="115"/>
+        <CursorPos X="10" Y="47"/>
+        <UsageCount Value="192"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="kernel\isr_irq.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="134"/>
+        <CursorPos X="34" Y="154"/>
+        <UsageCount Value="192"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="kernel\kernel.pas"/>
+        <IsPartOfProject Value="True"/>
+        <CursorPos X="2" Y="116"/>
+        <UsageCount Value="192"/>
+        <Loaded Value="True"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="kernel\kos.inc"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="24" Y="10"/>
+        <UsageCount Value="192"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="kernel\mboot.inc"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="192"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="kernel\mboot.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="192"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="kernel\real.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="192"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="kernel\bios\bios.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="11"/>
+        <TopLine Value="10"/>
+        <CursorPos X="54" Y="36"/>
+        <UsageCount Value="192"/>
+        <Loaded Value="True"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="kernel\drivers\ide.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="650"/>
+        <CursorPos X="35" Y="671"/>
+        <ExtraEditorCount Value="1"/>
+        <ExtraEditor1>
+          <EditorIndex Value="-1"/>
+          <TopLine Value="169"/>
+          <CursorPos X="30" Y="176"/>
+        </ExtraEditor1>
+        <UsageCount Value="192"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="kernel\drivers\keyboard.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="18"/>
+        <CursorPos X="20" Y="18"/>
+        <UsageCount Value="192"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="kernel\drivers\mouse.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="72"/>
+        <CursorPos X="20" Y="92"/>
+        <UsageCount Value="192"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="kernel\drivers\pic.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="3"/>
+        <CursorPos X="15" Y="50"/>
+        <UsageCount Value="192"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="kernel\drivers\rtc.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="106"/>
+        <CursorPos X="63" Y="115"/>
+        <UsageCount Value="192"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="kernel\drivers\vbe.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="9"/>
+        <TopLine Value="10"/>
+        <CursorPos X="54" Y="76"/>
+        <UsageCount Value="192"/>
+        <Loaded Value="True"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="kernel\drivers\vga.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="36"/>
+        <CursorPos X="3" Y="37"/>
+        <UsageCount Value="192"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="kernel\filesystem\fat.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="409"/>
+        <CursorPos X="28" Y="114"/>
+        <UsageCount Value="192"/>
+        <Loaded Value="True"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="kernel\gfx\kurogl.pas"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="10"/>
+        <TopLine Value="208"/>
+        <CursorPos X="41" Y="64"/>
+        <UsageCount Value="192"/>
+        <Loaded Value="True"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="kernel\interrupts\int0x0e.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="19"/>
+        <CursorPos X="20" Y="20"/>
+        <UsageCount Value="192"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="kernel\interrupts\int0x03.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="8"/>
+        <TopLine Value="16"/>
+        <CursorPos X="31" Y="23"/>
+        <UsageCount Value="192"/>
+        <Loaded Value="True"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="kernel\interrupts\int0x61.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="31"/>
+        <CursorPos X="39" Y="10"/>
+        <UsageCount Value="192"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="kernel\mm\kheap.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="153"/>
+        <CursorPos Y="186"/>
+        <UsageCount Value="192"/>
+        <Loaded Value="True"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="kernel\mm\pmm.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="29"/>
+        <CursorPos X="58" Y="52"/>
+        <UsageCount Value="192"/>
+      </Unit24>
+      <Unit25>
+        <Filename Value="kernel\mm\vmm.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="186"/>
+        <CursorPos X="23" Y="34"/>
+        <UsageCount Value="192"/>
+        <Loaded Value="True"/>
+      </Unit25>
+      <Unit26>
+        <Filename Value="kernel\rtl\astrings.inc"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="195"/>
+        <CursorPos Y="203"/>
+        <UsageCount Value="192"/>
+      </Unit26>
+      <Unit27>
+        <Filename Value="kernel\rtl\common.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="95"/>
+        <CursorPos X="65" Y="227"/>
+        <UsageCount Value="192"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="kernel\rtl\sstrings.inc"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="11"/>
+        <CursorPos X="43" Y="21"/>
+        <UsageCount Value="192"/>
+      </Unit28>
+      <Unit29>
+        <Filename Value="kernel\rtl\system.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="16"/>
+        <CursorPos X="30" Y="28"/>
+        <UsageCount Value="192"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="kernel\rtl\sysutils.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="17" Y="6"/>
+        <UsageCount Value="192"/>
+      </Unit30>
+      <Unit31>
+        <Filename Value="kernel\vga\fnt8x8.inc"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="192"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="kernel\vga\fnt8x16.inc"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="192"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="kernel\filesystem\filesystem.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="185"/>
+      </Unit33>
+      <Unit34>
+        <Filename Value="kernel\rtl\generic.inc"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="26"/>
+        <CursorPos X="28" Y="35"/>
+        <UsageCount Value="179"/>
+      </Unit34>
+      <Unit35>
+        <Filename Value="kernel\tasks\schedule.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="64"/>
+        <CursorPos X="19" Y="374"/>
+        <UsageCount Value="180"/>
+        <Loaded Value="True"/>
+      </Unit35>
+      <Unit36>
+        <Filename Value="kernel\filesystem\cdfs.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="307"/>
+        <CursorPos X="31" Y="282"/>
+        <UsageCount Value="151"/>
+        <Loaded Value="True"/>
+      </Unit36>
+      <Unit37>
+        <Filename Value="kernel\rtl\fastmove.inc"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="725"/>
+        <CursorPos Y="734"/>
+        <UsageCount Value="117"/>
+      </Unit37>
+      <Unit38>
+        <Filename Value="kernel\loader\kex.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="5" Y="12"/>
+        <UsageCount Value="107"/>
+      </Unit38>
+      <Unit39>
+        <Filename Value="kernel\interrupts\int0x71.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="31"/>
+        <CursorPos X="59" Y="46"/>
+        <UsageCount Value="85"/>
+      </Unit39>
+      <Unit40>
+        <Filename Value="kernel\tasks\mutex.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="3"/>
+        <CursorPos X="12" Y="14"/>
+        <UsageCount Value="69"/>
+        <Loaded Value="True"/>
+      </Unit40>
+      <Unit41>
+        <Filename Value="kernel\services\consolecmd.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="17"/>
+        <CursorPos Y="114"/>
+        <UsageCount Value="69"/>
+      </Unit41>
+      <Unit42>
+        <Filename Value="kernel\tasks\spinlock.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="31"/>
+        <UsageCount Value="50"/>
+        <Loaded Value="True"/>
+      </Unit42>
+      <Unit43>
+        <Filename Value="app\process.asm"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="2"/>
+        <CursorPos X="28" Y="14"/>
+        <UsageCount Value="28"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit43>
+      <Unit44>
+        <Filename Value="kernel\task.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="2"/>
+        <UsageCount Value="21"/>
+      </Unit44>
+      <Unit45>
+        <Filename Value="kernel\tasks\taskmanager.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="18"/>
+        <UsageCount Value="8"/>
+      </Unit45>
+      <Unit46>
+        <Filename Value="kernel\asm\stub.asm"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="31"/>
+        <CursorPos X="59" Y="42"/>
+        <UsageCount Value="4"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit46>
+      <Unit47>
+        <Filename Value="app\threads.asm"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="19"/>
+        <CursorPos Y="25"/>
+        <UsageCount Value="28"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit47>
+      <Unit48>
+        <Filename Value="app\hello.asm"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="16"/>
+        <CursorPos X="48" Y="20"/>
+        <UsageCount Value="12"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit48>
+      <Unit49>
+        <Filename Value="E:\sdks\lazarus\lazarus_svn\designer\jitforms.pp"/>
+        <UnitName Value="JITForms"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1511"/>
+        <CursorPos X="64" Y="1527"/>
+        <UsageCount Value="10"/>
+      </Unit49>
+    </Units>
+    <JumpHistory Count="28" HistoryIndex="27">
+      <Position1>
+        <Filename Value="kernel\tasks\schedule.pas"/>
+        <Caret Line="174" Column="11" TopLine="163"/>
+      </Position1>
+      <Position2>
+        <Filename Value="kernel\tasks\schedule.pas"/>
+        <Caret Line="176" Column="36" TopLine="163"/>
+      </Position2>
+      <Position3>
+        <Filename Value="kernel\tasks\schedule.pas"/>
+        <Caret Line="218" Column="28" TopLine="174"/>
+      </Position3>
+      <Position4>
+        <Filename Value="kernel\mm\kheap.pas"/>
+        <Caret Line="187" Column="39" TopLine="167"/>
+      </Position4>
+      <Position5>
+        <Filename Value="kernel\mm\kheap.pas"/>
+        <Caret Line="63" Column="64" TopLine="52"/>
+      </Position5>
+      <Position6>
+        <Filename Value="kernel\mm\kheap.pas"/>
+        <Caret Line="52" Column="3" TopLine="52"/>
+      </Position6>
+      <Position7>
+        <Filename Value="kernel\mm\kheap.pas"/>
+        <Caret Line="62" Column="19" TopLine="52"/>
+      </Position7>
+      <Position8>
+        <Filename Value="kernel\mm\kheap.pas"/>
+        <Caret Line="223" Column="19" TopLine="190"/>
+      </Position8>
+      <Position9>
+        <Filename Value="kernel\kernel.pas"/>
+        <Caret Line="20" Column="43" TopLine="20"/>
+      </Position9>
+      <Position10>
+        <Filename Value="kernel\kernel.pas"/>
+        <Caret Line="97" Column="47" TopLine="92"/>
+      </Position10>
+      <Position11>
+        <Filename Value="kernel\drivers\vbe.pas"/>
+        <Caret Line="138" TopLine="106"/>
+      </Position11>
+      <Position12>
+        <Filename Value="kernel\drivers\vbe.pas"/>
+        <Caret Line="9" Column="12"/>
+      </Position12>
+      <Position13>
+        <Filename Value="kernel\kernel.pas"/>
+        <Caret Line="71" Column="32" TopLine="58"/>
+      </Position13>
+      <Position14>
+        <Filename Value="kernel\kernel.pas"/>
+        <Caret Line="84" Column="26" TopLine="75"/>
+      </Position14>
+      <Position15>
+        <Filename Value="kernel\tasks\schedule.pas"/>
+        <Caret Line="224" Column="57" TopLine="191"/>
+      </Position15>
+      <Position16>
+        <Filename Value="kernel\tasks\schedule.pas"/>
+        <Caret Line="351" Column="21" TopLine="323"/>
+      </Position16>
+      <Position17>
+        <Filename Value="kernel\tasks\schedule.pas"/>
+        <Caret Line="362" Column="15" TopLine="334"/>
+      </Position17>
+      <Position18>
+        <Filename Value="kernel\tasks\schedule.pas"/>
+        <Caret Line="365" Column="15" TopLine="337"/>
+      </Position18>
+      <Position19>
+        <Filename Value="kernel\tasks\schedule.pas"/>
+        <Caret Line="103" Column="21" TopLine="86"/>
+      </Position19>
+      <Position20>
+        <Filename Value="kernel\tasks\schedule.pas"/>
+        <Caret Line="351" Column="21" TopLine="323"/>
+      </Position20>
+      <Position21>
+        <Filename Value="kernel\tasks\schedule.pas"/>
+        <Caret Line="362" Column="15" TopLine="334"/>
+      </Position21>
+      <Position22>
+        <Filename Value="kernel\tasks\schedule.pas"/>
+        <Caret Line="365" Column="15" TopLine="337"/>
+      </Position22>
+      <Position23>
+        <Filename Value="kernel\tasks\schedule.pas"/>
+        <Caret Line="103" Column="21" TopLine="86"/>
+      </Position23>
+      <Position24>
+        <Filename Value="kernel\tasks\schedule.pas"/>
+        <Caret Line="351" Column="21" TopLine="323"/>
+      </Position24>
+      <Position25>
+        <Filename Value="kernel\tasks\schedule.pas"/>
+        <Caret Line="372" Column="10" TopLine="355"/>
+      </Position25>
+      <Position26>
+        <Filename Value="kernel\mm\kheap.pas"/>
+        <Caret Line="451" Column="64" TopLine="425"/>
+      </Position26>
+      <Position27>
+        <Filename Value="kernel\mm\kheap.pas"/>
+        <Caret Line="414" TopLine="395"/>
+      </Position27>
+      <Position28>
+        <Filename Value="kernel\gfx\kurogl.pas"/>
+        <Caret Line="216" Column="7" TopLine="193"/>
+      </Position28>
+    </JumpHistory>
+  </ProjectSession>
+</CONFIG>

@@ -1,0 +1,25 @@
+ENTRY(k_start)
+
+SECTIONS
+{
+  . = 0x100000;
+  .text : AT(ADDR(.text))
+  {
+    __text = .;
+    *(EXCLUDE_FILE(libs/real.o) .text)
+    . = ALIGN(0x1000);
+  }
+  .data : AT(ADDR(.data))
+  {
+    __data = .;
+    *(.data)
+	. = ALIGN(0x1000);
+  }
+  .bss : AT(ADDR(.bss))
+  {
+    __bss = .;
+    *(.bss)
+	. = ALIGN(0x1000);
+  }
+  __endKernel = .;
+}

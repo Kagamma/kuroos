@@ -1,0 +1,1 @@
+qemu-system-i386w.exe -boot d -cdrom kos.iso -m 256 -s

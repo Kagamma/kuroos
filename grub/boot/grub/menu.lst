@@ -1,0 +1,3 @@
+title KOS
+kernel /boot/kos
+boot
