@@ -12,7 +12,7 @@
 - VBE driver
 - IDE driver (basic support for FAT32 & CDFS)
 - PIC/RTC
-- Multi-tasking, multi-threading (Cooperative)
+- Preemptive multi-tasking
 - Basic window manager
 
 #### Things that need more work
