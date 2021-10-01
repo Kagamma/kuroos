@@ -15,9 +15,11 @@ void main() {
   handle = CreateWindow(#win);
   while (1) {
     EAX = CheckMessage(handle);
-    if (EAX == KM_CLOSE) {
-      CloseHandle(handle);
-      exit();
+    if (EAX == 1) {
+      if (EBX == KM_CLOSE) {
+        CloseHandle(handle);
+        break;
+      }
     }
     yield();
   }
