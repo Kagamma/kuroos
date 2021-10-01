@@ -1,13 +1,15 @@
 org 0x04000000
 use32
 
-; KOS header executable (24 bytes).
-    db    'K32',0                 ; Header.
-    dd    image_end - 0x04000000  ; Image size.
-    dd    0x04000000              ; Startup code.
-    dd    0x05000000              ; Startup heap.
-    dd    0x400                   ; Stack size.
-    dd    0                       ; Icon location, in 32x32x4 format.
+; KOS header executable (32 bytes).
+    db    'K32',0                    ; Header.
+    dd    1                          ; Version
+    dd    image_end - 0x04000000     ; Image size.
+    dd    0x04000000                 ; Startup code.
+    dd    0x05000000                 ; Startup heap.
+    dd    0x400                      ; Stack size.
+    dd    code_section - 0x04000000  ; code point
+    dd    0                          ; Icon location.
 
 code_section:
     hlt

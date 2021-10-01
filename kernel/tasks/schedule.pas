@@ -209,7 +209,7 @@ begin
       Cardinal(PKEXHeader(ABuf)^.HeapAddr) + i*PAGE_SIZE,
       Cardinal(Task^.HeapAddr) - KERNEL_HEAP_START + KERNEL_SIZE + i*PAGE_SIZE, 1);
   end;
-  Pointer(Task^.Code):= Pointer(Task^.Code) + SizeOf(TKEXHeader);
+  Pointer(Task^.Code):= Pointer(Task^.Code) + PKEXHeader(ABuf)^.CodePoint;
   // Generate default stack
   GENERATE_STACK;
   //

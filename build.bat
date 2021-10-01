@@ -1,4 +1,4 @@
-SET PATH=.;.\tools
+SET PATH=.;.\tools;..\tools;
 
 @echo KOS build script
 @echo ------------------
@@ -11,6 +11,11 @@ mkdir libs
 @del libs\*.obj
 
 @echo assemble stub.asm...
+
+cd app
+@c-- /b32 /OS /5 helloc.c
+@move helloc.bin ../grub/helloc.kex
+cd ..
 
 @fasm app/hello.asm grub/hello.kex
 @fasm app/process.asm grub/process.kex
