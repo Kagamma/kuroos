@@ -205,6 +205,26 @@ begin
   end;
 end;
 
+procedure BtnRunWinC(const Sender: PKuroObject; const M: PKuroMessage);
+var
+  CM: TKuroMessage;
+  i: Integer;
+  p: Pointer;
+begin
+  if (M^.Command = KM_MOUSEUP) and (Boolean(M^.LoShort1 and $01)) and PKuroButton(Sender)^.IsFocused then
+  begin
+    IRQ_ENABLE;
+    p:= CDFSObj^.Loader(IDE.FindDrive(True), 'winc.kex');
+    IRQ_DISABLE;
+    if p <> nil then
+    begin
+      // Create a new process
+      Schedule.CreateProcessFromBuffer('winc.kex', p);
+      FreeMem(p);
+    end;
+  end;
+end;
+
 procedure BtnCloseWm(const Sender: PKuroObject; const M: PKuroMessage);
 begin
   if (M^.Command = KM_MOUSEUP) and (Boolean(M^.LoShort1 and $01)) and PKuroButton(Sender)^.IsFocused then
@@ -249,15 +269,21 @@ begin
 
   New(Btn, Init(Taskbar));
   Btn^.Name := 'Close WM';
-  Btn^.SetPosition(15, 2);
-  Btn^.SetSize(160, 24);
+  Btn^.SetPosition(10, 2);
+  Btn^.SetSize(100, 24);
   Btn^.OnCallback := @BtnCloseWm;
 
   New(Btn, Init(Taskbar));
   Btn^.Name := 'Run win.kex';
-  Btn^.SetPosition(200, 2);
+  Btn^.SetPosition(120, 2);
   Btn^.SetSize(160, 24);
   Btn^.OnCallback := @BtnRunWin;
+
+  New(Btn, Init(Taskbar));
+  Btn^.Name := 'Run winc.kex';
+  Btn^.SetPosition(290, 2);
+  Btn^.SetSize(160, 24);
+  Btn^.OnCallback := @BtnRunWinC;
 
   // New(Win3, Init(Win2));
   // Win3^.X := 0;

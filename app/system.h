@@ -18,12 +18,16 @@ inline fastcall void exit() {
   EAX = 4;
   ECX = DSDWORD[ESP + 4];
   $int 0x61;
-  $iloop:
-    $hlt
-    $jmp iloop
+  while (1) {
+    $hlt;
+  }
 }
 
 inline fastcall void printf(dword ESI) {
   EAX = 1;
   $int 0x71;
+}
+
+inline fastcall void yield() {
+  $int 0x20;
 }

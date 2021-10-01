@@ -14,7 +14,9 @@ mkdir libs
 
 cd app
 @c-- /b32 /OS /5 helloc.c
+@c-- /b32 /OS /5 winc.c
 @move helloc.bin ../grub/helloc.kex
+@move winc.bin ../grub/winc.kex
 cd ..
 
 @fasm app/hello.asm grub/hello.kex
