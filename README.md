@@ -1,5 +1,8 @@
 <img height="300" src="https://i.imgur.com/AKzAEAK.png" />   <img height="300" src="https://i.imgur.com/CZ9bwY2.png" />
 
+#### Download link
+- https://drive.google.com/file/d/14O9d_dTaAWlkyUeu2qfs4uV3vY4Q32CU/view?usp=sharing
+
 #### How to build
 - Everything need to build is included in repo. If you are on Windows, run `build.bat` and it will create a `kos.iso` at root directory.
 
