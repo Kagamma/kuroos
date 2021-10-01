@@ -22,7 +22,6 @@ cd ..
 @fasm app/hello.asm grub/hello.kex
 @fasm app/process.asm grub/process.kex
 @fasm app/threads.asm grub/threads.kex
-@fasm app/memtest.asm grub/memtest.kex
 @fasm app/win.asm grub/win.kex
 
 @fasm kernel/asm/real.asm libs/real.bin
