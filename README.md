@@ -1,5 +1,5 @@
 #### How to build
-- If you are on Windows, run `build.bat' and it will create a `kos.iso` at root directory.
+- If you are on Windows, run `build.bat` and it will create a `kos.iso` at root directory.
 
 #### Things that work
 - PS2 mouse/keyboard driver
