@@ -400,7 +400,7 @@ procedure FreeProcess(const ATask: PTaskStruct); stdcall;
 begin
   // Free task's all memory
   // TODO: Make sure to reclaim free frames
-  if ATask^.PPID = 0 then
+  if ATask^.PPID <> 0 then
     PurgeFramesFromTask(@ATask^.Frames[0]);
   FreeAllMemory(ATask^.PID);
 end;
