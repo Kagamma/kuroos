@@ -28,7 +28,8 @@ inline fastcall dword CloseHandle(dword ESI) {
   $int 0x69;
 }
 
-inline fastcall dword CheckMessage(dword ESI) {
+dword CheckMessage(dword ESI, dword *msg) {
   EAX = 0x401;
   $int 0x69;
+  $mov DSDWORD[msg],ebx;
 }

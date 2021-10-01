@@ -3,6 +3,7 @@
 
 KuroView win;
 dword handle;
+dword msg;
 
 void main() {
   win.name = "Empty Window";
@@ -14,9 +15,8 @@ void main() {
   win.isMovable = 1;
   handle = CreateWindow(#win);
   while (1) {
-    EAX = CheckMessage(handle);
-    if (EAX == 1) {
-      if (EBX == KM_CLOSE) {
+    if (CheckMessage(handle, #msg) == 1) {
+      if (msg == KM_CLOSE) {
         CloseHandle(handle);
         break;
       }
