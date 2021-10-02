@@ -121,7 +121,7 @@ begin
     Console.WriteHex(Trace^.EIP, 8);
     if Trace^.EIP <> 0 then
     begin
-      Console.WriteStr('    ');
+      Console.WriteStr('  ');
       WriteStackTraceformation(Trace^.EIP);
     end;
     Console.WriteStr(#10#13);

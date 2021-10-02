@@ -1,3 +1,12 @@
+{
+    File:
+        trace.pas
+    Description:
+        N/A.
+    License:
+        General Public License (GPL)
+}
+
 unit trace;
 
 {$I KOS.INC}
@@ -38,6 +47,7 @@ var
   I, J: Cardinal;
   Pos, Pos2: Integer;
   P: PByte;
+  BaseAddr: Cardinal;
 begin
   Pos := -1;
   for I := 0 to DebugAddressesSize - 1 do
@@ -45,6 +55,7 @@ begin
     if DebugAddresses[I] > Addr then
     begin
       Pos := I - 1;
+      BaseAddr := DebugAddresses[Pos];
       break;
     end;
   end;
@@ -66,7 +77,11 @@ begin
           Console.WriteChar(Char(P^));
           Inc(P);
           if P^ = 0 then
+          begin
+            Console.WriteChar('+');
+            Console.WriteHex(Addr - BaseAddr, 0);
             exit;
+          end;
         end;
       end;
       Inc(P);
