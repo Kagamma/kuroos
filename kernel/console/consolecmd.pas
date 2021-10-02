@@ -68,10 +68,8 @@ begin
 
   while True do
   begin
-    if IsGUI then
-    asm
-      int $20; // yield
-    end;
+    while IsGUI do
+      PROCESS_WAIT;
     FillChar(Cmd[0], 256, 0);
     Write('>');
     while True do
