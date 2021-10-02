@@ -43,7 +43,7 @@ procedure TList.Add(const P: Pointer);
 var
   Size: Cardinal;
 begin
-  Size := GetSize(Items);
+  Size := GetSize(Items) div SizeOf(Pointer);
   Inc(FCount);
   if FCount >= Size then
     Items := ReAlloc(Items, (Size + FCapacity) * SizeOf(Pointer));
@@ -58,7 +58,7 @@ begin
   begin
     Dec(FCount);
     Move(Items[Index+1], Items[Index], (FCount-Index) shl 2);
-    Size := GetSize(Items);
+    Size := GetSize(Items) div SizeOf(Pointer);
     if (FCount + FCapacity <= Size) and (Count > FCapacity) then
       Items := ReAlloc(Items, (Size - FCapacity) * SizeOf(Pointer));
   end;
