@@ -23,6 +23,7 @@ procedure CmdThread(PID: PtrUInt); stdcall;
 procedure Dir; stdcall;
 // Test KuroWM
 procedure StartKuroWM; stdcall;
+procedure TestTrace;
 
 implementation
 
@@ -37,6 +38,11 @@ uses
 
 var
   WM: TKuroWM;
+
+procedure TestTrace;
+begin
+  asm int 3 end;
+end;
 
 procedure CmdThread(PID: PtrUInt); stdcall;
 var
@@ -100,6 +106,7 @@ begin
       Writeln(' - mem        : Print all memory blocks');
       Writeln(' - ps         : Print all tasks');
       Writeln(' - wm         : Kuro Window Manager');
+      Writeln(' - testtrace  : Test stack trace');
     end
     else
     if Cmd = 'wm' then
@@ -120,6 +127,11 @@ begin
     if Cmd = 'dir' then
     begin
       Dir;
+    end
+    else
+    if Cmd = 'testtrace' then
+    begin
+      TestTrace;
     end
     else
     if Pos('kill ', Cmd) = 1 then

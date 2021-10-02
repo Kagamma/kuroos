@@ -7,5 +7,7 @@
 *.obj
 *.lst
 *.map
+*.1
+*.2
 kos
 .vscode

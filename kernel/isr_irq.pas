@@ -17,14 +17,14 @@ uses
   console, idt;
 
 type
-  TStrackTrace = packed record
+  TStackTrace = packed record
     EBP: Pointer;
     EIP: Cardinal;
   end;
-  PStrackTrace = ^TStrackTrace;
+  PStackTrace = ^TStackTrace;
 
 procedure k_IDT_WriteRegisters(const r: TRegisters); stdcall;
-procedure k_IDT_WriteStackTrace(Trace: PStrackTrace); stdcall;
+procedure k_IDT_WriteStackTrace(Trace: PStackTrace); stdcall;
 procedure k_IDT_ISR_FaultHandler(r: TRegisters); cdecl;
 procedure k_IDT_IRQ_FaultHandler(r: TRegisters); cdecl;
 function  k_PIC_Handler(AStack: Cardinal): Cardinal; cdecl;
@@ -32,7 +32,7 @@ function  k_PIC_Handler(AStack: Cardinal): Cardinal; cdecl;
 implementation
 
 uses
-  vga, vbe, schedule;
+  vga, vbe, schedule, trace;
 
 const
   ISR_ERRORCODE: array[0..15] of PChar =
@@ -110,17 +110,22 @@ begin
  // Console.WriteStr('useresp: 0x'); Console.WriteHex(r.useresp, 8); Console.WriteStr(#10#13);
 end;
 
-procedure k_IDT_WriteStackTrace(Trace: PStrackTrace); stdcall;
+procedure k_IDT_WriteStackTrace(Trace: PStackTrace); stdcall;
 var
   I: Integer;
 begin
   Console.WriteStr('Stack trace: '#10#13);
-  for I := 0 to 5 do
+  for I := 0 to 9 do
   begin
     Console.WriteStr('    0x');
     Console.WriteHex(Trace^.EIP, 8);
+    if Trace^.EIP <> 0 then
+    begin
+      Console.WriteStr('    ');
+      WriteStackTraceformation(Trace^.EIP);
+    end;
     Console.WriteStr(#10#13);
-    Trace := PStrackTrace(Trace^.EBP);
+    Trace := PStackTrace(Trace^.EBP);
     if Trace = nil then
       break;
   end;
@@ -132,6 +137,7 @@ var
   lIsGUI   : Boolean;
   attrib   : Byte;
   i        : Integer;
+  StackTrace: TStackTrace;
 begin
   // TODO:
   if (r.int_no < 32)  then
@@ -180,7 +186,9 @@ begin
       Console.WriteStr(@TaskCurrent^.Name[1]);
       Console.WriteStr(']'#10#13);
     end;
-    k_IDT_WriteStackTrace(PStrackTrace(r.ebp));
+    StackTrace.EBP := Pointer(r.ebp);
+    StackTrace.EIP := r.eip;
+    k_IDT_WriteStackTrace(@StackTrace);
 
     IDTHandle:= IDTHandles[r.int_no];
     if IDTHandle <> nil then

@@ -23,7 +23,7 @@ uses
   pic, rtc, mouse, keyboard, vga, vbe, ide,
   fat, cdfs, filesystem,
   schedule, mutex, spinlock,
-  consolecmd,
+  consolecmd, trace,
   objects, strings,
   kurogl, kurowm;
 
@@ -112,6 +112,7 @@ begin
   FAT.Init;
   // Just want to test if the good old Object works...
   CDFSObj:= New(PCDFSObject, Init);
+  Trace.Init;
   // KHeap.Test;
 
   //CDFSObj^.Test;
