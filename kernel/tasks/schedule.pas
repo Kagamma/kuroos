@@ -317,7 +317,7 @@ begin
   Task^.Priority:= TASK_PRIORITY_VLOW;
   //
   Task^.Code:= ACode;
-  // Allocate 4KB RAM for stack
+  // Allocate at least 1KB RAM for stack
   if AStackSize < 1024 then AStackSize:= 1024;
   Task^.StackAddr:= KHeap.Alloc(AStackSize);
   Task^.Stack:= Task^.StackAddr + AStackSize;

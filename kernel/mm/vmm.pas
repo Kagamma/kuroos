@@ -21,7 +21,7 @@ const
   KERNEL_HEAP_START  = $B0000000;
   KERNEL_HEAP_END    = $DE000000;
   PAGE_MEMORY_BLOCK  = $400000;
-  KERNEL_SIZE        = 1024 * 1024 * 8;
+  KERNEL_SIZE        = 1024 * 1024 * 12;
   FIXED_PAGETABLE_SIZE = 768;
 
 type
@@ -482,7 +482,15 @@ begin
   KernelPageStruct_:= VMM.CreatePageDirectory;
   KernelPageStruct_^.PhysAddr:= Cardinal(KernelPageStruct_);
 
-  // Map the first 8MB physical memory to virtual memory (kernel).
+  if GlobalMB^.mem_upper * 1024 < KERNEL_SIZE * 2 then
+  begin
+    Console.WriteStr('Not enough memory. Need at least ');
+    Console.WriteDec(KERNEL_SIZE * 2 div 1024 div 1024);
+    Console.WriteStr('MB RAM');
+    INFINITE_LOOP;
+  end;
+
+  // Map the first 12MB physical memory to virtual memory (kernel).
   for i:= 0 to KERNEL_SIZE div PAGE_MEMORY_BLOCK - 1 do
   begin
     PageTable := VMM.CreatePageTable(KernelPageStruct_, i * PAGE_MEMORY_BLOCK, 0);
