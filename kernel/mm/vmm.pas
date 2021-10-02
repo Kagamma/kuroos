@@ -383,7 +383,6 @@ begin
   // We first look for a free 4KB memory block
   Frame := FindFirstFreeFrame(PFrames);
   // Mark the frame as used
-  SetFrame(PFrames, Frame * PAGE_SIZE);
   SetFrame(@Frames[0], Frame * PAGE_SIZE);
   // Mark for current process as well, in case it has a different frame
   if TaskCurrent <> nil then
