@@ -367,9 +367,9 @@ end;
 function AllocPage(APageStruct: PPageStruct; AVirtualAddr: Cardinal; RWAble: TBit1): PPageTableEntry; stdcall;
 var
   i: Integer;
-  Frame: Cardinal;
   PageTable: PPageTable;
   Page: PPageTableEntry;
+  Frame: Cardinal;
   PFrames: PCardinal = nil;
 begin
   Spinlock.Lock(SLock);
@@ -419,8 +419,17 @@ var
   i: Integer;
   PageTable: PPageTable;
   Page: PPageTableEntry;
+  Frame: Cardinal;
+  PFrames: PCardinal = nil;
 begin
   Spinlock.Lock(SLock);
+  if TaskCurrent <> nil then
+    PFrames := TaskCurrent^.Frames
+  else
+    PFrames := @Frames[0];
+  // Mark the frame as used
+  SetFrame(PFrames, APhysicAddr);
+  SetFrame(@Frames[0], APhysicAddr);
   // Now we get the page table. If No table found, create it.
   if APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].TableAddr <> 0 then
     PageTable := PPageTable(APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].TableAddr * PAGE_SIZE)
