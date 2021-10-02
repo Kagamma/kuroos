@@ -104,6 +104,9 @@ procedure SplitChunk(const ANode: PHeapNode; const ASize: Cardinal);
 var
   p: PHeapNode;
 begin
+  // Cant slit if the chunk is allocated
+  if ANode^.Allocated <> 0 then
+    exit;
   p            := PHeapNode(Cardinal(ANode) + SizeOf(THeapNode) + ASize);
   p^.Next      := ANode^.Next;
   p^.Prev      := ANode;
@@ -122,6 +125,9 @@ var
   p: PHeapNode;
 begin
   p            := ANode^.Next;
+  // Cant merge if the next chunk is allocated
+  if p^.Allocated <> 0 then
+    exit(ANode);
   ANode^.Size  := ANode^.Size + p^.Size + SizeOf(THeapNode);
   ANode^.Next  := p^.Next;
   if p^.Next <> nil then
@@ -455,19 +461,19 @@ begin
     exit;
   p^.Allocated:= 0;
 
-  // MoveP backward to merge free chunks
-  while (p^.Prev <> nil) and (p^.Prev^.Magic = KERNEL_HEAP_MAGIC) and (p^.Prev^.Allocated = 0) do
-  begin
-    //Console.WriteStr(#10#13 + 'Merging backward: 0x');
-    //Console.WriteHex(Cardinal(p^.Prev), 8);
-    p:= KHeap.MergeChunk(p^.Prev);
-  end;
   // MoveP forward to merge free chunks
   while (p^.Next <> nil) and (p^.Next^.Magic = KERNEL_HEAP_MAGIC) and (p^.Next^.Allocated = 0) do
   begin
     //Console.WriteStr(#10#13 + 'Merging forward: 0x');
     //Console.WriteHex(Cardinal(p^.Next), 8);
     p:= KHeap.MergeChunk(p);
+  end;
+  // MoveP backward to merge free chunks
+  while (p^.Prev <> nil) and (p^.Prev^.Magic = KERNEL_HEAP_MAGIC) and (p^.Prev^.Allocated = 0) do
+  begin
+    //Console.WriteStr(#10#13 + 'Merging backward: 0x');
+    //Console.WriteHex(Cardinal(p^.Prev), 8);
+    p:= KHeap.MergeChunk(p^.Prev);
   end;
   APtr:= nil;
   Spinlock.Unlock(PMM.SLock);
@@ -564,7 +570,7 @@ begin
   p:= GetHeapNode;
   while p <> nil do
   begin
-    if p^.PID = PID then
+    if (p^.PID = PID) and (p^.Allocated = 1) then
       Ret:= Ret + p^.Size;
     p:= p^.Next;
   end;
