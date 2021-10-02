@@ -65,8 +65,13 @@ begin
   Writeln('Type ''help'' to see list of commands.');
   Writeln('Type any .KEX file name to execute.');
   Writeln;
+
   while True do
   begin
+    if IsGUI then
+    asm
+      int $20; // yield
+    end;
     FillChar(Cmd[0], 256, 0);
     Write('>');
     while True do

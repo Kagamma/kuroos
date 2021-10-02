@@ -123,3 +123,27 @@ begin
     end;
   result:=0;
 end;
+
+function IndexByte(Const buf;len:SizeInt;b:byte):SizeInt;
+var
+  psrc,pend : pbyte;
+begin
+  psrc:=@buf;
+  { simulate assembler implementations behaviour, which is expected }
+  { fpc_pchar_to_ansistr in astrings.inc                            }
+  if (len < 0) or
+     (psrc+len < psrc) then
+    pend:=pbyte(high(PtrUInt)-sizeof(byte))
+  else
+    pend:=psrc+len;
+  while (psrc<pend) do
+    begin
+      if psrc^=b then
+        begin
+          result:=psrc-pbyte(@buf);
+          exit;
+        end;
+      inc(psrc);
+    end;
+  result:=-1;
+end;

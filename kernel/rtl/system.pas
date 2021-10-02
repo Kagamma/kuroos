@@ -45,6 +45,7 @@ type
   PPtrInt   = ^PtrInt;
   KernelString = ShortString;
   PShortString = ^ShortString;
+  ObjpasInt = Integer;
 
   Pjmp_buf = ^jmp_buf;
   jmp_buf = packed record
@@ -98,9 +99,9 @@ procedure fpc_shortstr_assign(Len: LongInt; sstr, dstr: Pointer); compilerproc;
 procedure fpc_Shortstr_SetLength(var s:shortstring;len:SizeInt); compilerproc;
 function  fpc_shortstr_length(const s: ShortString): Byte;
 procedure fpc_shortstr_to_shortstr(out res: ShortString; const sstr: ShortString); compilerproc;
-procedure fpc_shortstr_concat(var dest: ShortString; const s1, s2: ShortString); compilerproc;
+procedure fpc_shortstr_concat(var dests: ShortString; const s1, s2: ShortString); compilerproc;
 procedure fpc_shortstr_concat_multi(var dests:shortstring;const sarr:array of pshortstring);compilerproc;
-function  fpc_ShortStr_Compare_equal(const s1, s2: ShortString): SizeInt; compilerproc;
+function fpc_shortstr_compare_equal(const left,right:shortstring): longint; compilerproc;
 procedure fpc_pchar_to_shortstr(out res: ShortString; p: PChar); compilerproc;
 procedure fpc_write_text_float(rt, fixkomma, Len: Longint; var t : Text; r : ValReal); compilerproc;
 

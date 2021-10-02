@@ -29,7 +29,7 @@ implementation
 
 constructor TList.Init;
 begin
-  FCapacity := 16;
+  FCapacity := 64;
   FCount := 0;
   GetMem(Items, FCapacity * SizeOf(Pointer));
 end;
