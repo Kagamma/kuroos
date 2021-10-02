@@ -1,3 +1,4 @@
+#pragma option b32
 #pragma option X
 #pragma option LST
 #pragma option J0

@@ -13,8 +13,8 @@ mkdir libs
 @echo assemble stub.asm...
 
 cd app
-@c-- /b32 /OS /5 helloc.c
-@c-- /b32 /OS /5 winc.c
+@c-- /OS /5 helloc.c
+@c-- /OS /5 winc.c
 @move helloc.bin ../grub/helloc.kex
 @move winc.bin ../grub/winc.kex
 cd ..
