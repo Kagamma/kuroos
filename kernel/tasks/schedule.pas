@@ -141,7 +141,6 @@ var
   i: Cardinal;
   CodeSize: Cardinal;
   PageTable: PPageTable;
-  TaskCurrentBackup: PTaskStruct;
 begin
   if (PKEXHeader(ABuf)^.ID[0] <> 'K') or
      (PKEXHeader(ABuf)^.ID[1] <> '3') or
@@ -195,10 +194,6 @@ begin
   KHeap.SetOwner(Task^.Page, Task^.PID);
   // Clone kernel page directory for this task
   Move(KernelPageStruct_^.Directory, Task^.Page^.Directory, SizeOf(TPageDir));
-  // Temporary switch to this task, to mark allocated memory to this task's frames,
-  // so we can purge it later when the task is destroyed
-  TaskCurrentBackup := TaskCurrent;
-  TaskCurrent:= Task;
   // Set virtual memory for task code
   // TODO: We somehow skip a 4KB physics memory block if the kernel heap doesnt enough memory to allocate
   for i := 0 to GetSize(ABuf) div PAGE_SIZE do
@@ -214,9 +209,6 @@ begin
       Cardinal(PKEXHeader(ABuf)^.HeapAddr) + i*PAGE_SIZE,
       Cardinal(Task^.HeapAddr) - KERNEL_HEAP_START + KERNEL_SIZE + i*PAGE_SIZE, 1);
   end;
-  // Switch back to current task
-  if TaskCurrentBackup <> nil then
-    TaskCurrent:= TaskCurrentBackup;
   Pointer(Task^.Code):= Pointer(Task^.Code) + PKEXHeader(ABuf)^.CodePoint;
   // Generate default stack
   GENERATE_STACK;
@@ -302,7 +294,6 @@ var
   TaskParent: PTaskStruct;
   P: PHeapNode;
   pp: Pointer;
-  TaskCurrentBackup: PTaskStruct;
 begin
   Spinlock.Lock(Schedule.SLock);
   //
@@ -333,10 +324,7 @@ begin
   KHeap.SetOwner(Task^.StackAddr, Task^.PID);
   //
   Task^.HeapAddr := FirstHeapNode_;
-  // Allocate Frames
-  Task^.Frames:= KHeap.Alloc(1024*1024*4 div 32);
-  FillChar(Task^.Frames^, GetSize(Task^.Frames), 0);
-  KHeap.SetOwner(Task^.Frames, Task^.PID);
+  Task^.Frames := @VMM.Frames[0];
   // Set this task as alive
   Task^.State:= TASK_ALIVE;
   // Use the same address page with kernel
@@ -412,8 +400,8 @@ procedure FreeProcess(const ATask: PTaskStruct); stdcall;
 begin
   // Free task's all memory
   // TODO: Make sure to reclaim free frames
-  if ATask^.PPID = 0 then
-    PurgeFramesFromTask(@ATask^.Frames[0]);
+  //if ATask^.PPID = 0 then
+  //  PurgeFramesFromTask(@ATask^.Frames[0]);
   FreeAllMemory(ATask^.PID);
 end;
 
