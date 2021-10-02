@@ -187,7 +187,8 @@ begin
   end;
   // TODO: Try to collect free memory from processes
   // TODO: Page out to external device to free memory
-  VBE.ReturnToTextMode;
+  if IsGUI then
+    VBE.ReturnToTextMode;
   IRQ_DISABLE;
   Console.WriteStr('Not enough memory.');
   INFINITE_LOOP;

@@ -209,7 +209,6 @@ procedure ReturnToTextMode; stdcall;
 var
   r: TX86Registers;
 begin
-  if not IsGUI then exit;
   FillChar(r, SizeOf(TX86Registers), 0);
   r.ax:= $4F02;
   r.bx:= 3;
@@ -223,7 +222,6 @@ procedure ReturnToGraphicsMode; stdcall;
 var
   r: TX86Registers;
 begin
-  if IsGUI then exit;
   Console.SaveState;
   FillChar(r, SizeOf(TX86Registers), 0);
   r.ax:= $4F02;
