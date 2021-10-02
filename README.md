@@ -16,5 +16,5 @@
 - Basic window manager
 
 #### Things that need more work
-- All process runs at ring 0 at the moment
+- All process runs at ring 0, and share same page table
 - Memory manager is pretty barebone. Process doesn't have any ways to request for more memory
