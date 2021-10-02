@@ -21,7 +21,7 @@ const
   KERNEL_HEAP_START  = $B0000000;
   KERNEL_HEAP_END    = $DE000000;
   PAGE_MEMORY_BLOCK  = $400000;
-  KERNEL_SIZE        = 1024 * 1024 * 12;
+  KERNEL_SIZE        = 1024 * 1024 * 8;
   FIXED_PAGETABLE_SIZE = 768;
 
 type
@@ -379,14 +379,6 @@ begin
   Frame := FindFirstFreeFrame(@Frames[0]);
   // Mark the frame as used
   SetFrame(@Frames[0], Frame * PAGE_SIZE);
-  // Mark for current process as well, in case it has a different frame
-  if TaskCurrent <> nil then
-  begin
-    if TaskCurrent^.Frames <> @Frames then
-    begin
-      SetFrame(@TaskCurrent^.Frames[0], Frame * PAGE_SIZE);
-    end;
-  end;
   // Now we get the page table. If No table found, create it.
   if APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].TableAddr <> 0 then
     PageTable := PPageTable(APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].TableAddr * PAGE_SIZE)

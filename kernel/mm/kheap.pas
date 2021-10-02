@@ -324,6 +324,17 @@ begin
   Console.WriteStr(', h: 0x');
   Console.WriteHex(Cardinal(h), 8);
   Console.WriteStr(#10#13);
+  Console.SetFgColor(14);
+  Console.WriteStr('Trying to allocate 128-bytes aligned chunks...');
+  Console.SetFgColor(7);
+  g:= KHeap.AllocAligned(128);
+  Console.WriteStr(#10#13);
+  Console.WriteStr('g: 0x');
+  Console.WriteHex(Cardinal(g), 8);
+  h:= KHeap.AllocAligned(128);
+  Console.WriteStr(', h: 0x');
+  Console.WriteHex(Cardinal(h), 8);
+  Console.WriteStr(#10#13);
 
   Console.SetFgColor(14);
   Console.WriteStr('Freeing all chunks... ');

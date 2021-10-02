@@ -92,7 +92,6 @@ begin
   VMM.Init;
 
   KHeap.Init;
-  //KHeap.Test;
 
   Writeln('Total memory: ', mbInfo^.mem_upper * 1024, ' bytes');
   Writeln(
@@ -113,6 +112,7 @@ begin
   FAT.Init;
   // Just want to test if the good old Object works...
   CDFSObj:= New(PCDFSObject, Init);
+  // KHeap.Test;
 
   //CDFSObj^.Test;
 

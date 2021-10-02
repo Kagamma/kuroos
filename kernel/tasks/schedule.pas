@@ -75,8 +75,6 @@ type
     Priority: Cardinal;
     // Task's own paging
     Page: PPageStruct;
-    // Task's own frames
-    Frames: PCardinal;
     // Code's pointer in kernel's address space.
     Code: TaskProc;
   end;
@@ -174,10 +172,6 @@ begin
   Task^.StackAddr:= KHeap.Alloc(PKEXHeader(ABuf)^.StackSize);
   Task^.Stack:= Task^.StackAddr + (PKEXHeader(ABuf)^.StackSize);
   KHeap.SetOwner(Task^.StackAddr, Task^.PID);
-  // Allocate Frames
-  Task^.Frames:= KHeap.Alloc(1024*1024*4 div 32);
-  FillChar(Task^.Frames^, GetSize(Task^.Frames), 0);
-  KHeap.SetOwner(Task^.Frames, Task^.PID);
   // Allocate 64KB "heap starter"
   Task^.HeapAddr := KHeap.AllocAligned(PROCESS_HEAP_SIZE);
   KHeap.Init(Task^.HeapAddr);
@@ -261,7 +255,6 @@ begin
   KHeap.SetOwner(Task^.StackAddr, Task^.PID);
   //
   Task^.HeapAddr := TaskParent^.HeapAddr;
-  Task^.Frames := TaskParent^.Frames;
   // Set this task as alive
   Task^.State:= TASK_ALIVE;
 
@@ -324,7 +317,6 @@ begin
   KHeap.SetOwner(Task^.StackAddr, Task^.PID);
   //
   Task^.HeapAddr := FirstHeapNode_;
-  Task^.Frames := @VMM.Frames[0];
   // Set this task as alive
   Task^.State:= TASK_ALIVE;
   // Use the same address page with kernel
