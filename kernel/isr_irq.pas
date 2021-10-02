@@ -24,7 +24,7 @@ function  k_PIC_Handler(AStack: Cardinal): Cardinal; cdecl;
 implementation
 
 uses
-  vga, vbe;
+  vga, vbe, schedule;
 
 const
   ISR_ERRORCODE: array[0..15] of PChar =
@@ -145,6 +145,17 @@ begin
     Console.WriteDec(r.err_code, 0);
 
     k_IDT_WriteRegisters(r);
+    if TaskCurrent <> nil then
+    begin
+      Console.WriteStr('Current Task: ');
+      if TaskCurrent^.PID = 0 then
+        Console.WriteDec(TaskCurrent^.PPID)
+      else
+        Console.WriteDec(TaskCurrent^.PID);
+      Console.WriteStr('[');
+      Console.WriteStr(@TaskCurrent^.Name[1]);
+      Console.WriteStr(']'#10#13);
+    end;
 
     IDTHandle:= IDTHandles[r.int_no];
     if IDTHandle <> nil then
