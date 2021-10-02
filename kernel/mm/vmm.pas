@@ -373,15 +373,10 @@ var
   PageTable: PPageTable;
   Page: PPageTableEntry;
   Frame: Cardinal;
-  PFrames: PCardinal = nil;
 begin
   Spinlock.Lock(SLock);
-  if TaskCurrent <> nil then
-    PFrames := TaskCurrent^.Frames
-  else
-    PFrames := @Frames[0];
   // We first look for a free 4KB memory block
-  Frame := FindFirstFreeFrame(PFrames);
+  Frame := FindFirstFreeFrame(@Frames[0]);
   // Mark the frame as used
   SetFrame(@Frames[0], Frame * PAGE_SIZE);
   // Mark for current process as well, in case it has a different frame
