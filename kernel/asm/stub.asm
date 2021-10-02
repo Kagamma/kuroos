@@ -43,6 +43,7 @@ k_start:
     push  eax                               ; ELFBOOT magic number
     push  ebx                               ; ELFBOOT info
     sti
+    xor   ebp,ebp
     call  k_main                            ; Call kernel entrypoint
     cli
     hlt

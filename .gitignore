@@ -6,5 +6,6 @@
 *.kex
 *.obj
 *.lst
+*.map
 kos
 .vscode
