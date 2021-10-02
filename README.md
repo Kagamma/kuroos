@@ -17,4 +17,4 @@
 
 #### Things that need more work
 - All process runs at ring 0 at the moment
-- Memory manager is pretty barebone. Process is allocated an entire map (4MB) of memory, without any ways to request for more memory
+- Memory manager is pretty barebone. Process doesn't have any ways to request for more memory
