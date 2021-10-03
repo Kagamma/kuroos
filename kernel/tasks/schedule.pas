@@ -152,14 +152,13 @@ begin
   IRQ_DISABLE;
   //
   Inc(TaskCount);
-  // Make sure to switch back to kernel in order to manage list of tasks
-  TaskCurrent := nil;
   // Create new task
   Inbetween:= True;
   TaskArray:= KHeap.ReAlloc(TaskArray, SizeOf(TTaskStruct) * TaskCount);
   Inbetween:= False;
   //
-  TaskCurrent:= FindProcess(1);
+  if TaskCurrent <> nil then
+    TaskCurrent:= @TaskArray[TaskPtr];
   //
   Task:= @TaskArray[TaskCount-1];
   Task^.Name:= AName;
@@ -230,14 +229,13 @@ begin
   IRQ_DISABLE;
   //
   Inc(TaskCount);
-  // Make sure to switch back to kernel in order to manage list of tasks
-  TaskCurrent := nil;
   // Create new task
   Inbetween:= True;
   TaskArray:= KHeap.ReAlloc(TaskArray, SizeOf(TTaskStruct) * TaskCount);
   Inbetween:= False;
   //
-  TaskCurrent:= @TaskArray[TaskPtr];
+  if TaskCurrent <> nil then
+    TaskCurrent:= @TaskArray[TaskPtr];
   //
   Task:= @TaskArray[TaskCount-1];
 
