@@ -169,6 +169,7 @@ begin
   Inbetween:= True;
  // TaskArray:= KHeap.ReAlloc(TaskArray, SizeOf(TTaskStruct) * TaskCount);
   Inbetween:= False;
+  //
   if TaskCurrent <> nil then
     TaskCurrent:= @TaskArray[TaskPtr];
   //
@@ -242,6 +243,7 @@ begin
   Inbetween:= True;
  // TaskArray:= KHeap.ReAlloc(TaskArray, SizeOf(TTaskStruct) * TaskCount);
   Inbetween:= False;
+  //
   if TaskCurrent <> nil then
     TaskCurrent:= @TaskArray[TaskPtr];
   //
