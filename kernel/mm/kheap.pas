@@ -31,11 +31,13 @@ type
   end;}
   PHeapNode = ^THeapNode;
   THeapNode = packed record
+    _Pad1     : Cardinal;
     Magic     : Cardinal;
     Prev, Next: PHeapNode;
     Allocated : Cardinal;
     Size      : Cardinal;
     PID       : Cardinal;
+    _Pad2     : Cardinal;
   end;
 
 var
