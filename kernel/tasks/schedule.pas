@@ -117,6 +117,7 @@ implementation
 uses
   pic,
   sysutils,
+  vbe,
   kex;
 
 var
@@ -130,6 +131,19 @@ begin
   SLock    := Spinlock.Create;
   Spinlock.Unlock(SLock);
   TaskCurrent:= nil;
+end;
+
+procedure IncreaseTaskCount; stdcall; public;
+begin
+  Inc(TaskCount);
+  if TaskCount > High(TaskArray) then
+  begin
+    if IsGUI then
+      VBE.ReturnToTextMode;
+    IRQ_DISABLE;
+    Console.WriteStr('Maximum number of tasks reached.');
+    INFINITE_LOOP;
+  end;
 end;
 
 function  CreateProcessFromBuffer(const AName: KernelString; const ABuf: Pointer): PtrUInt; stdcall;
@@ -150,7 +164,7 @@ begin
   //
   IRQ_DISABLE;
   //
-  Inc(TaskCount);
+  IncreaseTaskCount;
   // Create new task
   Inbetween:= True;
  // TaskArray:= KHeap.ReAlloc(TaskArray, SizeOf(TTaskStruct) * TaskCount);
@@ -174,8 +188,6 @@ begin
   KHeap.SetOwner(Task^.StackAddr, Task^.PID);
   // Allocate 64KB "heap starter"
   Task^.HeapAddr := KHeap.AllocAligned(PROCESS_HEAP_SIZE);
-  KHeap.Init(Task^.HeapAddr);
-  PHeapNode(Task^.HeapAddr)^.Size := PROCESS_HEAP_SIZE - SizeOf(THeapNode);
   KHeap.SetOwner(Task^.HeapAddr, Task^.PID);
   // Allocate RAM for the task
   CodeSize:= KHeap.CalcAlign(SizeOf(ABuf), PAGE_SIZE);
@@ -220,14 +232,13 @@ function  CreateThread(ACode: TaskProc;
 var
   Task: PTaskStruct;
   TaskParent: PTaskStruct;
-  P: PHeapNode;
   pp: Pointer;
 begin
   Spinlock.Lock(Schedule.SLock);
   //
   IRQ_DISABLE;
   //
-  Inc(TaskCount);
+  IncreaseTaskCount;
   // Create new task
   Inbetween:= True;
  // TaskArray:= KHeap.ReAlloc(TaskArray, SizeOf(TTaskStruct) * TaskCount);
@@ -287,14 +298,13 @@ function  CreateKernelThread(const AName: KernelString; ACode: TaskProc;
 var
   Task: PTaskStruct;
   TaskParent: PTaskStruct;
-  P: PHeapNode;
   pp: Pointer;
 begin
   Spinlock.Lock(Schedule.SLock);
   //
   IRQ_DISABLE;
   //
-  Inc(TaskCount);
+  IncreaseTaskCount;
   // Create new task
   Inbetween:= True;
  // TaskArray:= KHeap.ReAlloc(TaskArray, SizeOf(TTaskStruct) * TaskCount);
@@ -318,7 +328,7 @@ begin
   Task^.Stack:= Task^.StackAddr + AStackSize;
   KHeap.SetOwner(Task^.StackAddr, Task^.PID);
   //
-  Task^.HeapAddr := FirstHeapNode_;
+  Task^.HeapAddr := Pointer(KERNEL_HEAP_START);
   // Set this task as alive
   Task^.State:= TASK_ALIVE;
   // Use the same address page with kernel
@@ -412,6 +422,8 @@ begin
   Inbetween:= True;
   if TaskCount > 0 then
   begin
+    // Switch page directory to kernel
+    VMM.SwitchPageDir(@KernelPageStruct_^.Directory);
     // Save current stack register to older task
     if (TaskPtr >= 0) then
     begin
@@ -463,7 +475,7 @@ begin
     // Switch page directory
     if DirPhys <> VMM.CurrentPageDir_ then
     begin
-      VMM.EnablePageDir(DirPhys);
+      VMM.SwitchPageDir(DirPhys);
     end;
     //
     Run:= Cardinal(TaskCur^.Stack);

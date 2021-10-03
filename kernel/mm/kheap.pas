@@ -21,30 +21,20 @@ const
   PROCESS_HEAP_SIZE = 4096 * 16;
 
 type
-  // 16-bytes heap header
-  {PHeapNode = ^THeapNode;
-  THeapNode = bitpacked record
-    Magic     : Cardinal;
-    Prev, Next: PHeapNode;
-    Allocated : TBit1;
-    Size      : TBit31;
-  end;}
-  PHeapNode = ^THeapNode;
-  THeapNode = packed record
-    Magic     : Cardinal;
-    Prev, Next: PHeapNode;
-    Allocated : Cardinal;
-    Size      : Cardinal;
-    PID       : Cardinal;
+  PHeapEntry = ^THeapEntry;
+  THeapEntry = packed record
+    Allocated: Cardinal;
+    Size     : Cardinal;
+    PID      : Cardinal;
+    Address  : Cardinal;
   end;
 
 var
-  FirstHeapNode_: PHeapNode;
+  HeapEntries: array[0..199999] of THeapEntry;
+  HeapEntryCount: Integer;
 
-// Initialize first heap node for the kernel and print init info
-procedure Init; stdcall; overload;
-// Initialize first heap node
-procedure Init(const ALinearAddr: Pointer); stdcall; overload;
+// Initialize first heap entry for the kernel and print init info
+procedure Init; stdcall;
 
 // Perform alloc/free for testing.
 procedure Test; stdcall;
@@ -52,8 +42,6 @@ procedure Test; stdcall;
 function  Alloc(const ASize: Cardinal): Pointer; stdcall;
 // Allocate a block of memory, aligned to 4KB
 function  AllocAligned(const ASize: Cardinal): Pointer; stdcall;
-// Allocate a block of memory, Custom align
-function  AllocAlignedCustom(const ASize: Cardinal; const AAlign: Cardinal): Pointer; stdcall;
 {  Allocate a block of memory. If memory exists, we will delete it and move
    all its data to new block.
    TODO:
@@ -90,163 +78,141 @@ uses
 
 // ----- Helper functions -----
 
-// Get heap address
-function GetHeapAddress: PHeapNode; public;
-begin
-  if TaskCurrent = nil then
-    exit(FirstHeapNode_)
-  else
-    exit(TaskCurrent^.HeapAddr);
-end;
-
 // Split a chunk into 2 smaller chunks
-procedure SplitChunk(const ANode: PHeapNode; const ASize: Cardinal); public;
+procedure SplitChunk(const Index: Cardinal; const ASize: Cardinal); public;
 var
-  p: PHeapNode;
+  PE, PENext: PHeapEntry;
+  I: Integer;
 begin
-  p            := PHeapNode(Cardinal(ANode) + SizeOf(THeapNode) + ASize);
-  p^.Next      := ANode^.Next;
-  p^.Prev      := ANode;
-  if p^.Next <> nil then
-    p^.Next^.Prev:= p;
-  ANode^.Next  := p;
-  p^.Magic     := KERNEL_HEAP_MAGIC;
-  p^.Size      := ANode^.Size - ASize - SizeOf(THeapNode);
-  p^.Allocated := 0;
-  ANode^.Size  := ASize;
+  Inc(HeapEntryCount);
+  for I := HeapEntryCount - 1 downto Index + 1 do
+  begin
+    HeapEntries[I] := HeapEntries[I - 1];
+  end;
+  PE := @HeapEntries[Index];
+  PENext := @HeapEntries[Index + 1];
+  PENext^.Size := PE^.Size - ASize;
+  PENext^.Address := PE^.Address + ASize;
+  PENext^.Allocated := 0;
+  PE^.Size := ASize;
 end;
 
-// Merge 2 free chunks into 1 and return the 1st chunk.
-function  MergeChunk(const ANode: PHeapNode): PHeapNode; public;
+// Merge 2 free chunks into 1.
+procedure MergeChunk(const Index: Cardinal); public;
 var
-  p: PHeapNode;
+  PE, PENext: PHeapEntry;
+  I: Integer;
 begin
-  p            := ANode^.Next;
-  ANode^.Size  := ANode^.Size + p^.Size + SizeOf(THeapNode);
-  ANode^.Next  := p^.Next;
-  if p^.Next <> nil then
-    p^.Next^.Prev:= ANode;
-
-  // Erase 2nd chunk's node header.
-  p^.Magic     := 0;
-  p^.Size      := 0;
-
-  exit(ANode);
+  PE := @HeapEntries[Index];
+  PENext := @HeapEntries[Index + 1];
+  PE^.Size := PE^.Size + PENext^.Size;
+  PE^.Allocated := 0;
+  Dec(HeapEntryCount);
+  Move(HeapEntries[Index + 2], HeapEntries[Index + 1], (HeapEntryCount - Index) * SizeOf(THeapEntry));
 end;
 
 { Find a useable chunk with base address and a given size using brute-force.
   TODO: Need a better algorithm. }
-function  FindUseableChunk(const AStartAddr: Pointer; const ASize: Cardinal; const AAligned: Cardinal): Pointer; stdcall; public;
+function  FindUseableChunk(const ASize: Cardinal; const IsPageAligned: Boolean): Pointer; stdcall; public;
 var
-  p: PHeapNode;
-  align,
-  alignMargin: Cardinal;
+  I, J: Integer;
+  PE: PHeapEntry;
 begin
-  p:= AStartAddr;
-  alignMargin:= AAligned + SizeOf(THeapNode);
-  while p <> nil do
+  if IsPageAligned then
   begin
-    if (p^.Allocated = 0) and
-       (p^.Size > ASize) then
+    for I := 0 to HeapEntryCount - 1 do
     begin
-      if (AAligned > 0) then
+      PE := @HeapEntries[I];
+      if (PE^.Allocated = 0) and (PE^.Address mod PAGE_SIZE = 0) and (PE^.Size >= ASize) then
       begin
-        if ((p^.size >= alignMargin) or
-            (p^.Next^.size - p^.size > alignMargin)) then
+        // Split in case the the entry has more space than required
+        if PE^.Size > ASize then
         begin
-          align:= (Cardinal(p) + SizeOf(THeapNode) shl 1) mod AAligned;
-          if align > 0 then
-          begin
-            align:= AAligned - align;
-            KHeap.SplitChunk(p, align);
-            p^.Allocated:= 0;
-            p:= Pointer(Cardinal(p) + SizeOf(THeapNode) + align);
-          end;
-        end
-        else
-        begin
-          p:= p^.Next;
-          continue;
+          SplitChunk(I, ASize);
         end;
-      end;
-
-      // If the hole is larger than necessary, we split this chunk into 2.
-      if p^.Size - (ASize + SizeOf(THeapNode)) > 0 then
-        KHeap.SplitChunk(p, ASize);
-      p^.Allocated:= 1;
-      // We need to know which process/thread this memory block belong to!
-      if (not Inbetween) and (TaskCurrent <> nil) then
+        if (not Inbetween) and (TaskCurrent <> nil) then
+          PE^.PID := TaskCurrent^.PID
+        else
+          PE^.PID := 0;
+        PE^.Allocated := 1;
+        exit(Pointer(PE^.Address));
+      end else
+      if (PE^.Allocated = 0) and (PE^.Size >= ASize + PAGE_SIZE * 2) then
       begin
-        p^.PID:= TaskCurrent^.PID;
-      end
-      else
-        p^.PID:= 0;
-        //
-      exit(Pointer(Cardinal(p) + SizeOf(THeapNode)));
+        // Split left
+        J := I;
+        if PAGE_SIZE - PE^.Address mod PAGE_SIZE > 0 then
+        begin
+          SplitChunk(I, PAGE_SIZE - PE^.Address mod PAGE_SIZE);
+          Inc(J);
+        end;
+        // Split right
+        SplitChunk(J, ASize);
+        PE := @HeapEntries[J];
+        if (not Inbetween) and (TaskCurrent <> nil) then
+          PE^.PID := TaskCurrent^.PID
+        else
+          PE^.PID := 0;
+        PE^.Allocated := 1;
+        exit(Pointer(PE^.Address));
+      end;
     end;
-    p:= p^.Next;
+  end else
+  begin
+    for I := 0 to HeapEntryCount - 1 do
+    begin
+      PE := @HeapEntries[I];
+      if (PE^.Allocated = 0) and (PE^.Size >= ASize) then
+      begin
+        // Split in case the the entry has more space than required
+        if PE^.Size > ASize then
+        begin
+          SplitChunk(I, ASize);
+        end;
+        if (not Inbetween) and (TaskCurrent <> nil) then
+          PE^.PID := TaskCurrent^.PID
+        else
+          PE^.PID := 0;
+        PE^.Allocated := 1;
+        exit(Pointer(PE^.Address));
+      end;
+    end;
   end;
   exit(nil);
-end;
-
-{ Expand the heap by allocating a new 4KB page and add the number to the last node's size }
-procedure ExpandHeap(const AStartAddr: Pointer; Size: Cardinal); stdcall; public;
-var
-  p: PHeapNode;
-  i: Cardinal;
-begin
-  Size := Size div PAGE_SIZE;
-  p:= AStartAddr;
-  while p^.Next <> nil do
-    p := p^.Next;
-  for i := 0 to Size do
-  begin
-    VMM.AllocPage(TaskCurrent^.Page, Cardinal(p) + p^.Size, 1);
-    p^.Size := p^.Size + PAGE_SIZE;
-  end;
-end;
-
-function GetHeapNode: PHeapNode; inline;
-begin
-  if TaskCurrent = nil then
-    exit(FirstHeapNode_)
-  else
-    exit(TaskCurrent^.HeapAddr);
 end;
 
 // ----- Public functions -----
 
 procedure SetOwner(const APtr: Pointer; const AID: Cardinal); stdcall; inline;
+var
+  I: Integer;
+  PE: PHeapEntry;
 begin
-  PHeapNode(APtr - SizeOf(THeapNode))^.PID:= AID;
+  for I := 0 to HeapEntryCount - 1 do
+  begin
+    PE := @HeapEntries[I];
+    if Pointer(PE^.Address) = APtr then
+    begin
+      PE^.PID := AID;
+      exit;
+    end;
+  end;
 end;
 
 procedure Init; stdcall; overload;
 begin
-  FirstHeapNode_:= PHeapNode(KERNEL_HEAP_START);
-  KHeap.Init(FirstHeapNode_);
+  FillChar(HeapEntries[0], SizeOf(HeapEntries), 0);
+  HeapEntries[0].Address := KERNEL_HEAP_START;
+  HeapEntries[0].Size := MaxKernelHeapSize_;
+  HeapEntryCount := 1;
 
   Console.WriteStr('Kernel heap started at 0x');
-  Console.WriteHex(Cardinal(FirstHeapNode_), 8);
+  Console.WriteHex(KERNEL_HEAP_START, 8);
   Console.WriteStr(#10#13);
 
   Console.WriteStr('Kernel heap size: ');
   Console.WriteDec(MaxKernelHeapSize_, 0);
   Console.WriteStr(' bytes'#10#13);
-end;
-
-procedure Init(const ALinearAddr: Pointer); stdcall; overload;
-var
-  heapNode: PHeapNode;
-begin
-  // Now we perform heap allocation.
-  // We will map all heap memory to a single block and mark that block as unallocated;
-  heapNode           := ALinearAddr;
-  heapNode^.Magic    := KERNEL_HEAP_MAGIC;
-  heapNode^.Prev     := nil;
-  heapNode^.Next     := nil;
-  heapNode^.Allocated:= 0;
-  heapNode^.Size     := MaxKernelHeapSize_ - SizeOf(THeapNode);
 end;
 
 procedure Test; stdcall;
@@ -262,7 +228,7 @@ var
   i: Pointer;
 begin
   Console.SetFgColor(14);
-  Console.WriteStr('Trying to allocate 4 memory chunks, each chunk has 8 bytes+16 bytes header... ');
+  Console.WriteStr('Trying to allocate 4 memory chunks, each chunk has 8 bytes header... ');
   Console.SetFgColor(7);
 
   Console.WriteStr(#10#13);
@@ -353,14 +319,14 @@ var
   p: Pointer;
 begin
   Spinlock.Lock(PMM.SLock);
-  p:= KHeap.FindUseableChunk(GetHeapNode, ASize, 2);
+  p:= KHeap.FindUseableChunk(ASize, False);
   while p = nil do
   begin
     // Try to ask VMM to allocate new page if possible
-    ExpandHeap(GetHeapNode, ASize);
-    p:= KHeap.FindUseableChunk(GetHeapNode, ASize, 2);
-    // Console.WriteStr('KHeap.Alloc: Not enough memory!');
-    // INFINITE_LOOP;
+    // ExpandHeap(GetHeapNode, ASize);
+    // p:= KHeap.FindUseableChunk(GetHeapNode, ASize, 2);
+    Console.WriteStr('KHeap.Alloc: Not enough memory!');
+    INFINITE_LOOP;
   end;
   Spinlock.Unlock(PMM.SLock);
   exit(p);
@@ -413,96 +379,94 @@ var
   p: Pointer;
 begin
   Spinlock.Lock(PMM.SLock);
-  p:= KHeap.FindUseableChunk(GetHeapNode, ASize, PAGE_SIZE);
+  p:= KHeap.FindUseableChunk(ASize, True);
   while p = nil do
   begin
     // Try to ask VMM to allocate new page if possible
-    ExpandHeap(GetHeapNode, ASize);
-    p:= KHeap.FindUseableChunk(GetHeapNode, ASize, PAGE_SIZE);
-    // Console.WriteStr('KHeap.AllocAligned: Not enough memory!');
-    // INFINITE_LOOP;
+    // ExpandHeap(GetHeapNode, ASize);
+    // p:= KHeap.FindUseableChunk(GetHeapNode, ASize, PAGE_SIZE);
+    Console.WriteStr('KHeap.AllocAligned: Not enough memory!');
+    INFINITE_LOOP;
   end;
   Spinlock.Unlock(PMM.SLock);
   exit(p);
 end;
 
-function  AllocAlignedCustom(const ASize: Cardinal; const AAlign: Cardinal): Pointer; stdcall;
+procedure FreeEntry(Index: Cardinal); stdcall;
 var
-  p: Pointer;
+  PE: PHeapEntry;
 begin
-  Spinlock.Lock(PMM.SLock);
-  p:= KHeap.FindUseableChunk(GetHeapNode, ASize, AAlign);
-  while p = nil do
+  PE := @HeapEntries[Index];
+  PE^.Allocated := 0;
+  // Merge forward
+  while (Index < HeapEntryCount - 1) and ((PE + 1)^.Allocated = 0)  do
+    MergeChunk(Index);
+  // Merge backward
+  while (Index > 0) and ((PE - 1)^.Allocated = 0)  do
   begin
-    // Try to ask VMM to allocate new page if possible
-    ExpandHeap(GetHeapNode, ASize);
-    p:= KHeap.FindUseableChunk(GetHeapNode, ASize, AAlign);
-    // Console.WriteStr('KHeap.AllocAlignedCustom: Not enough memory!');
-    // INFINITE_LOOP;
+    Dec(Index);
+    MergeChunk(Index);
+    PE := PE - 1;
   end;
-  Spinlock.Unlock(PMM.SLock);
-  exit(p);
 end;
 
 procedure Free(var APtr: Pointer); stdcall;
 var
-  p: PHeapNode;
+  I, J: Integer;
+  PE: PHeapEntry;
 begin
   Spinlock.Lock(PMM.SLock);
-  p:= PHeapNode(APtr - SizeOf(THeapNode));
-
-  if p^.Magic <> KERNEL_HEAP_MAGIC then
-    exit;
-  p^.Allocated:= 0;
-
-  // MoveP forward to merge free chunks
-  while (p^.Next <> nil) and (p^.Next^.Magic = KERNEL_HEAP_MAGIC) and (p^.Next^.Allocated = 0) do
+  for I := 0 to HeapEntryCount - 1 do
   begin
-    //Console.WriteStr(#10#13 + 'Merging forward: 0x');
-    //Console.WriteHex(Cardinal(p^.Next), 8);
-    p:= KHeap.MergeChunk(p);
+    PE := @HeapEntries[I];
+    if (Pointer(PE^.Address) = APtr) and (PE^.Allocated = 1) then
+    begin
+      FreeEntry(I);
+      break;
+    end;
   end;
-  // MoveP backward to merge free chunks
-  while (p^.Prev <> nil) and (p^.Prev^.Magic = KERNEL_HEAP_MAGIC) and (p^.Prev^.Allocated = 0) do
-  begin
-    //Console.WriteStr(#10#13 + 'Merging backward: 0x');
-    //Console.WriteHex(Cardinal(p^.Prev), 8);
-    p:= KHeap.MergeChunk(p^.Prev);
-  end;
-  APtr:= nil;
   Spinlock.Unlock(PMM.SLock);
 end;
 
 procedure FreeAllMemory(const PID: PtrUInt); stdcall;
 var
-  p: PHeapNode;
-  m: Pointer;
+  I: Integer;
+  PE: PHeapEntry;
 begin
   if PID = 0 then
     exit;
-  p:= FirstHeapNode_;
-  while p <> nil do
+  Spinlock.Lock(PMM.SLock);
+  I := HeapEntryCount - 1;
+  while I >= 0 do
   begin
-    if (p^.PID = PID) and (p^.Allocated = 1) then
+    PE := @HeapEntries[I];
+    if (PE^.PID = PID) and (PE^.Allocated = 1) then
     begin
-      m:= Pointer(p) + SizeOf(THeapNode);
-      p:= p^.Next;
-      Free(m);
-    end
-    else
-      p:= p^.Next;
+      FreeEntry(I);
+      I := HeapEntryCount;
+    end;
+    Dec(I);
   end;
+  Spinlock.Unlock(PMM.SLock);
 end;
 
 function  GetSize(const APtr: Pointer): Cardinal; stdcall;
 var
-  p: PHeapNode;
+  I: Integer;
+  PE: PHeapEntry;
 begin
-  p:= PHeapNode(APtr - SizeOf(THeapNode));
-  if p^.Magic = KERNEL_HEAP_MAGIC then
-    exit(p^.Size)
-  else
-    exit(0);
+  Spinlock.Lock(PMM.SLock);
+  for I := 0 to HeapEntryCount - 1 do
+  begin
+    PE := @HeapEntries[I];
+    if Pointer(PE^.Address) = APtr then
+    begin
+      Spinlock.Unlock(PMM.SLock);
+      exit(PE^.Size);
+    end;
+  end;
+  Spinlock.Unlock(PMM.SLock);
+  exit(0);
 end;
 
 // ----- Debug functions -----
@@ -510,63 +474,48 @@ end;
 procedure Debug_PrintMemoryBlocks; stdcall;
 var
   i, j: Integer;
-  p: PHeapNode;
+  PE: PHeapEntry;
   c: Char;
 begin
   Console.SetFgColor(14);       // 12       // 24   // 32
   Console.WriteStr('Address     Size        Status  PID' + #10#13);
   Console.SetFgColor(7);
   Console.WriteStr('--------------------------------------' + #10#13);
-  p:= FirstHeapNode_;
-  while p <> nil do
+  for I := 0 to HeapEntryCount - 1 do
   begin
-    Console.WriteHex(Cardinal(p) + SizeOf(THeapNode), 8);
+    PE := @HeapEntries[I];
+    Console.WriteHex(PE^.Address, 8);
     Console.SetCursorPos(12, Console.GetCursorPosY);
-    Console.WriteHex(p^.Size, 8);
+    Console.WriteHex(PE^.Size, 8);
     Console.SetCursorPos(24, Console.GetCursorPosY);
-    case p^.Allocated of
+    case PE^.Allocated of
       0: Console.WriteStr('Free');
       1:
         begin
           Console.WriteStr('Used');
           Console.SetCursorPos(32, Console.GetCursorPosY);
-          case p^.PID of
+          case PE^.PID of
             0: Console.WriteStr('Kernel');
             else
-              Write(p^.PID);
+              Write(PE^.PID);
           end;
         end;
     end;
     Console.WriteStr(#10#13);
-    {if (p^.Allocated = 1) and (p^.Size <= 80) and (p^.Size > 0) then
-    begin
-      Console.SetFgColor(7);
-      for j:= 0 to p^.Size-1 do
-      begin
-        c:= Char((Pointer(p) + SizeOf(THeapNode) + j)^);
-        if Byte(c) in [32..127] then
-          Console.WriteChar(c)
-        else
-          Console.WriteChar('?');
-      end;
-      Console.WriteStr(#10#13);
-    end; }
-    p:= p^.Next;
   end;
 end;
 
 function  Debug_PrintProcessMemoryUsage(const PID: PtrUInt): Cardinal; stdcall;
 var
-  Ret: Cardinal;
-  p: PHeapNode;
+  Ret, I: Cardinal;
+  PE: PHeapEntry;
 begin
   Ret:= 0;
-  p:= GetHeapNode;
-  while p <> nil do
+  for I := 0 to HeapEntryCount - 1 do
   begin
-    if (p^.PID = PID) and (p^.Allocated = 1) then
-      Ret:= Ret + p^.Size;
-    p:= p^.Next;
+    PE := @HeapEntries[I];
+    if (PE^.PID = PID) and (PE^.Allocated = 1) then
+      Ret:= Ret + PE^.Size;
   end;
   exit(Ret);
 end;
