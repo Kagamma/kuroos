@@ -74,7 +74,7 @@ type
     PID: Cardinal;
     Pipe: Pointer;
     constructor Init;
-    destructor Done;
+    destructor Done; virtual;
   end;
 
   TKuroWM = object(TKuroObject)
@@ -90,7 +90,7 @@ type
     Width, Height: Cardinal;
 
     constructor Init;
-    destructor Done;
+    destructor Done; virtual;
     procedure ProcessMessages;
     procedure ClearScreen;
     procedure TextMode;
@@ -129,7 +129,7 @@ type
     OnCallback: TCallbackFunc;
 
     constructor Init(const AParent: PKuroObject);
-    destructor Done;
+    destructor Done; virtual;
     procedure ProcessMessages(const M: PKuroMessage; const IsChild: Boolean); virtual;
     procedure Render; virtual;
     // Focus this object
@@ -226,7 +226,6 @@ end;
 
 destructor TKuroWM.Done;
 begin
-  inherited;
   glDeleteTexture(WallpaperTexture);
   glDeleteTexture(CursorTexture);
   glDeleteTexture(BackBuffer);
@@ -235,6 +234,7 @@ begin
   Console.SetBgColor(0);
   Console.SetFgColor(7);
   Writeln('Back to Text Mode!');
+  inherited;
 end;
 
 procedure TKuroWM.TextMode;

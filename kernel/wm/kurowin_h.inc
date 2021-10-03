@@ -23,7 +23,7 @@
     Body: PKuroBody;
     BtnClose: PKuroCloseButton;
     constructor Init(const AParent: PKuroObject);
-    destructor Done;
+    destructor Done; virtual;
     procedure Callback(const M: PKuroMessage); virtual;
     procedure Render; virtual;
     procedure SetPosition(const AX, AY: LongInt); virtual;

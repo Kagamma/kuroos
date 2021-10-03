@@ -16,7 +16,7 @@ type
     Items: PPointer;
 
     constructor Init;
-    destructor Done;
+    destructor Done; virtual;
     procedure Add(const P: Pointer);
     procedure Delete(const Index: Cardinal);
     procedure Clear;
@@ -31,7 +31,7 @@ constructor TList.Init;
 begin
   FCapacity := 64;
   FCount := 0;
-  GetMem(Items, FCapacity * SizeOf(Pointer));
+  Items := Alloc(FCapacity * SizeOf(Pointer));
 end;
 
 destructor TList.Done;
@@ -57,7 +57,7 @@ begin
   if Index < FCount then
   begin
     Dec(FCount);
-    Move(Items[Index+1], Items[Index], (FCount-Index) shl 2);
+    Move(Items[Index+1], Items[Index], (FCount-Index) * SizeOf(Pointer));
     Size := GetSize(Items) div SizeOf(Pointer);
     if (FCount + FCapacity <= Size) and (Count > FCapacity) then
       Items := ReAlloc(Items, (Size - FCapacity) * SizeOf(Pointer));

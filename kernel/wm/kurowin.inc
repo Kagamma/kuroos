@@ -96,7 +96,6 @@ end;
 
 destructor TKuroWindow.Done;
 begin
-  Dispose(Body, Done);
   inherited;
 end;
 
