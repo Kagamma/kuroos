@@ -18,5 +18,5 @@
 #### Things that need more work
 - All process runs at ring 0 at the moment
 - Memory manager is pretty barebone. Process doesn't have any ways to request for more memory
-- Heap is organized as link list, and the node is stored at the start of each block. This could lead to corrupt entire heap in case of memory leak
+- Heap is organized as linked-list, and the node is stored at the start of each block. This could lead to corrupt entire heap in case of memory leak
 - Process stack is pointed to kernel's address space instead of it's own address space
