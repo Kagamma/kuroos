@@ -93,6 +93,7 @@ begin
             break;
           end;
       end;
+      CPU_HALT;
     end;
     if Length(Cmd) = 0 then
       continue;
