@@ -82,7 +82,7 @@ type
 var
   Inbetween  : Boolean = True;
   TaskCurrent: PTaskStruct;
-  TaskArray  : PTaskStruct;
+  TaskArray  : array[0..2999] of TTaskStruct;
   TaskCount  : Integer;
   TaskPtr    : Integer;
   SLock      : PSpinLock;
@@ -125,7 +125,6 @@ var
 
 procedure Init; stdcall;
 begin
-  TaskArray:= nil;
   TaskCount:= 0;
   TaskPtr  := -1;
   SLock    := Spinlock.Create;
@@ -154,7 +153,7 @@ begin
   Inc(TaskCount);
   // Create new task
   Inbetween:= True;
-  TaskArray:= KHeap.ReAlloc(TaskArray, SizeOf(TTaskStruct) * TaskCount);
+ // TaskArray:= KHeap.ReAlloc(TaskArray, SizeOf(TTaskStruct) * TaskCount);
   Inbetween:= False;
   //
   if TaskCurrent <> nil then
@@ -231,7 +230,7 @@ begin
   Inc(TaskCount);
   // Create new task
   Inbetween:= True;
-  TaskArray:= KHeap.ReAlloc(TaskArray, SizeOf(TTaskStruct) * TaskCount);
+ // TaskArray:= KHeap.ReAlloc(TaskArray, SizeOf(TTaskStruct) * TaskCount);
   Inbetween:= False;
   //
   if TaskCurrent <> nil then
@@ -298,7 +297,7 @@ begin
   Inc(TaskCount);
   // Create new task
   Inbetween:= True;
-  TaskArray:= KHeap.ReAlloc(TaskArray, SizeOf(TTaskStruct) * TaskCount);
+ // TaskArray:= KHeap.ReAlloc(TaskArray, SizeOf(TTaskStruct) * TaskCount);
   Inbetween:= False;
   if TaskCurrent <> nil then
     TaskCurrent:= @TaskArray[TaskPtr];
@@ -451,7 +450,7 @@ begin
       //
       Dec(TaskCount);
       // Reallocate task array
-      TaskArray:= KHeap.ReAlloc(TaskArray, SizeOf(TTaskStruct) * TaskCount);
+     // TaskArray:= KHeap.ReAlloc(TaskArray, SizeOf(TTaskStruct) * TaskCount);
       // Misc
       TaskCur:= @TaskArray[0];
       TaskPtr:= 0;
