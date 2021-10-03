@@ -10,7 +10,8 @@
 - PS2 mouse/keyboard driver
 - VGA driver
 - VBE driver
-- IDE driver (basic support for FAT32 & CDFS)
+- ATA/ATAPI driver
+- Basic support for FAT32 (read only) & CDFS
 - PIC/RTC
 - Preemptive multi-tasking
 - Basic window manager
