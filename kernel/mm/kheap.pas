@@ -91,7 +91,7 @@ uses
 // ----- Helper functions -----
 
 // Get heap address
-function GetHeapAddress: PHeapNode;
+function GetHeapAddress: PHeapNode; public;
 begin
   if TaskCurrent = nil then
     exit(FirstHeapNode_)
@@ -100,7 +100,7 @@ begin
 end;
 
 // Split a chunk into 2 smaller chunks
-procedure SplitChunk(const ANode: PHeapNode; const ASize: Cardinal);
+procedure SplitChunk(const ANode: PHeapNode; const ASize: Cardinal); public;
 var
   p: PHeapNode;
 begin
@@ -120,7 +120,7 @@ begin
 end;
 
 // Merge 2 free chunks into 1 and return the 1st chunk.
-function  MergeChunk(const ANode: PHeapNode): PHeapNode;
+function  MergeChunk(const ANode: PHeapNode): PHeapNode; public;
 var
   p: PHeapNode;
 begin
@@ -142,7 +142,7 @@ end;
 
 { Find a useable chunk with base address and a given size using brute-force.
   TODO: Need a better algorithm. }
-function  FindUseableChunk(const AStartAddr: Pointer; const ASize: Cardinal; const AAligned: Cardinal): Pointer; stdcall;
+function  FindUseableChunk(const AStartAddr: Pointer; const ASize: Cardinal; const AAligned: Cardinal): Pointer; stdcall; public;
 var
   p: PHeapNode;
   align,
@@ -196,7 +196,7 @@ begin
 end;
 
 { Expand the heap by allocating a new 4KB page and add the number to the last node's size }
-procedure ExpandHeap(const AStartAddr: Pointer; Size: Cardinal); stdcall;
+procedure ExpandHeap(const AStartAddr: Pointer; Size: Cardinal); stdcall; public;
 var
   p: PHeapNode;
   i: Cardinal;

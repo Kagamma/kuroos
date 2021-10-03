@@ -23,7 +23,6 @@ procedure CmdThread(PID: PtrUInt); stdcall;
 procedure Dir; stdcall;
 // Test KuroWM
 procedure StartKuroWM; stdcall;
-procedure TestTrace;
 
 implementation
 
@@ -39,7 +38,7 @@ uses
 var
   WM: TKuroWM;
 
-procedure TestTrace;
+procedure TestTrace; public;
 begin
   asm int 3 end;
 end;
@@ -183,7 +182,7 @@ begin
   end;
 end;
 
-procedure PointRotate(X, Y, AX, AY, Angle: Single; var RX, RY: LongInt);
+procedure PointRotate(X, Y, AX, AY, Angle: Single; var RX, RY: LongInt); public;
 var
   S, C,
   XNew, YNew: Single;
@@ -200,7 +199,7 @@ begin
   RY := Round(YNew+AY);
 end;
 
-procedure BtnRunWin(const Sender: PKuroObject; const M: PKuroMessage);
+procedure BtnRunWin(const Sender: PKuroObject; const M: PKuroMessage); public;
 var
   CM: TKuroMessage;
   i: Integer;
@@ -220,7 +219,7 @@ begin
   end;
 end;
 
-procedure BtnRunWinC(const Sender: PKuroObject; const M: PKuroMessage);
+procedure BtnRunWinC(const Sender: PKuroObject; const M: PKuroMessage); public;
 var
   CM: TKuroMessage;
   i: Integer;
@@ -240,7 +239,7 @@ begin
   end;
 end;
 
-procedure BtnCloseWm(const Sender: PKuroObject; const M: PKuroMessage);
+procedure BtnCloseWm(const Sender: PKuroObject; const M: PKuroMessage); public;
 begin
   if (M^.Command = KM_MOUSEUP) and (Boolean(M^.LoShort1 and $01)) and PKuroButton(Sender)^.IsFocused then
   begin
