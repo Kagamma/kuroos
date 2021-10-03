@@ -64,6 +64,7 @@ type
 
 procedure Callback(r: TRegisters); stdcall;
 procedure Init; stdcall;
+procedure InitBlank; stdcall;
 
 implementation
 
@@ -75,6 +76,12 @@ uses
 // Private
 
 // Public
+
+procedure CallbackBlank(r: TRegisters); stdcall;
+begin
+  Schedule.KillProcess(TaskCurrent^.PID);
+  Writeln('Kuro Window Manager is not initialized!');
+end;
 
 procedure Callback(r: TRegisters); stdcall;
 
@@ -101,6 +108,14 @@ var
   i, j: LongInt;
 
 begin
+  // Make sure KuroWM is initialized
+  if GetKuroWMInstance = nil then
+  begin
+    Writeln('Kuro Window Manager is not initialized!');
+    Schedule.KillProcess(TaskCurrent^.PID);
+    exit;
+  end;
+  //
   r_ah:= (r.eax and $FF00) shr 8;
   r_al:= (r.eax and $FF);
   // We switch current task back to Kuro task. Kuro Window Objects should be
@@ -215,6 +230,15 @@ begin
   Console.WriteStr('Installing KuroWM Syscalls (0x69)... ');
   IDT.InstallHandler($69, @Int0x69.Callback);
   Console.WriteStr(stOK);
+
+  IRQ_ENABLE;
+end;
+
+procedure InitBlank; stdcall;
+begin
+  IRQ_DISABLE;
+
+  IDT.InstallHandler($69, @Int0x69.Callback);
 
   IRQ_ENABLE;
 end;

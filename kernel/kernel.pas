@@ -76,6 +76,7 @@ begin
   Int0x03.Init; // Hardware breakpoint
   Int0x0e.Init; // Fault
   Int0x61.Init;
+  Int0x69.InitBlank;
   Int0x71.Init; // Text mode handling
 
   //

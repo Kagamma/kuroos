@@ -168,10 +168,7 @@ var
 
 function GetKuroWMInstance: PKuroWM;
 begin
-  if Kuro = nil then
-    exit(nil)
-  else
-    exit(Kuro);
+  exit(Kuro);
 end;
 
 constructor TKuroObject.Init;
