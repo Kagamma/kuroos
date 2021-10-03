@@ -66,7 +66,7 @@ function  CalcAlign(const AValue: Cardinal; const AAlign: Cardinal): Cardinal; s
 
 // ----- Debug functions -----
 
-procedure Debug_PrintMemoryBlocks; stdcall;
+procedure Debug_PrintMemoryBlocks(const PID: Integer); stdcall;
 function  Debug_PrintProcessMemoryUsage(const PID: PtrUInt): Cardinal; stdcall;
 
 implementation
@@ -471,7 +471,7 @@ end;
 
 // ----- Debug functions -----
 
-procedure Debug_PrintMemoryBlocks; stdcall;
+procedure Debug_PrintMemoryBlocks(const PID: Integer); stdcall;
 var
   i, j: Integer;
   PE: PHeapEntry;
@@ -480,28 +480,52 @@ begin
   Console.SetFgColor(14);       // 12       // 24   // 32
   Console.WriteStr('Address     Size        Status  PID' + #10#13);
   Console.SetFgColor(7);
-  Console.WriteStr('--------------------------------------' + #10#13);
+  Console.WriteStr('---------------------------------------------' + #10#13);
   for I := 0 to HeapEntryCount - 1 do
   begin
     PE := @HeapEntries[I];
-    Console.WriteHex(PE^.Address, 8);
-    Console.SetCursorPos(12, Console.GetCursorPosY);
-    Console.WriteHex(PE^.Size, 8);
-    Console.SetCursorPos(24, Console.GetCursorPosY);
-    case PE^.Allocated of
-      0: Console.WriteStr('Free');
-      1:
-        begin
-          Console.WriteStr('Used');
-          Console.SetCursorPos(32, Console.GetCursorPosY);
-          case PE^.PID of
-            0: Console.WriteStr('Kernel');
-            else
-              Write(PE^.PID);
+    if PID >= 0 then
+    begin
+      if (PID <> PE^.PID) or (PE^.Allocated = 0) then continue;
+      Console.WriteHex(PE^.Address, 8);
+      Console.SetCursorPos(12, Console.GetCursorPosY);
+      Console.WriteHex(PE^.Size, 8);
+      Console.SetCursorPos(24, Console.GetCursorPosY);
+      case PE^.Allocated of
+        0: Console.WriteStr('Free');
+        1:
+          begin
+            Console.WriteStr('Used');
+            Console.SetCursorPos(32, Console.GetCursorPosY);
+            case PE^.PID of
+              0: Console.WriteStr('0 <Kernel>');
+              else
+                Write(PE^.PID);
+            end;
           end;
-        end;
+      end;
+      Console.WriteStr(#10#13);
+    end else
+    begin
+      Console.WriteHex(PE^.Address, 8);
+      Console.SetCursorPos(12, Console.GetCursorPosY);
+      Console.WriteHex(PE^.Size, 8);
+      Console.SetCursorPos(24, Console.GetCursorPosY);
+      case PE^.Allocated of
+        0: Console.WriteStr('Free');
+        1:
+          begin
+            Console.WriteStr('Used');
+            Console.SetCursorPos(32, Console.GetCursorPosY);
+            case PE^.PID of
+              0: Console.WriteStr('0 <Kernel>');
+              else
+                Write(PE^.PID);
+            end;
+          end;
+      end;
+      Console.WriteStr(#10#13);
     end;
-    Console.WriteStr(#10#13);
   end;
 end;
 

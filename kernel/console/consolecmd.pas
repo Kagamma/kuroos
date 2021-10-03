@@ -99,10 +99,10 @@ begin
     Cmd:= LowerCase(Cmd);
     if Cmd = 'help' then
     begin
-      Writeln(' - help       : Show this help');
+      Writeln(' - help       : You are looking at it');
       Writeln(' - dir        : List all files on CD''s root directory');
       Writeln(' - kill [pid] : Delete a process by pid');
-      Writeln(' - mem        : Print all memory blocks');
+      Writeln(' - mem [pid]  : Print memory blocks of a single task, or all if pid is empty');
       Writeln(' - ps         : Print all tasks');
       Writeln(' - wm         : Kuro Window Manager');
       Writeln(' - testtrace  : Test stack trace');
@@ -120,7 +120,7 @@ begin
     else
     if Cmd = 'mem' then
     begin
-      Debug_PrintMemoryBlocks;
+      Debug_PrintMemoryBlocks(-1);
     end
     else
     if Cmd = 'dir' then
@@ -163,6 +163,27 @@ begin
           else
             Writeln('Failed!');
         end;
+      end;
+    end
+    else
+    if Pos('mem ', Cmd) = 1 then
+    begin
+      Tmp[0]:= #0;
+      for i:= 0 to 255 do
+      begin
+        C:= Cmd[i + 5];
+        if C in ['0'..'9'] then
+        begin
+          Tmp[i+1]:= C;
+          Tmp[0]:= Char(i + 1);
+        end
+        else
+          break;
+      end;
+      if Length(Tmp) > 0 then
+      begin
+        LID:= StrToInt(Tmp);
+        Debug_PrintMemoryBlocks(LID);
       end;
     end
     else
