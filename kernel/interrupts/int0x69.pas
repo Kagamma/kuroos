@@ -127,7 +127,7 @@ begin
               SetPosition(K.X, K.Y);
               SetSize(K.Width, K.Height);
               IsMoveable := Boolean(K.IsMoveable);
-              PID := TaskCurrent^.PID;
+              PID := TaskBackup^.PID;
               Body^.SetName(S);
               Focus;
             end;
@@ -151,7 +151,7 @@ begin
               SetPosition(K.X, K.Y);
               SetSize(K.Width, K.Height);
               IsMoveable := Boolean(K.IsMoveable);
-              PID := TaskCurrent^.PID;
+              PID := TaskBackup^.PID;
               SetName(S);
             end;
             IRQEAXHave := 1;
