@@ -1,6 +1,17 @@
+{
+    File:
+        objects.pas
+    Description:
+        N/A.
+    License:
+        General Public License (GPL)
+}
+
 unit Objects;
 
 interface
+
+{$I KOS.INC}
 
 uses
   kheap;
