@@ -139,7 +139,6 @@ var
   i: Cardinal;
   CodeSize: Cardinal;
   PageTable: PPageTable;
-  TaskCurrentBackup: PTaskStruct;
 begin
   if (PKEXHeader(ABuf)^.ID[0] <> 'K') or
      (PKEXHeader(ABuf)^.ID[1] <> '3') or
@@ -154,14 +153,13 @@ begin
   //
   Inc(TaskCount);
   // Make sure to switch back to kernel in order to manage list of tasks
-  TaskCurrentBackup := TaskCurrent;
   TaskCurrent := nil;
   // Create new task
   Inbetween:= True;
   TaskArray:= KHeap.ReAlloc(TaskArray, SizeOf(TTaskStruct) * TaskCount);
   Inbetween:= False;
   //
-  TaskCurrent:= @TaskArray[TaskPtr];
+  TaskCurrent:= FindProcess(1);
   //
   Task:= @TaskArray[TaskCount-1];
   Task^.Name:= AName;
