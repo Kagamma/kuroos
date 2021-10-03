@@ -92,15 +92,21 @@ var
   r_ah,
   r_al: Byte;
   Parent: PKuroObject;
+  TaskBackup: PTaskStruct;
   B: PKuroButton;
   W: PKuroWindow;
   V: PKuroView;
   K: TKuroStruct;
   S: ShortString;
   i, j: LongInt;
+
 begin
   r_ah:= (r.eax and $FF00) shr 8;
   r_al:= (r.eax and $FF);
+  // We switch current task back to Kuro task. Kuro Window Objects should be
+  // managed by Kuro
+  TaskBackup := TaskCurrent;
+  TaskCurrent := FindProcess(1);
   case r_ah of
     0:
       case r_al of
@@ -199,6 +205,7 @@ begin
           end;
       end;
   end;
+  TaskCurrent := TaskBackup;
 end;
 
 procedure Init; stdcall;
