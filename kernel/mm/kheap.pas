@@ -106,9 +106,6 @@ procedure SplitChunk(const ANode: PHeapNode; const ASize: Cardinal); public;
 var
   p: PHeapNode;
 begin
-  // Cant slit if the chunk is allocated
-  if ANode^.Allocated <> 0 then
-    exit;
   p            := PHeapNode(Cardinal(ANode) + SizeOf(THeapNode) + ASize);
   p^.Next      := ANode^.Next;
   p^.Prev      := ANode;
@@ -127,9 +124,6 @@ var
   p: PHeapNode;
 begin
   p            := ANode^.Next;
-  // Cant merge if the next chunk is allocated
-  if p^.Allocated <> 0 then
-    exit(ANode);
   ANode^.Size  := ANode^.Size + p^.Size + SizeOf(THeapNode);
   ANode^.Next  := p^.Next;
   if p^.Next <> nil then

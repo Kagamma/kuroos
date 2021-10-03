@@ -115,7 +115,7 @@ var
   I: Integer;
 begin
   Console.WriteStr('Stack trace: '#10#13);
-  for I := 0 to 9 do
+  for I := 0 to 14 do
   begin
     Console.WriteStr('    0x');
     Console.WriteHex(Trace^.EIP, 8);
