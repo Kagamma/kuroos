@@ -211,6 +211,7 @@ begin
   //
   CreateProcessFromBuffer:= TaskIdPtr;
   Inc(TaskIdPtr);
+  TaskCurrent:= @TaskArray[TaskPtr];
   //
   Spinlock.Unlock(Schedule.SLock);
   IRQ_ENABLE;
