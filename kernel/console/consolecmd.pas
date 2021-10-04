@@ -261,6 +261,26 @@ begin
   end;
 end;
 
+procedure BtnRunClock(const Sender: PKuroObject; const M: PKuroMessage); public;
+var
+  CM: TKuroMessage;
+  i: Integer;
+  p: Pointer;
+begin
+  if (M^.Command = KM_MOUSEUP) and (Boolean(M^.LoShort1 and $01)) and PKuroButton(Sender)^.IsFocused then
+  begin
+    IRQ_ENABLE;
+    p:= CDFSObj^.Loader(IDE.FindDrive(True), 'clock.kex');
+    IRQ_DISABLE;
+    if p <> nil then
+    begin
+      // Create a new process
+      Schedule.CreateProcessFromBuffer('clock.kex', p);
+      FreeMem(p);
+    end;
+  end;
+end;
+
 procedure BtnCloseWm(const Sender: PKuroObject; const M: PKuroMessage); public;
 begin
   if (M^.Command = KM_MOUSEUP) and (Boolean(M^.LoShort1 and $01)) and PKuroButton(Sender)^.IsFocused then
@@ -320,6 +340,12 @@ begin
   Btn^.SetPosition(290, 2);
   Btn^.SetSize(160, 24);
   Btn^.OnCallback := @BtnRunWinC;
+
+  New(Btn, Init(Taskbar));
+  Btn^.Name := 'Run clock.kex';
+  Btn^.SetPosition(460, 2);
+  Btn^.SetSize(160, 24);
+  Btn^.OnCallback := @BtnRunClock;
 
   // New(Win3, Init(Win2));
   // Win3^.X := 0;

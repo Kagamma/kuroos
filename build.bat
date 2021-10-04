@@ -15,8 +15,10 @@ mkdir libs
 cd app
 @c-- /OS /5 helloc.c
 @c-- /OS /5 winc.c
+@c-- /OS /5 clock.c
 @move helloc.bin ../grub/helloc.kex
 @move winc.bin ../grub/winc.kex
+@move clock.bin ../grub/clock.kex
 cd ..
 
 @fasm app/hello.asm grub/hello.kex
