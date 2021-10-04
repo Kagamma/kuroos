@@ -5,9 +5,9 @@ KuroView_t win;
 DateTime_t dt;
 dword handle;
 dword msg;
-char timeText = "Time: xx:xx:xx\0";
+char timeText = "Time: yy/mm/dd hh:mm:ss\0";
 
-void timeDigit(int num, char* c) {
+void timeDigit(dword num, char* c) {
   char buf[14];
   byte* str;
   dword digit;
@@ -41,7 +41,7 @@ void main() {
   win.parent = 0;
   win.x = rnd() % 400 + 10;
   win.y = rnd() % 400 + 10;
-  win.width = 160;
+  win.width = 250;
   win.height = 27;
   win.isMovable = 1;
   handle = CreateWindow(#win);
@@ -53,9 +53,12 @@ void main() {
       }
     }
     GetDateTime(#dt);
-    timeDigit(dt.second, #timeText + 12);
-    timeDigit(dt.minute, #timeText + 9);
-    timeDigit(dt.hour, #timeText + 6);
+    timeDigit(dt.second, #timeText + 21);
+    timeDigit(dt.minute, #timeText + 18);
+    timeDigit(dt.hour, #timeText + 15);
+    timeDigit(dt.day, #timeText + 12);
+    timeDigit(dt.month, #timeText + 9);
+    timeDigit(dt.year, #timeText + 6);
     UpdateName(handle, #timeText);
     yield();
   }

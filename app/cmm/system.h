@@ -15,7 +15,7 @@ dword codePoint   = #main - 0x04000000;
 dword icon        = 0;
 
 struct DateTime_t {
-  word year;
+  byte year;
   byte month;
   byte day;
   byte second;
@@ -48,12 +48,12 @@ void GetDateTime(dword EDI) {
   $int 0x61;
   EDI.DateTime_t.second = AL;
   EDI.DateTime_t.minute = AH;
-  EDI.DateTime_t.hour = AX >> 8;
-  EDI.DateTime_t.day = DL;
-  EDI.DateTime_t.month = DH;
-  EDI.DateTime_t.year = DX >> 8;
+  EDI.DateTime_t.hour = dword EAX >> 16;
+  EDI.DateTime_t.day = CL;
+  EDI.DateTime_t.month = CH;
+  EDI.DateTime_t.year = dword ECX >> 16;
   if (EDI.DateTime_t.hour > 80)
-    EDI.DateTime_t.hour -= 80 + 12;
+    EDI.DateTime_t.hour = EDI.DateTime_t.hour - 80 + 12;
 }
 
 void itoa(int num, char* c, byte base) {
