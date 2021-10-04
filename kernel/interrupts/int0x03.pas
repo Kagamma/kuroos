@@ -32,7 +32,7 @@ begin
   Keyboard.ClearBuffer;
   // Console.WriteStr('Press any key to continue...');
   // IRQ_ENABLE;
-  while Keyboard.GetLastKeyStroke = 0 do ;
+  while Keyboard.GetLastKeyStroke = 0 do CPU_HALT ;
   Keyboard.ClearBuffer;
 end;
 
