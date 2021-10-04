@@ -44,16 +44,14 @@ inline fastcall void yield() {
 
 // EDI: DateTime_t*
 void GetDateTime(dword EDI) {
-  int time;
-  int date;
   EAX = 0x201;
   $int 0x61;
-  time = EAX;
-  date = ECX;
-  EDI.DateTime_t.second = time;
-  EDI.DateTime_t.minute = time << 8;
-  EDI.DateTime_t.hour = time << 16;
-  EDI.DateTime_t.day = date;
-  EDI.DateTime_t.month = date << 8;
-  EDI.DateTime_t.year = date << 16;
+  EDI.DateTime_t.second = AL;
+  EDI.DateTime_t.minute = AH;
+  EDI.DateTime_t.hour = AX >> 8;
+  EDI.DateTime_t.day = DL;
+  EDI.DateTime_t.month = DH;
+  EDI.DateTime_t.year = DX >> 8;
+  if (EDI.DateTime_t.hour > 80)
+    EDI.DateTime_t.hour -= 80 + 12;
 }

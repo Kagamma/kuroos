@@ -80,8 +80,8 @@ begin
           begin
             IRQEAXHave:= 1;
             IRQECXHave:= 1;
-            IRQEAXValue:= (GlobalTime.Hour shl 16) or (GlobalTime.Minute shl 8) or GlobalTime.Second;
-            IRQECXValue:= (GlobalTime.Year shl 16) or (GlobalTime.Month shl 8) or GlobalTime.DayOfMonth;
+            IRQEAXValue:= (Cardinal(GlobalTime.Hour) shl 16) or (Word(GlobalTime.Minute) shl 8) or GlobalTime.Second;
+            IRQECXValue:= (Cardinal(GlobalTime.Year) shl 16) or (Word(GlobalTime.Month) shl 8) or GlobalTime.DayOfMonth;
           end;
       end;
   end;
