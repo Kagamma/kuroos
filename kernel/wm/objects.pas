@@ -40,7 +40,7 @@ implementation
 
 constructor TList.Init;
 begin
-  FCapacity := 64;
+  FCapacity := 16;
   FCount := 0;
   Items := Alloc(FCapacity * SizeOf(Pointer));
 end;
