@@ -181,22 +181,38 @@ begin
   exit(nil);
 end;
 
+function FindEntryByAddress(Addr: Pointer): PHeapEntry; public; inline; stdcall;
+var
+  L, R, I: Cardinal;
+  Cur: Pointer;
+begin
+  L := 0;
+  R := HeapEntryCount - 1;
+  while L <= R do
+  begin
+    I := L + (R - L) div 2;
+    Cur := Pointer(HeapEntries[I].Address);
+    if Addr = Cur then
+    begin
+      exit(@HeapEntries[I]);
+    end;
+    if Addr > Cur then
+      L := I + 1
+    else
+      R := I - 1;
+  end;
+  exit(nil);
+end;
+
 // ----- Public functions -----
 
 procedure SetOwner(const APtr: Pointer; const AID: Cardinal); stdcall; inline;
 var
-  I: Integer;
   PE: PHeapEntry;
 begin
-  for I := 0 to HeapEntryCount - 1 do
-  begin
-    PE := @HeapEntries[I];
-    if Pointer(PE^.Address) = APtr then
-    begin
-      PE^.PID := AID;
-      exit;
-    end;
-  end;
+  PE := FindEntryByAddress(Pointer(APtr));
+  if PE <> nil then
+    PE^.PID := AID;
 end;
 
 procedure Init; stdcall; overload;
@@ -456,14 +472,11 @@ var
   PE: PHeapEntry;
 begin
   Spinlock.Lock(PMM.SLock);
-  for I := 0 to HeapEntryCount - 1 do
+  PE := FindEntryByAddress(APtr);
+  if PE <> nil then
   begin
-    PE := @HeapEntries[I];
-    if Pointer(PE^.Address) = APtr then
-    begin
-      Spinlock.Unlock(PMM.SLock);
-      exit(PE^.Size);
-    end;
+    Spinlock.Unlock(PMM.SLock);
+    exit(PE^.Size);
   end;
   Spinlock.Unlock(PMM.SLock);
   exit(0);
