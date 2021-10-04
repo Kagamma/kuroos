@@ -554,15 +554,15 @@ begin
             PKuroView(Parent)^.IsMouseDown := false;
             PKuroView(Parent)^.IsMoveBlocked := true;
           end;
-        end
-        else
-        begin
-          Blur;
         end;
         TransferMessageWithCallback(M, IsChild);
       end;
     KM_MOUSEUP:
       begin;
+        if not IsSelected(M) then
+        begin
+          Blur;
+        end;
         IsMouseDown := false;
         Kuro^.IsMoved := false;
         TransferMessageWithCallback(M, IsChild);
