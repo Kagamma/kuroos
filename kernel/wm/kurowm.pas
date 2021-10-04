@@ -203,7 +203,7 @@ begin
 
   glGenTexture(@BackBuffer);
   glBindTexture(GL_TEXTURE_2D, BackBuffer);
-  glTexStorage2D(GL_TEXTURE_2D, 1, GL_BGA8, 800, 600);
+  glTexStorage2D(GL_TEXTURE_2D, 1, GL_BGA8, Width, Height);
   glBindBuffer(BackBuffer);
 
   glGenTexture(@WallpaperTexture);
@@ -376,7 +376,7 @@ begin
           V^.Render;
         end;
 
-        glViewport(0, 0, 800, 600);
+        glViewport(0, 0, Self.Width, Self.Height);
         glBindTexture(GL_TEXTURE_2D, CursorTexture);
         glRasterBlit(E.Mouse.X, E.Mouse.Y);
 
