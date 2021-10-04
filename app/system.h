@@ -14,6 +14,15 @@ dword stackSize   = 0x400;
 dword codePoint   = #main - 0x04000000;
 dword icon        = 0;
 
+struct DateTime_t {
+  word year;
+  byte month;
+  byte day;
+  byte second;
+  byte minute;
+  byte hour;
+};
+
 inline fastcall void exit() {
   EAX = 4;
   ECX = DSDWORD[ESP + 4];
@@ -23,6 +32,7 @@ inline fastcall void exit() {
   }
 }
 
+// ESI: char*
 inline fastcall void printf(dword ESI) {
   EAX = 1;
   $int 0x71;
@@ -30,4 +40,20 @@ inline fastcall void printf(dword ESI) {
 
 inline fastcall void yield() {
   $int 0x20;
+}
+
+// EDI: DateTime_t*
+void GetDateTime(dword EDI) {
+  int time;
+  int date;
+  EAX = 0x201;
+  $int 0x61;
+  time = EAX;
+  date = ECX;
+  EDI.DateTime_t.second = time;
+  EDI.DateTime_t.minute = time << 8;
+  EDI.DateTime_t.hour = time << 16;
+  EDI.DateTime_t.day = date;
+  EDI.DateTime_t.month = date << 8;
+  EDI.DateTime_t.year = date << 16;
 }

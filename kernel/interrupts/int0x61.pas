@@ -19,6 +19,10 @@
                 ECX: Task ID.
         AH = 1: Memory
         AH = 2: Timer
+            AL = 1: GetTime
+                <-
+                EAX: 8 bytes of hh << mm << ss
+                ECX: 16 bytes of year << 8 bytes of month << day
     License:
         General Public License (GPL)
 }
@@ -39,6 +43,7 @@ procedure Init; stdcall;
 implementation
 
 uses
+  rtc,
   schedule;
 
 // Private
@@ -67,6 +72,16 @@ begin
         4: // Kill task
           begin
             Schedule.KillProcess(r.ecx);
+          end;
+      end;
+    2:
+      case r_al of
+        1: // GetTime
+          begin
+            IRQEAXHave:= 1;
+            IRQECXHave:= 1;
+            IRQEAXValue:= (GlobalTime.Hour shl 16) or (GlobalTime.Minute shl 8) or GlobalTime.Second;
+            IRQECXValue:= (GlobalTime.Year shl 16) or (GlobalTime.Month shl 8) or GlobalTime.DayOfMonth;
           end;
       end;
   end;

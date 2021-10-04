@@ -8,7 +8,7 @@
 #define KM_PAINT 0x70
 #define KM_CLOSE 0x80
 
-struct KuroView {
+struct KuroView_t {
   char *name;
   dword parent;
   dword x;
@@ -18,16 +18,27 @@ struct KuroView {
   dword isMovable;
 };
 
+// ESI: KuroView_t*
 inline fastcall dword CreateWindow(dword ESI) {
   EAX = 1;
   $int 0x69;
 }
 
+// ESI: KuroView_t*
 inline fastcall dword CloseHandle(dword ESI) {
   EAX = 0x301;
   $int 0x69;
 }
 
+// ESI: KuroView_t*
+// ECX: char*
+inline fastcall void UpdateName(dword ESI, ECX) {
+  EAX = 0x201;
+  $int 0x69;
+}
+
+// ESI: KuroView_t*
+// msg: result message
 dword CheckMessage(dword ESI, dword *msg) {
   EAX = 0x401;
   $int 0x69;

@@ -9,7 +9,7 @@
 #### Things that work
 - PS2 mouse/keyboard driver
 - VGA driver
-- VBE driver
+- VESA driver
 - ATA/ATAPI driver
 - Basic support for FAT32 (read only) & CDFS
 - PIC/RTC
