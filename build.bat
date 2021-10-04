@@ -1,4 +1,4 @@
-SET PATH=.;.\tools;..\tools;
+SET PATH=.;.\tools;..\..\tools;
 
 @echo KOS build script
 @echo ------------------
@@ -13,18 +13,20 @@ mkdir libs
 @echo assemble stub.asm...
 
 cd app
+cd cmm
 @c-- /OS /5 helloc.c
 @c-- /OS /5 winc.c
 @c-- /OS /5 clock.c
-@move helloc.bin ../grub/helloc.kex
-@move winc.bin ../grub/winc.kex
-@move clock.bin ../grub/clock.kex
+@move helloc.bin ../../grub/helloc.kex
+@move winc.bin ../../grub/winc.kex
+@move clock.bin ../../grub/clock.kex
+cd ..
 cd ..
 
-@fasm app/hello.asm grub/hello.kex
-@fasm app/process.asm grub/process.kex
-@fasm app/threads.asm grub/threads.kex
-@fasm app/win.asm grub/win.kex
+@fasm app/asm/hello.asm grub/hello.kex
+@fasm app/asm/process.asm grub/process.kex
+@fasm app/asm/threads.asm grub/threads.kex
+@fasm app/asm/win.asm grub/win.kex
 
 @fasm kernel/asm/real.asm libs/real.bin
 @bin2pas libs/real.bin kernel/real.pas
