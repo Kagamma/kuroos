@@ -133,12 +133,12 @@ type
     procedure ProcessMessages(const M: PKuroMessage; const IsChild: Boolean); virtual;
     procedure Render; virtual;
     // Focus this object
-    procedure Focus;
+    procedure Focus; virtual;
     // Blur this object and its children
-    procedure Blur;
+    procedure Blur; virtual;
     // Destroy this object and its children
-    procedure Close;
-    function IsSelected(M: PKuroMessage): Boolean;
+    procedure Close; virtual;
+    function IsSelected(M: PKuroMessage): Boolean; virtual;
     // Transfer message to user's pipeline
     procedure Callback(const M: PKuroMessage); virtual;
     procedure TransferMessage(const M: PKuroMessage);
