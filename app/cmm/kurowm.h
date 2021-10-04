@@ -25,6 +25,12 @@ inline fastcall dword CreateWindow(dword ESI) {
 }
 
 // ESI: KuroView_t*
+inline fastcall dword CreateButton(dword ESI) {
+  EAX = 2;
+  $int 0x69;
+}
+
+// ESI: KuroView_t*
 inline fastcall dword CloseHandle(dword ESI) {
   EAX = 0x301;
   $int 0x69;

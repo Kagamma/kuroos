@@ -1,9 +1,9 @@
 #include "system.h"
 #include "kurowm.h"
 
-KuroView_t win;
+KuroView_t win, btn;
 DateTime_t dt;
-dword handle;
+dword winHandle, buttonHandle;
 dword msg;
 char timeText = "Time: yy/mm/dd hh:mm:ss\0";
 
@@ -41,14 +41,22 @@ void main() {
   win.parent = 0;
   win.x = rnd() % 400 + 10;
   win.y = rnd() % 400 + 10;
-  win.width = 250;
-  win.height = 27;
+  win.width = 228;
+  win.height = 59;
   win.isMovable = 1;
-  handle = CreateWindow(#win);
+  winHandle = CreateWindow(#win);
+  btn.name = "";
+  btn.parent = winHandle;
+  btn.x = 4;
+  btn.y = 4;
+  btn.width = 220;
+  btn.height = 26;
+  btn.isMovable = 0;
+  buttonHandle = CreateButton(#btn);
   while (1) {
-    if (CheckMessage(handle, #msg) == 1) {
+    if (CheckMessage(winHandle, #msg) == 1) {
       if (msg == KM_CLOSE) {
-        CloseHandle(handle);
+        CloseHandle(winHandle);
         break;
       }
     }
@@ -59,7 +67,7 @@ void main() {
     timeDigit(dt.day, #timeText + 12);
     timeDigit(dt.month, #timeText + 9);
     timeDigit(dt.year, #timeText + 6);
-    UpdateName(handle, #timeText);
+    UpdateName(buttonHandle, #timeText);
     yield();
   }
   exit();
