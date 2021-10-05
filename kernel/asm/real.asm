@@ -12,46 +12,46 @@ use16
 .RealMode:
 ; Setup 16bit real mode registers
     xor   ax,ax
-	mov   ds,ax
+	  mov   ds,ax
     mov   es,ax
-	mov   eax,0xFFFF
-	mov   esp,eax
-	mov   ax,0x2000
+    mov   eax,0xFFFF
+    mov   esp,eax
+    mov   ax,0x2000
     mov   ss,ax
 
 ; Install and enable IDT.
     lidt  [idt_real]
-	sti
+    sti
 
-	mov   ax,[0x7C00 + 10]
-	mov   es,ax
-	mov   ax,[0x7C00 + 2]
-	mov   bx,[0x7C00 + 4]
-	mov   cx,[0x7C00 + 6]
-	mov   dx,[0x7C00 + 8]
-	mov   si,[0x7C00 + 14]
-	mov   di,[0x7C00 + 16]
+    mov   ax,[0x7C00 + 10]
+    mov   es,ax
+    mov   ax,[0x7C00 + 2]
+    mov   bx,[0x7C00 + 4]
+    mov   cx,[0x7C00 + 6]
+    mov   dx,[0x7C00 + 8]
+    mov   si,[0x7C00 + 14]
+    mov   di,[0x7C00 + 16]
 jmp .n
     dd    0xDEADBEEF
 .n:
-	int   0x10
+    int   0x10
 
-	mov   [0x7C00 + 2],ax
-	mov   [0x7C00 + 4],bx
-	mov   [0x7C00 + 6],cx
-	mov   [0x7C00 + 8],dx
-	mov   [0x7C00 + 10],es
-	mov   [0x7C00 + 14],si
-	mov   [0x7C00 + 16],di
+    mov   [0x7C00 + 2],ax
+    mov   [0x7C00 + 4],bx
+    mov   [0x7C00 + 6],cx
+    mov   [0x7C00 + 8],dx
+    mov   [0x7C00 + 10],es
+    mov   [0x7C00 + 14],si
+    mov   [0x7C00 + 16],di
 
 ; Disable IDT, install GDT and jump to PM.
     cli
     lgdt  [gdt_protected]
-	mov   ecx,[0x7CFC]
-	mov   eax,cr0
+    mov   ecx,[0x7CFC]
+    mov   eax,cr0
     or    al,1
     mov   cr0,eax
-	jmp   0x8:.ReturnToPM
+  	jmp   0x8:.ReturnToPM
 
 ; Switch back to protected mode
 .ReturnToPM:

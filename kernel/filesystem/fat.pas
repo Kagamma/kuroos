@@ -339,9 +339,9 @@ begin
     begin
       if (AStr[i] <> #32) and (AStr[i] <> #0) then
       begin
-	Inc(j);
-	SFN2Name[j]:= AStr[i];
-	Inc(Byte(SFN2Name[0]));
+  Inc(j);
+  SFN2Name[j]:= AStr[i];
+  Inc(Byte(SFN2Name[0]));
       end
       else
         break;
@@ -393,35 +393,35 @@ begin
       name    := '';
       result  := False;
       repeat
-	{ Read a cluster from HD. }
+  { Read a cluster from HD. }
         ReadDataClusters(ADrive, p, cluster, 1);
         { Loop through the entire cluster. }
-	for j:= start to csize-1 do
-	begin
-	  { We found an entry that has the same name! }
-	  if (PFATDirectoryStruct(p + 32 * j)^.Name[0] <> FAT_DELETION_MARK) and
-	     (Compare(SFN2Name(Array2ShortStr(@PFATDirectoryStruct(p + 32 * j)^.Name[0], 11)), lastName) = 0) then
-	  begin
-	    { TODO: Make sure this is a directory. }
-		//if (i < Byte(APath[0])) and (PFATDirectoryStruct(p + 32 * j)^.Attr and FAT_ATTR_DIRECTORY <> 0) then
-	    begin
-	      cluster:= PFATDirectoryStruct(p + 32 * j)^.Cluster;
-	      result := True;
-	      break;
-	    end;
-	  end;
-	end;
-	start:= 0;
-	{ We found an entry so no need to loop through another cluster. }
-        if result then
-	begin
-	  { We meet the last entry of the path! }
-	  if i >= Byte(APath[0]) then
-	    AEntry^:= PFATDirectoryStruct(p + 32 * j)^;
-	  break;
+        for j:= start to csize-1 do
+        begin
+          { We found an entry that has the same name! }
+          if (PFATDirectoryStruct(p + 32 * j)^.Name[0] <> FAT_DELETION_MARK) and
+            (Compare(SFN2Name(Array2ShortStr(@PFATDirectoryStruct(p + 32 * j)^.Name[0], 11)), lastName) = 0) then
+          begin
+            { TODO: Make sure this is a directory. }
+          //if (i < Byte(APath[0])) and (PFATDirectoryStruct(p + 32 * j)^.Attr and FAT_ATTR_DIRECTORY <> 0) then
+            begin
+              cluster:= PFATDirectoryStruct(p + 32 * j)^.Cluster;
+              result := True;
+              break;
+            end;
+          end;
         end;
-	{ Found no entry. Process to the next cluster. }
-	cluster:= GetFATTableValue(ADrive, cluster);
+        start:= 0;
+  { We found an entry so no need to loop through another cluster. }
+        if result then
+        begin
+          { We meet the last entry of the path! }
+          if i >= Byte(APath[0]) then
+            AEntry^:= PFATDirectoryStruct(p + 32 * j)^;
+          break;
+            end;
+      { Found no entry. Process to the next cluster. }
+      cluster:= GetFATTableValue(ADrive, cluster);
       until IsEOF(cluster);
     end
     else
@@ -469,7 +469,7 @@ begin
     if NOT drive^.ATAPI then
       if (NOT IDE.LBA_ReadSector(drive, mbrSt, 0)) or
          (NOT IDE.LBA_ReadSector(drive, sector1, 1)) then
-	      continue;
+        continue;
 
     Console.SetFgColor(14);
     Writeln('Disk #', driveNo, ' file system information:');
@@ -504,28 +504,28 @@ begin
     Writeln(' - Free Clusters     : ', sector1^.FreeClusters);
 
 {	p:= KHeap.Alloc(4096);
-	FillChar(p^, 4096, 0);
-	s:= 'SDKS/SRC/HELLO.PAS';
+  FillChar(p^, 4096, 0);
+  s:= 'SDKS/SRC/HELLO.PAS';
 
-	FAT.FileOpen(s, @f);
-	Writeln;
-	Writeln('Path: ', s);
+  FAT.FileOpen(s, @f);
+  Writeln;
+  Writeln('Path: ', s);
         Writeln('File size: ', f.Size, ' bytes');
-	Writeln('Current File Pointer: ', f.DataPtr);
-	Writeln('Performing seek...');
-	FAT.FileSeek(@f, 8);
-	Writeln('Current File Pointer: ', f.DataPtr);
-	Writeln('Read: ', FAT.FileRead(@f, p, 4096), ' bytes');
-	Writeln('Data read from file: ');
-	Console.SetFgColor(14);
-	Console.WriteArrayChars(p, f.Size);
+  Writeln('Current File Pointer: ', f.DataPtr);
+  Writeln('Performing seek...');
+  FAT.FileSeek(@f, 8);
+  Writeln('Current File Pointer: ', f.DataPtr);
+  Writeln('Read: ', FAT.FileRead(@f, p, 4096), ' bytes');
+  Writeln('Data read from file: ');
+  Console.SetFgColor(14);
+  Console.WriteArrayChars(p, f.Size);
         Console.SetFgColor(7);
-	Writeln;
-	Writeln('Current File Pointer: ', f.DataPtr);
-	Writeln;
-	FAT.FileClose(@f);
+  Writeln;
+  Writeln('Current File Pointer: ', f.DataPtr);
+  Writeln;
+  FAT.FileClose(@f);
 
-	KHeap.Free(p);   }
+  KHeap.Free(p);   }
   end;
   Writeln;
 end;

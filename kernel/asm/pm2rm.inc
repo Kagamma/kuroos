@@ -7,8 +7,8 @@ extrn  k_IDT_RemapIRQRM
 extrn  k_IDT_RestoreIRQs
 
 k_BIOS_JumpToRM:
-	pusha
-	pushf
+    pusha
+    pushf
 
 ; Disable all IRQs
     call  k_IDT_RemapIRQRM
@@ -16,11 +16,11 @@ k_BIOS_JumpToRM:
     out   0xA1,al
     out   0x21,al
 
-	mov   ax,ss
+  	mov   ax,ss
     mov   [save_ss],ax        ; Save SS
-	mov   eax,esp
+	  mov   eax,esp
     mov   [save_esp],eax      ; Save ESP
-	mov   eax,cr3
+  	mov   eax,cr3
     mov   [save_cr3],eax      ; Save CR3
     mov   eax,cr0
     mov   [save_cr0],eax      ; Save CR0
@@ -33,27 +33,27 @@ k_BIOS_JumpToRM:
 
 ; Setup 16bit protected mode registers
     mov   ax,0x30
-	mov   ds,ax
-	mov   es,ax
-	mov   fs,ax
-	mov   gs,ax
+    mov   ds,ax
+    mov   es,ax
+    mov   fs,ax
+    mov   gs,ax
 
     jmp   0x28:0x7D00
 
 .ReturnToPM:
 ; Restore protected-mode registers
     mov   ax,0x10
-	mov   ds,ax
-	mov   es,ax
+    mov   ds,ax
+    mov   es,ax
 
-	mov   ax, [save_ss]
-	mov   ss,ax
+    mov   ax, [save_ss]
+    mov   ss,ax
     mov   eax,[save_esp]
     mov   esp,eax
     mov	  eax,[save_cr3]
-	mov   cr3,eax
-	mov	  eax,[save_cr0]
-	mov   cr0,eax
+    mov   cr3,eax
+    mov	  eax,[save_cr0]
+    mov   cr0,eax
 
 ; Enable all IRQs
     call  k_IDT_RemapIRQPM
@@ -62,9 +62,9 @@ k_BIOS_JumpToRM:
     out   $A0,al
     out   $20,al
 
-	popf
-	popa
-	ret
+    popf
+    popa
+    ret
 
 save_cr0:
     dd 0
