@@ -44,6 +44,7 @@ type
   PKuroEvent = ^TKuroEvent;
   TKuroEvent = record
     Mouse: TMouseEvent;
+    MouseOld: TMouseEvent;
     Keyboard: TKeyboardEvent;
   end;
 
@@ -80,6 +81,7 @@ type
   TKuroWM = object(TKuroObject)
     BackBuffer,
     CursorTexture,
+    CursorBackTexture,
     WallpaperTexture: GLuint;
     GLContext: GLuint;
     E: TKuroEvent;
@@ -188,6 +190,9 @@ begin
 end;
 
 constructor TKuroWM.Init;
+var
+  W, H: GLint;
+  WallpaperTextureScaled: GLuint;
 begin
   inherited;
 
@@ -203,16 +208,35 @@ begin
 
   glGenTexture(@BackBuffer);
   glBindTexture(GL_TEXTURE_2D, BackBuffer);
-  glTexStorage2D(GL_TEXTURE_2D, 1, GL_BGA8, Width, Height);
+  glTexStorage2D(GL_TEXTURE_2D, 1, GL_BGRA8, Width, Height);
   glBindBuffer(BackBuffer);
 
   glGenTexture(@WallpaperTexture);
   glBindTexture(GL_TEXTURE_2D, WallpaperTexture);
-  glLoadTexture(GL_BGA8, 'noire.bmp');
+  glLoadTexture(GL_BGRA8, 'noire.bmp');
+
+  glBindTexture(GL_TEXTURE_2D, Self.WallpaperTexture);
+  glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, @W);
+  glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, @H);
+  if (W <> Width) or (H <> Height) then
+  begin
+    // Scale up/down wallpaper in case it doesn't fit the screen
+    glGenTexture(@WallpaperTextureScaled);
+    glBindTexture(GL_TEXTURE_2D, WallpaperTextureScaled);
+    glTexStorage2D(GL_TEXTURE_2D, 1, GL_BGRA8, Width, Height);
+    glBindBuffer(WallpaperTextureScaled);
+    glBindTexture(GL_TEXTURE_2D, Self.WallpaperTexture);
+    glRasterBlitScale(0, 0, Width, Height);
+    glDeleteTexture(Self.WallpaperTexture);
+    Self.WallpaperTexture := WallpaperTextureScaled;
+    glBindBuffer(BackBuffer);
+  end;
 
   glGenTexture(@CursorTexture);
   glBindTexture(GL_TEXTURE_2D, CursorTexture);
-  glLoadTexture(GL_BGA8, 'cursor.bmp');
+  glLoadTexture(GL_BGRA8, 'cursor.bmp');
+
+  Self.CursorBackTexture := 0;
 
   FocusedView := nil;
   IsRenderUpdate := true;
@@ -256,6 +280,7 @@ var
   Messages: array[0..31] of TKuroMessage;
   M: PKuroMessage;
   MCount: Integer;
+  CW, CH: GLint;
   W: ShortInt;
   IsKeyEvent, IsMouseEvent: Boolean;
   p: Pointer;
@@ -273,7 +298,7 @@ begin
       FillChar(Messages[0], Length(Messages) * SizeOf(TKuroMessage), 0);
 
       // glBindTexture(GL_TEXTURE_2D, WallpaperTexture);
-      // glRasterFastBlit(0, 0);
+      // glRasterBlitFast(0, 0);
 
       Mouse.GetState(@E.Mouse);
       Keyboard.GetBuffer(@E.Keyboard.KeyBuffer);
@@ -339,7 +364,7 @@ begin
           M^.LoShort1 := E.Mouse.MouseButton;
           M^.LoShort2 := E.Mouse.X;
           M^.HiShort2 := E.Mouse.Y;
-          IsRenderUpdate := true;
+         // IsRenderUpdate := true;
         end;
       end;
 
@@ -367,6 +392,13 @@ begin
         end;
       end;
 
+      if Self.CursorBackTexture <> 0 then
+      begin
+        // Restore surface under mouse cursor
+        glBindTexture(GL_TEXTURE_2D, Self.CursorBackTexture);
+        glRasterBlitFast(Self.E.MouseOld.X, Self.E.MouseOld.Y);
+      end;
+      // Redraw views
       if IsRenderUpdate then
       begin
         ClearScreen;
@@ -375,13 +407,43 @@ begin
           V := Items[i];
           V^.Render;
         end;
-
-        glViewport(0, 0, Self.Width, Self.Height);
-        glBindTexture(GL_TEXTURE_2D, CursorTexture);
-        glRasterBlit(E.Mouse.X, E.Mouse.Y);
-
+      end;
+      glViewport(0, 0, Self.Width, Self.Height);
+      // First time we handle kurowm
+      if Self.CursorBackTexture = 0 then
+      begin
+        glBindTexture(GL_TEXTURE_2D, Self.CursorTexture);
+        glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, @CW);
+        glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, @CH);
+        // Generate back buffer for cursor
+        glGenTexture(@Self.CursorBackTexture);
+        glBindTexture(GL_TEXTURE_2D, Self.CursorBackTexture);
+        glTexStorage2D(GL_TEXTURE_2D, 1, GL_BGRA8, CW, CH);
+        // Backup the area behind cursor
+        glBindBuffer(Self.CursorBackTexture);
+        glBindTexture(GL_TEXTURE_2D, Self.BackBuffer);
+        glRasterBlitFast(-Self.E.Mouse.X, -Self.E.Mouse.Y);
+        // Draw cursor first time
+        glBindBuffer(Self.BackBuffer);
+        glBindTexture(GL_TEXTURE_2D, Self.CursorTexture);
+        glRasterBlit(Self.E.Mouse.X, Self.E.Mouse.Y);
+      end else
+      begin
+        // Save new surface under mouse cursor
+        glBindBuffer(Self.CursorBackTexture);
+        glBindTexture(GL_TEXTURE_2D, Self.BackBuffer);
+        glRasterBlitFast(-Self.E.Mouse.X, -Self.E.Mouse.Y);
+        // Draw mouse
+        glBindBuffer(Self.BackBuffer);
+        glBindTexture(GL_TEXTURE_2D, Self.CursorTexture);
+        glRasterBlit(Self.E.Mouse.X, Self.E.Mouse.Y);
+      end;
+      if IsRenderUpdate or IsMouseEvent then
+      begin
         glSwapBuffers;
         IsRenderUpdate := false;
+        Self.E.MouseOld.X := Self.E.Mouse.X;
+        Self.E.MouseOld.Y := Self.E.Mouse.Y;
       end;
       Keyboard.ClearBuffer;
     end;
@@ -413,7 +475,7 @@ begin
     if WallpaperTexture <> 0 then
     begin
       glBindTexture(GL_TEXTURE_2D, WallpaperTexture);
-      glRasterFastBlit(0, 0);
+      glRasterBlitFast(0, 0);
     end
     else
       glClear(GL_COLOR_BUFFER_BIT);
@@ -583,7 +645,7 @@ begin
           Y := Y + M^.HiShort2 - MouseYOld;
           MouseXOld := M^.LoShort2;
           MouseYOld := M^.HiShort2;
-          IsRenderUpdate := true;
+        //  IsRenderUpdate := true;
         end;
       end;
     KM_KEYDOWN:

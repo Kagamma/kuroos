@@ -315,7 +315,7 @@ begin
 
   New(Taskbar, Init(@WM));
   Taskbar^.X := 0;
-  Taskbar^.Y := 570;
+  Taskbar^.Y := WM.Height - 30;
   Taskbar^.Width := WM.Width;
   Taskbar^.Height := 30;
   Taskbar^.IsMoveable := false;

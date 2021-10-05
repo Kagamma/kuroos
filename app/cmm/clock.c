@@ -5,6 +5,7 @@ KuroView_t win, btn;
 DateTime_t dt;
 dword winHandle, buttonHandle;
 dword msg;
+byte sec;
 char timeText = "Time: yy/mm/dd hh:mm:ss\0";
 
 void timeDigit(dword num, char* c) {
@@ -53,6 +54,7 @@ void main() {
   btn.height = 26;
   btn.isMovable = 0;
   buttonHandle = CreateButton(#btn);
+  sec = 0xff;
   while (1) {
     if (CheckMessage(winHandle, #msg) == 1) {
       if (msg == KM_CLOSE) {
@@ -61,13 +63,16 @@ void main() {
       }
     }
     GetDateTime(#dt);
-    timeDigit(dt.second, #timeText + 21);
-    timeDigit(dt.minute, #timeText + 18);
-    timeDigit(dt.hour, #timeText + 15);
-    timeDigit(dt.day, #timeText + 12);
-    timeDigit(dt.month, #timeText + 9);
-    timeDigit(dt.year, #timeText + 6);
-    UpdateName(buttonHandle, #timeText);
+    if (dt.second != sec) {
+      timeDigit(dt.second, #timeText + 21);
+      timeDigit(dt.minute, #timeText + 18);
+      timeDigit(dt.hour, #timeText + 15);
+      timeDigit(dt.day, #timeText + 12);
+      timeDigit(dt.month, #timeText + 9);
+      timeDigit(dt.year, #timeText + 6);
+      UpdateName(buttonHandle, #timeText);
+      sec = dt.second;
+    }
     yield();
   }
   exit();

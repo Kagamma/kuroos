@@ -22,16 +22,18 @@ uses
 
 const
   GL_TEXTURE_2D = 0;
-  GL_POINTS = 0;
-  GL_LINES = 1;
-  GL_TRIANGLES = 2;
-  GL_QUADS = 3;
-  GL_BGA8 = 32; // Need verify the actual number
-  GL_FLOAT = 33;
-  GL_RASTER_BUFFER_SCREEN = 0;
-  GL_RASTER_TEXTURE_BUFFER = 1;
+  GL_POINTS = 1;
+  GL_LINES = 2;
+  GL_TRIANGLES = 3;
+  GL_QUADS = 4;
+  GL_BGRA8 = 32; // Need verify the actual number
+  GL_FLOAT = 5;
+  GL_RASTER_BUFFER_SCREEN = 6;
+  GL_RASTER_TEXTURE_BUFFER = 7;
   GL_COLOR_BUFFER_BIT = 1;
   GL_DEPTH_BUFFER_BIT = 2;
+  GL_TEXTURE_WIDTH = 8;
+  GL_TEXTURE_HEIGHT = 9;
 
 type
   GLshort = SmallInt;
@@ -39,6 +41,7 @@ type
   GLint = LongInt;
   GLuint = Cardinal;
   GLfloat = Single;
+  GLenum = Cardinal;
 
   PGLshort = ^GLshort;
   PGLushort = ^GLushort;
@@ -94,6 +97,9 @@ procedure glBindTexture(ATexType: GLuint; APtr: GLuint); stdcall;
 procedure glBindBuffer(APtr: GLuint); stdcall;
 procedure glSwapBuffers; stdcall;
 
+//
+procedure glGetTexLevelParameteriv(const Target: GLenum; const Level: GLint; const PName: GLenum; const Params: PGLint);
+
 // procedure glLoadTextureBMPFromHD(APath: ShortString); stdcall;
 procedure glLoadTexture(Format: GLuint; APath: ShortString); stdcall;
 
@@ -116,12 +122,9 @@ procedure glRasterGouraudTriangle(X1, Y1, X2, Y2, X3, Y3: GLint; C1, C2, C3: GLu
 procedure glRasterTextureTriangle(X1, Y1, X2, Y2, X3, Y3: GLint; TX1, TY1, TX2, TY2, TX3, TY3: Single); stdcall;
 // Draw 8x16 text to texture
 procedure glRasterText(X, Y: GLint; Color: GLuint; Text: ShortString); stdcall;
-// Swap between current tex and buf, or screen and buf
-// Note: This will reset the current viewport to default
-procedure glRasterSwapBuffers(AVal: GLuint); stdcall;
 
 // Raster with "fast" will ignore viewport and alpha
-procedure glRasterFastBlit(X, Y: GLint); stdcall;
+procedure glRasterBlitFast(X, Y: GLint); stdcall;
 
 function  RGB(R, G, B: Byte): Cardinal;
 function  RGBA(R, G, B, A: Byte): Cardinal;
@@ -237,7 +240,7 @@ begin
   screen := PGLTexture(KHeap.Alloc(SizeOf(TGLTexture)));
   screen^.Width := AWidth;
   screen^.Height := AHeight;
-  screen^.Format := GL_BGA8;
+  screen^.Format := GL_BGRA8;
   screen^.Depth := 2;
   screen^.Data := Pointer(VBE.GetCurrentMode^.Info.LFB);
   context^.ScreenBuffer := GLuint(screen);
@@ -388,6 +391,21 @@ begin
   end;
 end;
 
+procedure glGetTexLevelParameteriv(const Target: GLenum; const Level: GLint; const PName: GLenum; const Params: PGLint);
+begin
+  case Target of
+    GL_TEXTURE_2D:
+     begin
+       case PName of
+         GL_TEXTURE_WIDTH:
+          Params^ := PGLTexture(CurrentContext_^.CurrentTexture)^.Width;
+         GL_TEXTURE_HEIGHT:
+          Params^ := PGLTexture(CurrentContext_^.CurrentTexture)^.Height;
+       end
+     end;
+  end;
+end;
+
 procedure glRasterBlit(X, Y: GLint); stdcall;
 var
   tex,
@@ -412,14 +430,13 @@ begin
   ClampX := Clamp(X, glLeft, glRight);
   ClampY := Clamp(Y, glTop, glBottom);
 
-  startx := Max(Floor(Lerp(0, tex^.Width, (ClampX - X) / (X2 - X))), 0);
-  starty := Max(Floor(Lerp(0, tex^.Height, (ClampY - Y) / (Y2 - Y))), 0);
+  startx := Max(Round(Lerp(0, tex^.Width, (ClampX - X) / (X2 - X))), 0);
+  starty := Max(Round(Lerp(0, tex^.Height, (ClampY - Y) / (Y2 - Y))), 0);
 
   X := ClampX;
-  // TODO: Probably not right. Need to rethink
-  X2 := Clamp(X2, glLeft, glRight-1);
+  X2 := Clamp(X2, glLeft, glRight);
   Y := ClampY;
-  Y2 := Clamp(Y2, glTop, glBottom-1);
+  Y2 := Clamp(Y2, glTop, glBottom);
 
   cy := starty;
   for j := Y to Y2-1 do
@@ -620,30 +637,7 @@ begin
       end;
 end;
 
-procedure glRasterSwapBuffers(AVal: GLuint); stdcall;
-var
-  tmp: GLuint;
-  buf: PGLTexture;
-begin
-  case AVal of
-    GL_RASTER_TEXTURE_BUFFER:
-      begin
-        tmp := CurrentContext_^.CurrentTexture;
-        CurrentContext_^.CurrentTexture := CurrentContext_^.CurrentBuffer;
-        CurrentContext_^.CurrentBuffer := tmp;
-      end;
-    GL_RASTER_BUFFER_SCREEN:
-      begin
-        tmp := CurrentContext_^.CurrentBuffer;
-        CurrentContext_^.CurrentBuffer := CurrentContext_^.ScreenBuffer;
-        CurrentContext_^.ScreenBuffer := tmp;
-      end;
-  end;
-  buf:= PGLTexture(CurrentContext_^.CurrentBuffer);
-  glViewport(0, 0, buf^.Width, buf^.Height);
-end;
-
-procedure glRasterFastBlit(X, Y: GLint); stdcall;
+procedure glRasterBlitFast(X, Y: GLint); stdcall;
 var
   preLeft  : Word = 0;
   preTop   : Word = 0;
@@ -662,7 +656,7 @@ begin
   buf:= PGLTexture(CurrentContext_^.CurrentBuffer);
   tex:= PGLTexture(CurrentContext_^.CurrentTexture);
   case tex^.Format of
-    GL_BGA8:
+    GL_BGRA8:
       begin
         ctxData  := buf^.Data;
         ctxWidth := buf^.Width;
