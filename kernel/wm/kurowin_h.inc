@@ -7,7 +7,7 @@
   TKuroButton = object(TKuroView)
     TextX, TextY: LongInt;
     procedure SetSize(const AWidth, AHeight: Cardinal); virtual;
-    procedure SetName(const AName: ShortString); virtual;
+    procedure SetName(const AName: PChar); virtual;
     procedure Render; virtual;
   end;
 

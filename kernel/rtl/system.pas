@@ -104,6 +104,7 @@ procedure fpc_shortstr_concat_multi(var dests:shortstring;const sarr:array of ps
 function fpc_shortstr_compare_equal(const left,right:shortstring): longint; compilerproc;
 procedure fpc_pchar_to_shortstr(out res: ShortString; p: PChar); compilerproc;
 procedure fpc_write_text_float(rt, fixkomma, Len: Longint; var t : Text; r : ValReal); compilerproc;
+function fpc_pchar_length(p:pchar):sizeint; compilerproc;
 
 procedure fpc_Write_Text_AnsiStr(Len: Longint; var f: Text; const s: AnsiString); compilerproc;
 function  fpc_ShortStr_To_AnsiStr(const s2 : ShortString): AnsiString; compilerproc;

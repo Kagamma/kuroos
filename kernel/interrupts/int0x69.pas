@@ -104,7 +104,7 @@ var
   W: PKuroWindow;
   V: PKuroView;
   K: TKuroStruct;
-  S: ShortString;
+  S: PChar;
   i, j: LongInt;
 
 begin
@@ -131,7 +131,7 @@ begin
             if K.Name <> nil then
               S := K.Name
             else
-              S := '';
+              S := ' ';
             if K.Parent <> nil then
               Parent := K.Parent
             else
@@ -155,7 +155,7 @@ begin
             if K.Name <> nil then
               S := K.Name
             else
-              S := '';
+              S := ' ';
             if K.Parent <> nil then
               Parent := K.Parent
             else
@@ -181,7 +181,7 @@ begin
             if r.ecx <> 0 then
               S := PChar(r.ecx)
             else
-              S := '';
+              S := ' ';
             V^.SetName(S);
             V^.RenderUpdate;
           end;

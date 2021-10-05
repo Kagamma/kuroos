@@ -123,7 +123,7 @@ type
     BgColor,
     BorderColor: Cardinal;
     Parent: PKuroObject;
-    Name: ShortString;
+    Name: PChar;
     MessagesSent,
     MessagesReceived: array[0..63] of TKuroMessage;
     MessageSentCount,
@@ -153,7 +153,7 @@ type
     procedure SetPosition(const AX, AY: LongInt); virtual;
     procedure GetRealPosition(var AX, AY: LongInt); virtual;
     procedure SetSize(const AWidth, AHeight: Cardinal); virtual;
-    procedure SetName(const AName: ShortString); virtual;
+    procedure SetName(const AName: PChar); virtual;
   end;
 
   {$I kurowin_h.inc}
@@ -500,7 +500,8 @@ begin
   BgColor := $FF401000;
   BgColorSelected := $FF806000;
   BorderColor := $FF000000;
-  Name := 'View';
+  Self.Name := nil;
+  Self.SetName('View');
   FillChar(MessagesSent[0], SizeOf(TKuroMessage) * Length(MessagesSent), 0);
   FillChar(MessagesReceived[0], SizeOf(TKuroMessage) * Length(MessagesReceived), 0);
   MessageSentCount := 0;
@@ -510,6 +511,8 @@ end;
 
 destructor TKuroView.Done;
 begin
+  if Self.Name <> nil then
+    FreeMem(Self.Name);
   inherited;
 end;
 
@@ -835,9 +838,15 @@ begin
   end;
 end;
 
-procedure TKuroView.SetName(const AName: ShortString);
+procedure TKuroView.SetName(const AName: PChar);
+var
+  Len: Integer;
 begin
-  Name := AName;
+  if Self.Name <> nil then
+    FreeMem(Self.Name);
+  Len := Length(AName) + 1;
+  GetMem(Self.Name, Len);
+  Move(AName[0], Self.Name[0], Len);
 end;
 
 {$I kurowin.inc}

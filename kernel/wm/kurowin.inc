@@ -2,7 +2,7 @@ constructor TKuroBody.Init(const AParent: PKuroObject);
 begin
   inherited;
   Tag := TAG_KUROWINDOW;
-  Name := 'Window';
+  Self.SetName('Window');
 end;
 
 procedure TKuroButton.SetSize(const AWidth, AHeight: Cardinal);
@@ -15,7 +15,7 @@ begin
   TextY := AHeight div 2 - 8;
 end;
 
-procedure TKuroButton.SetName(const AName: ShortString);
+procedure TKuroButton.SetName(const AName: PChar);
 var
   Len: LongInt;
 begin

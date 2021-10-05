@@ -18,4 +18,4 @@
 }
 {$DEFINE CPU_HALT:= asm sti; hlt; end}
 {$DEFINE PROCESS_WAIT:= asm int $20; end}
-{$DEFINE INTERRUPT:= asm int 3; end}
+{$DEFINE BREAKPOINT:= asm int 3; end}

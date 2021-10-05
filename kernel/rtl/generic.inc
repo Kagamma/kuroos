@@ -147,3 +147,11 @@ begin
     end;
   result:=-1;
 end;
+
+function fpc_pchar_length(p:pchar):sizeint;[public,alias:'FPC_PCHAR_LENGTH']; compilerproc;
+begin
+  if assigned(p) then
+    Result:=IndexByte(p^,high(Result),0)
+  else
+    Result:=0;
+end;
