@@ -19,7 +19,7 @@
                 ECX: Task ID.
         AH = 1: Memory
         AH = 2: Timer
-            AL = 1: GetTime
+            AL = 2: GetTime
                 <-
                 EAX: 8 bytes of hh << mm << ss
                 ECX: 16 bytes of year << 8 bytes of month << day
@@ -76,7 +76,7 @@ begin
       end;
     2:
       case r_al of
-        1: // GetTime
+        2: // GetTime
           begin
             IRQEAXHave:= 1;
             IRQECXHave:= 1;

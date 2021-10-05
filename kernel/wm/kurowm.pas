@@ -522,7 +522,6 @@ procedure TKuroView.Render;
 var
   i: Integer;
   V: PKuroView;
-  S: ShortString;
   PX, PY: LongInt;
 begin
   // TODO: We should guard against unecesarry draw

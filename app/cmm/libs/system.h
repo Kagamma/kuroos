@@ -44,7 +44,7 @@ inline fastcall void yield() {
 
 // EDI: DateTime_t*
 void GetDateTime(dword EDI) {
-  EAX = 0x201;
+  EAX = 0x202;
   $int 0x61;
   EDI.DateTime_t.second = AL;
   EDI.DateTime_t.minute = AH;
