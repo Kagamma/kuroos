@@ -124,6 +124,7 @@ type
     BorderColor: Cardinal;
     Parent: PKuroObject;
     Name: PChar;
+    NameSize: LongWord;
     MessagesSent,
     MessagesReceived: array[0..63] of TKuroMessage;
     MessageSentCount,
@@ -501,6 +502,7 @@ begin
   BgColorSelected := $FF806000;
   BorderColor := $FF000000;
   Self.Name := nil;
+  Self.NameSize := 0;
   Self.SetName('View');
   FillChar(MessagesSent[0], SizeOf(TKuroMessage) * Length(MessagesSent), 0);
   FillChar(MessagesReceived[0], SizeOf(TKuroMessage) * Length(MessagesReceived), 0);
@@ -620,7 +622,10 @@ begin
             PKuroView(Parent)^.IsMoveBlocked := true;
           end;
         end;
-        TransferMessageWithCallback(M, IsChild);
+        if IsSelected(M) and (not Kuro^.IsMoved) then
+        begin
+          TransferMessageWithCallback(M, IsChild);
+        end;
       end;
     KM_MOUSEUP:
       begin;
@@ -840,22 +845,32 @@ end;
 
 procedure TKuroView.SetName(const AName: PChar);
 var
-  OldLen,
   Len: Integer;
 begin
-  Len := Length(AName) + 1;
-  if Self.Name <> nil then
+  if AName = nil then
   begin
-    OldLen := GetSize(Self.Name);
-    // Only reallocate memory if old size is smaller than new size
-    if OldLen < Len then
+    if Self.Name <> nil then
     begin
       FreeMem(Self.Name);
-      GetMem(Self.Name, Len);
+      Self.NameSize := 0;
+      Self.Name := nil;
     end;
   end else
-    GetMem(Self.Name, Len);
-  Move(AName[0], Self.Name[0], Len);
+  begin
+    Len := Length(AName) + 1;
+    if Self.Name <> nil then
+    begin
+      // Only reallocate memory if old size is smaller than new size
+      if Self.NameSize < Len then
+      begin
+        FreeMem(Self.Name);
+        GetMem(Self.Name, Len);
+        Self.NameSize := Len;
+      end;
+    end else
+      GetMem(Self.Name, Len);
+    Move(AName[0], Self.Name[0], Len);
+  end;
 end;
 
 {$I kurowin.inc}
