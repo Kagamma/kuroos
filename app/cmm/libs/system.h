@@ -60,25 +60,35 @@ void itoa(int num, char* c, byte base) {
   char buf[14];
   byte* str;
   dword digit;
+  byte isNeg = 0;
 
   for (digit = 0; digit < 14; digit++) {
     buf[digit] = 0;
   }
   str = #buf[12];
   *str = 0;
+  if (num < 0) {
+    isNeg = 1;
+    num = -num;
+  }
   digit = num;
   if (digit == 0) {
     *str = '0';
   } else {
     do {
       str -= 1;
-      *str = digit % 10 + 0x30;
+      EAX = digit % 10 + 0x30;
+      *str = AL;
       digit /= 10;
     } while (digit != 0);
   }
   str = #buf[0];
   while (*str == 0) {
     str++;
+  }
+  if (isNeg == 1) {
+    *c = '-';
+    c++;
   }
   while (*str != 0) {
     *c = *str;

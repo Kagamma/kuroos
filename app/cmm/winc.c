@@ -1,5 +1,5 @@
-#include "system.h"
-#include "kurowm.h"
+#include "libs/system.h"
+#include "libs/kurowm.h"
 
 KuroView_t win;
 dword handle;
