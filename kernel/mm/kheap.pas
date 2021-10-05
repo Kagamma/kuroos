@@ -486,30 +486,34 @@ end;
 
 procedure Debug_PrintMemoryBlocks(const PID: Integer); stdcall;
 var
-  i, j: Integer;
+  i, j, count: Integer;
   PE: PHeapEntry;
   c: Char;
 begin
-  Console.SetFgColor(14);       // 12       // 24   // 32
-  Console.WriteStr('Address     Size        Status  PID' + #10#13);
+  Console.SetFgColor(14);      // 8 12 12 8
+  Console.WriteStr('#       Address     Size        Status  PID' + #10#13);
   Console.SetFgColor(7);
-  Console.WriteStr('---------------------------------------------' + #10#13);
+  Console.WriteStr('-------------------------------------------------' + #10#13);
+  Count := 0;
   for I := 0 to HeapEntryCount - 1 do
   begin
     PE := @HeapEntries[I];
     if PID >= 0 then
     begin
       if (PID <> PE^.PID) or (PE^.Allocated = 0) then continue;
+      Inc(Count);
+      Console.WriteDec(Count, 0);
+      Console.SetCursorPos(8, Console.GetCursorPosY);
       Console.WriteHex(PE^.Address, 8);
-      Console.SetCursorPos(12, Console.GetCursorPosY);
+      Console.SetCursorPos(20, Console.GetCursorPosY);
       Console.WriteHex(PE^.Size, 8);
-      Console.SetCursorPos(24, Console.GetCursorPosY);
+      Console.SetCursorPos(32, Console.GetCursorPosY);
       case PE^.Allocated of
         0: Console.WriteStr('Free');
         1:
           begin
             Console.WriteStr('Used');
-            Console.SetCursorPos(32, Console.GetCursorPosY);
+            Console.SetCursorPos(40, Console.GetCursorPosY);
             case PE^.PID of
               0: Console.WriteStr('0 <Kernel>');
               else
@@ -520,16 +524,19 @@ begin
       Console.WriteStr(#10#13);
     end else
     begin
+      Inc(Count);
+      Console.WriteDec(Count, 0);
+      Console.SetCursorPos(8, Console.GetCursorPosY);
       Console.WriteHex(PE^.Address, 8);
-      Console.SetCursorPos(12, Console.GetCursorPosY);
+      Console.SetCursorPos(20, Console.GetCursorPosY);
       Console.WriteHex(PE^.Size, 8);
-      Console.SetCursorPos(24, Console.GetCursorPosY);
+      Console.SetCursorPos(32, Console.GetCursorPosY);
       case PE^.Allocated of
         0: Console.WriteStr('Free');
         1:
           begin
             Console.WriteStr('Used');
-            Console.SetCursorPos(32, Console.GetCursorPosY);
+            Console.SetCursorPos(40, Console.GetCursorPosY);
             case PE^.PID of
               0: Console.WriteStr('0 <Kernel>');
               else
