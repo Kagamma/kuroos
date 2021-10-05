@@ -163,7 +163,7 @@ function GetKuroWMInstance: PKuroWM;
 implementation
 
 uses
-  math, cdfs, schedule, ide;
+  math, cdfs, schedule, ide, kheap;
 
 var
   Kuro: PKuroWM = nil;
@@ -840,12 +840,21 @@ end;
 
 procedure TKuroView.SetName(const AName: PChar);
 var
+  OldLen,
   Len: Integer;
 begin
-  if Self.Name <> nil then
-    FreeMem(Self.Name);
   Len := Length(AName) + 1;
-  GetMem(Self.Name, Len);
+  if Self.Name <> nil then
+  begin
+    OldLen := GetSize(Self.Name);
+    // Only reallocate memory if old size is smaller than new size
+    if OldLen < Len then
+    begin
+      FreeMem(Self.Name);
+      GetMem(Self.Name, Len);
+    end;
+  end else
+    GetMem(Self.Name, Len);
   Move(AName[0], Self.Name[0], Len);
 end;
 
