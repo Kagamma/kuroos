@@ -405,6 +405,7 @@ end;
 function AllocPage(APageStruct: PPageStruct; AVirtualAddr, APhysicAddr: Cardinal; RWAble: TBit1; var Tracks: PPPageTable; var TrackCount: Cardinal): PPageTableEntry; stdcall;
 var
   i: Integer;
+  IsPageExistsInTrack: Boolean;
   PageTable: PPageTable;
   Page: PPageTableEntry;
 begin
@@ -419,8 +420,20 @@ begin
     PageTable:= AllocPageTable;
     FillChar(PageTable^, SizeOf(TPageTable), 0);
     // Keep track for process
-    Tracks[TrackCount] := PageTable;
-    Inc(TrackCount);
+    IsPageExistsInTrack := False;
+    for I := 0 to TrackCount - 1 do
+    begin
+      if Tracks[TrackCount] = PageTable then
+      begin
+        IsPageExistsInTrack := True;
+        exit;
+      end;
+    end;
+    if not IsPageExistsInTrack then
+    begin
+      Tracks[TrackCount] := PageTable;
+      Inc(TrackCount);
+    end;
     //
     APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].Present  := 1;
     APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].RWAble   := RWAble;

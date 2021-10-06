@@ -200,7 +200,8 @@ begin
   // Clone kernel page directory for this task
   Move(KernelPageStruct_^.Directory, Task^.Page^.Directory, SizeOf(TPageDir));
   Task^.TrackCount := 0;
-  Task^.Tracks := KHeap.Alloc(254 * SizeOf(PPageTable));
+  Task^.Tracks := KHeap.Alloc(256 * SizeOf(PPageTable));
+  FillChar(Task^.Tracks[0], 256 * SizeOf(PPageTable), 0);
   // Set virtual memory for task code
   // TODO: We somehow skip a 4KB physics memory block if the kernel heap doesnt enough memory to allocate
   for i := 0 to GetSize(ABuf) div PAGE_SIZE do
