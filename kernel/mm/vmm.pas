@@ -21,7 +21,7 @@ const
   KERNEL_HEAP_START  = $80000000;
   KERNEL_HEAP_END    = $DE000000;
   PAGE_MEMORY_BLOCK  = $400000;
-  KERNEL_SIZE        = 1024 * 1024 * 8;
+  KERNEL_SIZE        = 1024 * 1024 * 12;
   MINIMAL_SIZE       = 1024 * 1024 * 4;
   FIXED_PAGETABLE_SIZE = 768;
 
@@ -48,6 +48,7 @@ type
     Entries: array[0..1023] of TPageTableEntry;
   end;
   PPageTable = ^TPageTable;
+  PPPageTable = ^PPageTable;
 
   TPageDir = packed record
     Entries: array[0..1023] of TPageDirEntry;
@@ -78,8 +79,7 @@ function IsFixedPageTable(APageFrame: Cardinal): Boolean;
 procedure SetFrame(AFrames: PCardinal; Addr: Cardinal); stdcall;
 function  GetFrame(AFrames: PCardinal; Addr: Cardinal): Cardinal; stdcall;
 procedure ClearFrame(AFrames: PCardinal; Addr: Cardinal); stdcall;
-// Purge all allocated frames from a task
-procedure PurgeFramesFromTask(AFrames: PCardinal); stdcall;
+//
 function  FindFirstFreeFrame(AFrames: PCardinal): Cardinal; stdcall;
 procedure DisablePageDir;
 procedure EnablePageDir(APageDir: PPageDir);
@@ -95,7 +95,7 @@ procedure FreePageTable(PageTable: PPageTable); stdcall;
 // Ask for a new empty page for the next virtual address
 function AllocPage(APageStruct: PPageStruct; AVirtualAddr: Cardinal; RWAble: TBit1): PPageTableEntry; stdcall; overload;
 // Ask for a new empty page for the next virtual address, with custom physic address
-function AllocPage(APageStruct: PPageStruct; AVirtualAddr, APhysicAddr: Cardinal; RWAble: TBit1): PPageTableEntry; stdcall; overload;
+function AllocPage(APageStruct: PPageStruct; AVirtualAddr, APhysicAddr: Cardinal; RWAble: TBit1; Tracks: PPPageTable; var TrackCount: Byte): PPageTableEntry; stdcall; overload;
 function  CreatePageDirectory: Pointer; stdcall;
 // Perform mapping kernel to virtual memory
 procedure Init; stdcall;
@@ -186,8 +186,6 @@ begin
       end;
     end;
   end;
-  // TODO: Try to collect free memory from processes
-  // TODO: Page out to external device to free memory
   if IsGUI then
     VBE.ReturnToTextMode;
   IRQ_DISABLE;
@@ -404,7 +402,7 @@ begin
   exit(Page);
 end;
 
-function AllocPage(APageStruct: PPageStruct; AVirtualAddr, APhysicAddr: Cardinal; RWAble: TBit1): PPageTableEntry; stdcall;
+function AllocPage(APageStruct: PPageStruct; AVirtualAddr, APhysicAddr: Cardinal; RWAble: TBit1; Tracks: PPPageTable; var TrackCount: Byte): PPageTableEntry; stdcall;
 var
   i: Integer;
   PageTable: PPageTable;
@@ -420,6 +418,10 @@ begin
     // We use our big ass array for it instead
     PageTable:= AllocPageTable;
     FillChar(PageTable^, SizeOf(TPageTable), 0);
+    // Keep track for process
+    Tracks[TrackCount] := PageTable;
+    Inc(TrackCount);
+    //
     APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].Present  := 1;
     APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].RWAble   := RWAble;
     APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].UserMode := 0;

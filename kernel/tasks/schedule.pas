@@ -75,6 +75,8 @@ type
     Priority: Cardinal;
     // Task's own paging
     Page: PPageStruct;
+    Tracks: array[0..49] of PPageTable;
+    TrackCount: Byte;
     // Code's pointer in kernel's address space.
     Code: TaskProc;
   end;
@@ -197,13 +199,15 @@ begin
   KHeap.SetOwner(Task^.Page, Task^.PID);
   // Clone kernel page directory for this task
   Move(KernelPageStruct_^.Directory, Task^.Page^.Directory, SizeOf(TPageDir));
+  Task^.TrackCount := 0;
   // Set virtual memory for task code
   // TODO: We somehow skip a 4KB physics memory block if the kernel heap doesnt enough memory to allocate
   for i := 0 to GetSize(ABuf) div PAGE_SIZE do
   begin
     AllocPage(Task^.Page,
       Cardinal(PKEXHeader(ABuf)^.StartAddr) + i*PAGE_SIZE,
-      Cardinal(Task^.Code) - KERNEL_HEAP_START + KERNEL_SIZE + i*PAGE_SIZE, 1);
+      Cardinal(Task^.Code) - KERNEL_HEAP_START + KERNEL_SIZE + i*PAGE_SIZE, 1,
+      @Task^.Tracks[0], Task^.TrackCount);
   end;
   Pointer(Task^.Code):= Pointer(Task^.Code) + PKEXHeader(ABuf)^.CodePoint;
   // Generate default stack
@@ -387,11 +391,13 @@ begin
 end;
 
 procedure FreeProcess(const ATask: PTaskStruct); stdcall;
+var
+  I: Byte;
 begin
   // Free task's all memory
-  // TODO: Make sure to reclaim free frames
-  //if ATask^.PPID = 0 then
-  //  PurgeFramesFromTask(@ATask^.Frames[0]);
+  if ATask^.PPID = 0 then
+    for I := 0 to ATask^.TrackCount - 1 do
+      FreePageTable(ATask^.Tracks[I]);
   FreeAllMemory(ATask^.PID);
 end;
 
