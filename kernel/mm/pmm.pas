@@ -25,11 +25,11 @@ var
   SLock: PSpinlock;
   MemCache: Pointer;
 
-function  Alloc_Default(const ASize: Cardinal; const isAligned: Boolean): Pointer; stdcall;
+function  Alloc_Default(const ASize: KernelCardinal; const isAligned: Boolean): Pointer; stdcall;
 // Allocate a memory (unaligned).
-function  Alloc(const ASize: Cardinal): Pointer; stdcall;
+function  Alloc(const ASize: KernelCardinal): Pointer; stdcall;
 // Allocate a memory (aligned).
-function  AllocAligned(const ASize: Cardinal): Pointer; stdcall;
+function  AllocAligned(const ASize: KernelCardinal): Pointer; stdcall;
 // Free a block of memory.
 procedure Free(var APtr: Pointer); stdcall;
 procedure Init; stdcall;
@@ -39,17 +39,17 @@ implementation
 uses
   kheap, vmm;
 
-function  Alloc_Default(const ASize: Cardinal; const isAligned: Boolean): Pointer; stdcall; inline;
+function  Alloc_Default(const ASize: KernelCardinal; const isAligned: Boolean): Pointer; stdcall; inline;
 var
   p: Pointer;
 begin
   if NOT IsPaging then
   begin
-    if isAligned and ((Cardinal(PlacementAddr) mod PAGE_SIZE) <> 0) then
+    if isAligned and ((KernelCardinal(PlacementAddr) mod PAGE_SIZE) <> 0) then
     begin
       // Align the placement address
       p:= PlacementAddr;
-      p:= Pointer((Cardinal(p) + (PAGE_SIZE shl 2)) - (Cardinal(p) mod PAGE_SIZE));
+      p:= Pointer((KernelCardinal(p) + (PAGE_SIZE shl 2)) - (KernelCardinal(p) mod PAGE_SIZE));
       PlacementAddr:= p;
     end;
     Alloc_Default:= PlacementAddr;
@@ -66,12 +66,12 @@ begin
   end;
 end;
 
-function  Alloc(const ASize: Cardinal): Pointer; stdcall;
+function  Alloc(const ASize: KernelCardinal): Pointer; stdcall;
 begin
   exit(PMM.Alloc_Default(ASize, False));
 end;
 
-function  AllocAligned(const ASize: Cardinal): Pointer; stdcall;
+function  AllocAligned(const ASize: KernelCardinal): Pointer; stdcall;
 begin
   exit(PMM.Alloc_Default(ASize, True));
 end;

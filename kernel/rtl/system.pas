@@ -45,6 +45,8 @@ type
   PPtrInt   = ^PtrInt;
   KernelString = ShortString;
   PShortString = ^ShortString;
+  KernelCardinal = Cardinal;
+  PKernelCardinal = ^KernelCardinal;
   ObjpasInt = Integer;
 
   Pjmp_buf = ^jmp_buf;

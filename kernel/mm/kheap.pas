@@ -19,10 +19,10 @@ uses
 type
   PHeapEntry = ^THeapEntry;
   THeapEntry = packed record
-    Allocated: Cardinal;
-    Size     : Cardinal;
-    PID      : Cardinal;
-    Address  : Cardinal;
+    Allocated: KernelCardinal;
+    Size     : KernelCardinal;
+    PID      : KernelCardinal;
+    Address  : KernelCardinal;
   end;
 
 var
@@ -35,35 +35,35 @@ procedure Init; stdcall;
 // Perform alloc/free for testing.
 procedure Test; stdcall;
 // Allocate a block of memory
-function  Alloc(const ASize: Cardinal): Pointer; stdcall;
+function  Alloc(const ASize: KernelCardinal): Pointer; stdcall;
 // Allocate a block of memory, aligned to 4KB
-function  AllocAligned(const ASize: Cardinal): Pointer; stdcall;
+function  AllocAligned(const ASize: KernelCardinal): Pointer; stdcall;
 {  Allocate a block of memory. If memory exists, we will delete it and move
    all its data to new block.
    TODO:
    - Need a better algorithm. }
-function  ReAlloc(const APtr: Pointer; const ASize: Cardinal): Pointer; stdcall;
+function  ReAlloc(const APtr: Pointer; const ASize: KernelCardinal): Pointer; stdcall;
 {  Allocate a block of memory, aligned to 4KB. If memory exists, we will delete it and move
    all its data to new block.
    TODO:
    - Need a better algorithm. }
-function  ReAllocAligned(const APtr: Pointer; const ASize: Cardinal): Pointer; stdcall;
+function  ReAllocAligned(const APtr: Pointer; const ASize: KernelCardinal): Pointer; stdcall;
 
 // Free memory
 procedure Free(var APtr: Pointer); stdcall;
 // Free all memory used by a process
 procedure FreeAllMemory(const PID: PtrUInt); stdcall;
 // Get memory block size
-function  GetSize(const APtr: Pointer): Cardinal; stdcall;
+function  GetSize(const APtr: Pointer): KernelCardinal; stdcall;
 // Set pointer's owner
-procedure SetOwner(const APtr: Pointer; const AID: Cardinal); stdcall; inline;
+procedure SetOwner(const APtr: Pointer; const AID: KernelCardinal); stdcall; inline;
 // Calculate align for memory
-function  CalcAlign(const AValue: Cardinal; const AAlign: Cardinal): Cardinal; stdcall; inline;
+function  CalcAlign(const AValue: KernelCardinal; const AAlign: KernelCardinal): KernelCardinal; stdcall; inline;
 
 // ----- Debug functions -----
 
 procedure Debug_PrintMemoryBlocks(const PID: Integer); stdcall;
-function  Debug_PrintProcessMemoryUsage(const PID: PtrUInt): Cardinal; stdcall;
+function  Debug_PrintProcessMemoryUsage(const PID: PtrUInt): KernelCardinal; stdcall;
 
 implementation
 
@@ -75,7 +75,7 @@ uses
 // ----- Helper functions -----
 
 // Split a chunk into 2 smaller chunks
-procedure SplitChunk(const Index: Cardinal; const ASize: Cardinal); public;
+procedure SplitChunk(const Index: KernelCardinal; const ASize: KernelCardinal); public;
 var
   PE, PENext: PHeapEntry;
   I: Integer;
@@ -94,7 +94,7 @@ begin
 end;
 
 // Merge 2 free chunks into 1.
-procedure MergeChunk(const Index: Cardinal); public;
+procedure MergeChunk(const Index: KernelCardinal); public;
 var
   PE, PENext: PHeapEntry;
   I: Integer;
@@ -109,7 +109,7 @@ end;
 
 { Find a useable chunk with base address and a given size using brute-force.
   TODO: Need a better algorithm. }
-function  FindUseableChunk(const ASize: Cardinal; const IsPageAligned: Boolean): Pointer; stdcall; public;
+function  FindUseableChunk(const ASize: KernelCardinal; const IsPageAligned: Boolean): Pointer; stdcall; public;
 var
   I, J: Integer;
   PE: PHeapEntry;
@@ -179,7 +179,7 @@ end;
 
 function FindEntryByAddress(Addr: Pointer): PHeapEntry; public; inline; stdcall;
 var
-  L, R, I: Cardinal;
+  L, R, I: KernelCardinal;
   Cur: Pointer;
 begin
   L := 0;
@@ -202,7 +202,7 @@ end;
 
 // ----- Public functions -----
 
-procedure SetOwner(const APtr: Pointer; const AID: Cardinal); stdcall; inline;
+procedure SetOwner(const APtr: Pointer; const AID: KernelCardinal); stdcall; inline;
 var
   PE: PHeapEntry;
 begin
@@ -246,16 +246,16 @@ begin
   Console.WriteStr(#10#13);
   a:= KHeap.Alloc(8);
   Console.WriteStr('a: 0x');
-  Console.WriteHex(Cardinal(a), 8);
+  Console.WriteHex(KernelCardinal(a), 8);
   b:= KHeap.Alloc(8);
   Console.WriteStr(', b: 0x');
-  Console.WriteHex(Cardinal(b), 8);
+  Console.WriteHex(KernelCardinal(b), 8);
   c:= KHeap.Alloc(8);
   Console.WriteStr(', c: 0x');
-  Console.WriteHex(Cardinal(c), 8);
+  Console.WriteHex(KernelCardinal(c), 8);
   d:= KHeap.Alloc(8);
   Console.WriteStr(', d: 0x');
-  Console.WriteHex(Cardinal(d), 8);
+  Console.WriteHex(KernelCardinal(d), 8);
 
   Console.SetFgColor(14);
   Console.WriteStr(#10#13'Freeing chunk b and c... ');
@@ -270,7 +270,7 @@ begin
   e:= KHeap.Alloc(4);
   Console.WriteStr(#10#13);
   Console.WriteStr('e: 0x');
-  Console.WriteHex(Cardinal(e), 8);
+  Console.WriteHex(KernelCardinal(e), 8);
   Console.WriteStr(#10#13);
 
   Console.SetFgColor(14);
@@ -279,7 +279,7 @@ begin
   f:= KHeap.Alloc(10);
   Console.WriteStr(#10#13);
   Console.WriteStr('f: 0x');
-  Console.WriteHex(Cardinal(f), 8);
+  Console.WriteHex(KernelCardinal(f), 8);
   Console.WriteStr(#10#13);
 
   Console.SetFgColor(14);
@@ -297,10 +297,10 @@ begin
   g:= KHeap.AllocAligned(128);
   Console.WriteStr(#10#13);
   Console.WriteStr('g: 0x');
-  Console.WriteHex(Cardinal(g), 8);
+  Console.WriteHex(KernelCardinal(g), 8);
   h:= KHeap.AllocAligned(128);
   Console.WriteStr(', h: 0x');
-  Console.WriteHex(Cardinal(h), 8);
+  Console.WriteHex(KernelCardinal(h), 8);
   Console.WriteStr(#10#13);
 
   Console.SetFgColor(14);
@@ -316,7 +316,7 @@ begin
   i:= KHeap.Alloc(4096);
   Console.WriteStr(#10#13);
   Console.WriteStr('i: 0x');
-  Console.WriteHex(Cardinal(i), 8);
+  Console.WriteHex(KernelCardinal(i), 8);
   Console.WriteStr(#10#13);
 
   Console.SetFgColor(14);
@@ -326,7 +326,7 @@ begin
   Console.WriteStr(#10#13);
 end;
 
-function  Alloc(const ASize: Cardinal): Pointer; stdcall;
+function  Alloc(const ASize: KernelCardinal): Pointer; stdcall;
 var
   p: Pointer;
 begin
@@ -344,9 +344,9 @@ begin
   exit(p);
 end;
 
-function  ReAlloc(const APtr: Pointer; const ASize: Cardinal): Pointer; stdcall;
+function  ReAlloc(const APtr: Pointer; const ASize: KernelCardinal): Pointer; stdcall;
 var
-  size      : Cardinal;
+  size      : KernelCardinal;
   newP, oldP: Pointer;
 begin
   oldP:= APtr;
@@ -365,9 +365,9 @@ begin
   exit(newP);
 end;
 
-function  ReAllocAligned(const APtr: Pointer; const ASize: Cardinal): Pointer; stdcall;
+function  ReAllocAligned(const APtr: Pointer; const ASize: KernelCardinal): Pointer; stdcall;
 var
-  size      : Cardinal;
+  size      : KernelCardinal;
   newP, oldP: Pointer;
 begin
   oldP:= APtr;
@@ -386,7 +386,7 @@ begin
   exit(newP);
 end;
 
-function  AllocAligned(const ASize: Cardinal): Pointer; stdcall;
+function  AllocAligned(const ASize: KernelCardinal): Pointer; stdcall;
 var
   p: Pointer;
 begin
@@ -404,7 +404,7 @@ begin
   exit(p);
 end;
 
-procedure FreeEntry(Index: Cardinal); stdcall;
+procedure FreeEntry(Index: KernelCardinal); stdcall;
 var
   PE: PHeapEntry;
 begin
@@ -462,7 +462,7 @@ begin
   Spinlock.Unlock(PMM.SLock);
 end;
 
-function  GetSize(const APtr: Pointer): Cardinal; stdcall;
+function  GetSize(const APtr: Pointer): KernelCardinal; stdcall;
 var
   I: Integer;
   PE: PHeapEntry;
@@ -545,9 +545,9 @@ begin
   end;
 end;
 
-function  Debug_PrintProcessMemoryUsage(const PID: PtrUInt): Cardinal; stdcall;
+function  Debug_PrintProcessMemoryUsage(const PID: PtrUInt): KernelCardinal; stdcall;
 var
-  Ret, I: Cardinal;
+  Ret, I: KernelCardinal;
   PE: PHeapEntry;
 begin
   Ret:= 0;
@@ -560,7 +560,7 @@ begin
   exit(Ret);
 end;
 
-function  CalcAlign(const AValue: Cardinal; const AAlign: Cardinal): Cardinal; stdcall; inline;
+function  CalcAlign(const AValue: KernelCardinal; const AAlign: KernelCardinal): KernelCardinal; stdcall; inline;
 begin
   if AValue < AAlign then
     CalcAlign:= AAlign

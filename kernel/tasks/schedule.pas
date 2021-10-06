@@ -11,25 +11,25 @@ unit schedule;
 
 {$I KOS.INC}
 {$DEFINE GENERATE_STACK:= ;
-  Dec(Task^.Stack, 4); Cardinal(Task^.Stack^):= TaskIdPtr;
-  Dec(Task^.Stack, 4); Cardinal(Task^.Stack^):= 0;
-  Dec(Task^.Stack, 4); Cardinal(Task^.Stack^):= $202;  // EFLAGS
-  Dec(Task^.Stack, 4); Cardinal(Task^.Stack^):= $08;   // CS
-  Dec(Task^.Stack, 4); Cardinal(Task^.Stack^):= Cardinal(Task^.Code);  // EIP
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= TaskIdPtr;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= 0;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $202;  // EFLAGS
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $08;   // CS
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= KernelCardinal(Task^.Code);  // EIP
 
-  Dec(Task^.Stack, 4); Cardinal(Task^.Stack^):= 0;
-  Dec(Task^.Stack, 4); Cardinal(Task^.Stack^):= 0;
-  Dec(Task^.Stack, 4); Cardinal(Task^.Stack^):= 0;
-  Dec(Task^.Stack, 4); Cardinal(Task^.Stack^):= 0;
-  Dec(Task^.Stack, 4); Cardinal(Task^.Stack^):= 0;
-  Dec(Task^.Stack, 4); Cardinal(Task^.Stack^):= 0;
-  Dec(Task^.Stack, 4); Cardinal(Task^.Stack^):= 0;
-  Dec(Task^.Stack, 4); Cardinal(Task^.Stack^):= 0;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= 0;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= 0;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= 0;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= 0;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= 0;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= 0;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= 0;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= 0;
 
-  Dec(Task^.Stack, 4); Cardinal(Task^.Stack^):= $10;
-  Dec(Task^.Stack, 4); Cardinal(Task^.Stack^):= $10;
-  Dec(Task^.Stack, 4); Cardinal(Task^.Stack^):= $10;
-  Dec(Task^.Stack, 4); Cardinal(Task^.Stack^):= $10
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $10;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $10;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $10;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $10
 }
 
 interface
@@ -62,9 +62,9 @@ type
     //
     Name: String[32];
     //
-    Spin : Cardinal;
+    Spin : KernelCardinal;
     //
-    State: Cardinal;
+    State: KernelCardinal;
     //
     StackAddr: Pointer;
     // Stack pointer
@@ -72,11 +72,11 @@ type
     //
     Heap: Pointer;
     // Task priority
-    Priority: Cardinal;
+    Priority: KernelCardinal;
     // Task's own paging
     Page: PPageStruct;
     Tracks: PPPageTable;
-    TrackCount: Cardinal;
+    TrackCount: KernelCardinal;
     // Code's pointer in kernel's address space.
     Code: TaskProc;
   end;
@@ -95,10 +95,10 @@ procedure Init; stdcall;
 function  CreateProcessFromBuffer(const AName: KernelString; const ABuf: Pointer): PtrUInt; stdcall;
 // Basically the same as task except this share the same address space with pid
 function  CreateThread(ACode: TaskProc;
-    AStackSize: Cardinal; const PPID: Cardinal): PtrUInt; stdcall;
+    AStackSize: KernelCardinal; const PPID: KernelCardinal): PtrUInt; stdcall;
 // Basically the same as task except this share the same address space with pid
 function  CreateKernelThread(const AName: KernelString; ACode: TaskProc;
-    AStackSize: Cardinal): PtrUInt; stdcall;
+    AStackSize: KernelCardinal): PtrUInt; stdcall;
 // Find a task based on pid
 function  FindProcess(const AID: PtrInt): PTaskStruct; stdcall; overload;
 // Kill a task
@@ -108,7 +108,7 @@ function  KillThread(const AID: PtrInt): Boolean; stdcall; overload;
 // Free a task
 procedure FreeProcess(const ATask: PTaskStruct); stdcall;
 //
-function  Run(AStack: Cardinal): Cardinal; stdcall;
+function  Run(AStack: KernelCardinal): KernelCardinal; stdcall;
 //
 procedure NullThread(PID: PtrUInt); stdcall;
 // Show all tasks
@@ -124,7 +124,7 @@ uses
 
 var
   DirPhys: PPageDir;
-  TaskIdPtr: Cardinal = 1;
+  TaskIdPtr: KernelCardinal = 1;
 
 procedure Init; stdcall;
 begin
@@ -151,8 +151,8 @@ end;
 function  CreateProcessFromBuffer(const AName: KernelString; const ABuf: Pointer): PtrUInt; stdcall;
 var
   Task: PTaskStruct;
-  i: Cardinal;
-  CodeSize: Cardinal;
+  i: KernelCardinal;
+  CodeSize: KernelCardinal;
   PageTable: PPageTable;
 begin
   if (PKEXHeader(ABuf)^.ID[0] <> 'K') or
@@ -203,8 +203,8 @@ begin
   for i := 0 to GetSize(ABuf) div PAGE_SIZE do
   begin
     AllocPage(Task^.Page,
-      Cardinal(PKEXHeader(ABuf)^.StartAddr) + i*PAGE_SIZE,
-      Cardinal(Task^.Code) - KERNEL_HEAP_START + KERNEL_SIZE + i*PAGE_SIZE, 1,
+      KernelCardinal(PKEXHeader(ABuf)^.StartAddr) + i*PAGE_SIZE,
+      KernelCardinal(Task^.Code) - KERNEL_HEAP_START + KERNEL_SIZE + i*PAGE_SIZE, 1,
       Task^.Tracks, Task^.TrackCount);
   end;
   Pointer(Task^.Code):= Pointer(Task^.Code) + PKEXHeader(ABuf)^.CodePoint;
@@ -220,7 +220,7 @@ begin
 end;
 
 function  CreateThread(ACode: TaskProc;
-    AStackSize: Cardinal; const PPID: Cardinal): PtrUInt; stdcall;
+    AStackSize: KernelCardinal; const PPID: KernelCardinal): PtrUInt; stdcall;
 var
   Task: PTaskStruct;
   TaskParent: PTaskStruct;
@@ -280,7 +280,7 @@ begin
 end;
 
 function  CreateKernelThread(const AName: KernelString; ACode: TaskProc;
-    AStackSize: Cardinal): PtrUInt; stdcall;
+    AStackSize: KernelCardinal): PtrUInt; stdcall;
 var
   Task: PTaskStruct;
   TaskParent: PTaskStruct;
@@ -346,7 +346,7 @@ function  KillProcess(const AID: PtrInt): Boolean; stdcall;
 var
   Thread,
   Task: PTaskStruct;
-  i: Cardinal;
+  i: KernelCardinal;
 begin
   IRQ_DISABLE;
   Task:= FindProcess(AID);
@@ -366,7 +366,7 @@ function  KillThread(const AID: PtrInt): Boolean; stdcall;
 var
   Thread,
   Task: PTaskStruct;
-  i: Cardinal;
+  i: KernelCardinal;
 begin
   IRQ_DISABLE;
   Task:= FindProcess(AID);
@@ -392,7 +392,7 @@ begin
   FreeAllMemory(ATask^.PID);
 end;
 
-function  Run(AStack: Cardinal): Cardinal; stdcall;
+function  Run(AStack: KernelCardinal): KernelCardinal; stdcall;
 var
   i: Integer;
   TaskCur: PTaskStruct;
@@ -461,7 +461,7 @@ begin
       VMM.SwitchPageDir(DirPhys);
     end;
     //
-    Run:= Cardinal(TaskCur^.Stack);
+    Run:= KernelCardinal(TaskCur^.Stack);
   end
   else
     Run:= AStack;

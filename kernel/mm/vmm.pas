@@ -57,7 +57,7 @@ type
 
   TPageStruct = packed record
     Directory : TPageDir;
-    PhysAddr  : Cardinal;
+    PhysAddr  : KernelCardinal;
   end;
   PPageStruct = ^TPageStruct;
 
@@ -67,35 +67,35 @@ var
   // The current page directory.
   CurrentPageDir_   : PPageDir;
   // Max heap
-  MaxKernelHeapSize_: Cardinal;
+  MaxKernelHeapSize_: KernelCardinal;
   // Keep track allocated frames
-  Frames: array[0..1024*1024 div 32 - 1] of Cardinal;
+  Frames: array[0..1024*1024 div 32 - 1] of KernelCardinal;
   // Big ass array to keep track the allocated PageTable
   PageTables: PPageTable;
-  PageTableTracks: array[0..FIXED_PAGETABLE_SIZE div 32 - 1] of Cardinal;
+  PageTableTracks: array[0..FIXED_PAGETABLE_SIZE div 32 - 1] of KernelCardinal;
 
 
-function IsFixedPageTable(APageFrame: Cardinal): Boolean;
-procedure SetFrame(AFrames: PCardinal; Addr: Cardinal); stdcall;
-function  GetFrame(AFrames: PCardinal; Addr: Cardinal): Cardinal; stdcall;
-procedure ClearFrame(AFrames: PCardinal; Addr: Cardinal); stdcall;
+function IsFixedPageTable(APageFrame: KernelCardinal): Boolean;
+procedure SetFrame(AFrames: PKernelCardinal; Addr: KernelCardinal); stdcall;
+function  GetFrame(AFrames: PKernelCardinal; Addr: KernelCardinal): KernelCardinal; stdcall;
+procedure ClearFrame(AFrames: PKernelCardinal; Addr: KernelCardinal); stdcall;
 //
-function  FindFirstFreeFrame(AFrames: PCardinal): Cardinal; stdcall;
+function  FindFirstFreeFrame(AFrames: PKernelCardinal): KernelCardinal; stdcall;
 procedure DisablePageDir;
 procedure EnablePageDir(APageDir: PPageDir);
 procedure SwitchPageDir(APageDir: PPageDir);
 // Create a new empty page table, ignore if page table exists
-function CreatePageTable(APageStruct: PPageStruct; AVirtualAddr: Cardinal; RWAble: TBit1): PPageTable; stdcall;
+function CreatePageTable(APageStruct: PPageStruct; AVirtualAddr: KernelCardinal; RWAble: TBit1): PPageTable; stdcall;
 // Fill the page table with pages
-procedure FillPageTable(PageTable: PPageTable; APhysicAddr: Cardinal; RWAble: TBit1); stdcall;
+procedure FillPageTable(PageTable: PPageTable; APhysicAddr: KernelCardinal; RWAble: TBit1); stdcall;
 // Alloc page table
 function AllocPageTable: PPageTable; stdcall;
 // Free page table
 procedure FreePageTable(PageTable: PPageTable); stdcall;
 // Ask for a new empty page for the next virtual address
-function AllocPage(APageStruct: PPageStruct; AVirtualAddr: Cardinal; RWAble: TBit1): PPageTableEntry; stdcall; overload;
+function AllocPage(APageStruct: PPageStruct; AVirtualAddr: KernelCardinal; RWAble: TBit1): PPageTableEntry; stdcall; overload;
 // Ask for a new empty page for the next virtual address, with custom physic address
-function AllocPage(APageStruct: PPageStruct; AVirtualAddr, APhysicAddr: Cardinal; RWAble: TBit1; var Tracks: PPPageTable; var TrackCount: Cardinal): PPageTableEntry; stdcall; overload;
+function AllocPage(APageStruct: PPageStruct; AVirtualAddr, APhysicAddr: KernelCardinal; RWAble: TBit1; var Tracks: PPPageTable; var TrackCount: KernelCardinal): PPageTableEntry; stdcall; overload;
 function  CreatePageDirectory: Pointer; stdcall;
 // Perform mapping kernel to virtual memory
 procedure Init; stdcall;
@@ -111,35 +111,35 @@ uses
   kheap;
 
 var
-  NumFrames: Cardinal;
+  NumFrames: KernelCardinal;
   SLock: PSpinlock;
 
-function  GetIndex(AValue: Cardinal): Cardinal; inline;
+function  GetIndex(AValue: KernelCardinal): KernelCardinal; inline;
 begin
   GetIndex:= AValue div 32;
 end;
 
-function  GetOffset(AValue: Cardinal): Cardinal; inline;
+function  GetOffset(AValue: KernelCardinal): KernelCardinal; inline;
 begin
   GetOffset:= AValue mod 32;
 end;
 
-function IsFixedPageTable(APageFrame: Cardinal): Boolean;
+function IsFixedPageTable(APageFrame: KernelCardinal): Boolean;
 var
-  APhysAddr: Cardinal;
+  APhysAddr: KernelCardinal;
 begin
   APageFrame := APageFrame * PAGE_SIZE;
-  if (APhysAddr >= Cardinal(@PageTables[0])) and
-    (APhysAddr + SizeOf(TPageTable) <= Cardinal(@PageTables[FIXED_PAGETABLE_SIZE-1])) then
+  if (APhysAddr >= KernelCardinal(@PageTables[0])) and
+    (APhysAddr + SizeOf(TPageTable) <= KernelCardinal(@PageTables[FIXED_PAGETABLE_SIZE-1])) then
     exit(true);
   exit(false);
 end;
 
-procedure SetFrame(AFrames: PCardinal; Addr: Cardinal); stdcall;
+procedure SetFrame(AFrames: PKernelCardinal; Addr: KernelCardinal); stdcall;
 var
   frame,
   index,
-  offset: Cardinal;
+  offset: KernelCardinal;
 begin
   frame := Addr div PAGE_SIZE;
   index := GetIndex(frame);
@@ -147,11 +147,11 @@ begin
   AFrames[index]:= AFrames[index] or (1 shl offset);
 end;
 
-function  GetFrame(AFrames: PCardinal; Addr: Cardinal): Cardinal; stdcall;
+function  GetFrame(AFrames: PKernelCardinal; Addr: KernelCardinal): KernelCardinal; stdcall;
 var
   frame,
   index,
-  offset: Cardinal;
+  offset: KernelCardinal;
 begin
   frame := Addr div PAGE_SIZE;
   index := GetIndex(frame);
@@ -159,11 +159,11 @@ begin
   exit((AFrames[index] and (1 shl offset)) shr offset);
 end;
 
-procedure ClearFrame(AFrames: PCardinal; Addr: Cardinal); stdcall;
+procedure ClearFrame(AFrames: PKernelCardinal; Addr: KernelCardinal); stdcall;
 var
   frame,
   index,
-  offset: Cardinal;
+  offset: KernelCardinal;
 begin
   frame := Addr div PAGE_SIZE;
   index := GetIndex(frame);
@@ -171,9 +171,9 @@ begin
   AFrames[index]:= AFrames[index] and NOT (1 shl offset);
 end;
 
-function  FindFirstFreeFrame(AFrames: PCardinal): Cardinal; stdcall;
+function  FindFirstFreeFrame(AFrames: PKernelCardinal): KernelCardinal; stdcall;
 var
-  i, j, line: Cardinal;
+  i, j, line: KernelCardinal;
 begin
   for j:= 0 to GetIndex(NumFrames) div 32 - 1 do
   begin
@@ -194,9 +194,9 @@ begin
   INFINITE_LOOP;
 end;
 
-procedure PurgeFramesFromTask(AFrames: PCardinal); stdcall;
+procedure PurgeFramesFromTask(AFrames: PKernelCardinal); stdcall;
 var
-  i, j, line: Cardinal;
+  i, j, line: KernelCardinal;
 begin
   for j:= 0 to GetIndex(NumFrames) div 32 - 1 do
   begin
@@ -212,39 +212,39 @@ begin
   end;
 end;
 
-procedure SetTrack(Ind: Cardinal); stdcall;
+procedure SetTrack(Ind: KernelCardinal); stdcall;
 var
   index,
-  offset: Cardinal;
+  offset: KernelCardinal;
 begin
   index := GetIndex(Ind);
   offset:= GetOffset(Ind);
   PageTableTracks[index]:= PageTableTracks[index] or (1 shl offset);
 end;
 
-function  GetTrack(Ind: Cardinal): Cardinal; stdcall;
+function  GetTrack(Ind: KernelCardinal): KernelCardinal; stdcall;
 var
   index,
-  offset: Cardinal;
+  offset: KernelCardinal;
 begin
   index := GetIndex(Ind);
   offset:= GetOffset(Ind);
   exit((PageTableTracks[index] and (1 shl offset)) shr offset);
 end;
 
-procedure ClearTrack(Ind: Cardinal); stdcall;
+procedure ClearTrack(Ind: KernelCardinal); stdcall;
 var
   index,
-  offset: Cardinal;
+  offset: KernelCardinal;
 begin
   index := GetIndex(Ind);
   offset:= GetOffset(Ind);
   PageTableTracks[index]:= PageTableTracks[index] and NOT (1 shl offset);
 end;
 
-function  FindFirstTrack: Cardinal; stdcall;
+function  FindFirstTrack: KernelCardinal; stdcall;
 var
-  i, j, line: Cardinal;
+  i, j, line: KernelCardinal;
 begin
   for j:= 0 to GetIndex(Length(PageTableTracks)) - 1 do
   begin
@@ -292,10 +292,10 @@ begin
   end;
 end;
 
-function  CreatePageTable(APageStruct: PPageStruct; AVirtualAddr: Cardinal; RWAble: TBit1): PPageTable; stdcall;
+function  CreatePageTable(APageStruct: PPageStruct; AVirtualAddr: KernelCardinal; RWAble: TBit1): PPageTable; stdcall;
 var
   Addr,
-  i        : Cardinal;
+  i        : KernelCardinal;
   PageTable: PPageTable;
 begin
   Spinlock.Lock(SLock);
@@ -318,17 +318,17 @@ begin
   APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].RWAble   := RWAble;
   APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].UserMode := 0;
   if IsPaging then
-    Addr:= (Cardinal(PageTable) - KERNEL_HEAP_START + KERNEL_SIZE) div PAGE_SIZE
+    Addr:= (KernelCardinal(PageTable) - KERNEL_HEAP_START + KERNEL_SIZE) div PAGE_SIZE
   else
-    Addr:= Cardinal(PageTable) div PAGE_SIZE;
+    Addr:= KernelCardinal(PageTable) div PAGE_SIZE;
   APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].TableAddr:= Addr;
   Spinlock.Unlock(SLock);
   exit(PageTable);
 end;
 
-procedure FillPageTable(PageTable: PPageTable; APhysicAddr: Cardinal; RWAble: TBit1); stdcall;
+procedure FillPageTable(PageTable: PPageTable; APhysicAddr: KernelCardinal; RWAble: TBit1); stdcall;
 var
-  i: Cardinal;
+  i: KernelCardinal;
 begin
   Spinlock.Lock(SLock);
   for i:= 0 to 1023 do
@@ -367,12 +367,12 @@ begin
   end;
 end;
 
-function AllocPage(APageStruct: PPageStruct; AVirtualAddr: Cardinal; RWAble: TBit1): PPageTableEntry; stdcall;
+function AllocPage(APageStruct: PPageStruct; AVirtualAddr: KernelCardinal; RWAble: TBit1): PPageTableEntry; stdcall;
 var
   i: Integer;
   PageTable: PPageTable;
   Page: PPageTableEntry;
-  Frame: Cardinal;
+  Frame: KernelCardinal;
 begin
   Spinlock.Lock(SLock);
   // We first look for a free 4KB memory block
@@ -391,7 +391,7 @@ begin
     APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].Present  := 1;
     APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].RWAble   := RWAble;
     APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].UserMode := 0;
-    APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].TableAddr:= Cardinal(PageTable) div PAGE_SIZE;
+    APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].TableAddr:= KernelCardinal(PageTable) div PAGE_SIZE;
   end;
   // Now we look for our page table entry
   Page := @PageTable^.Entries[AVirtualAddr mod PAGE_MEMORY_BLOCK div PAGE_SIZE];
@@ -403,10 +403,10 @@ begin
   exit(Page);
 end;
 
-function AllocPage(APageStruct: PPageStruct; AVirtualAddr, APhysicAddr: Cardinal; RWAble: TBit1; var Tracks: PPPageTable; var TrackCount: Cardinal): PPageTableEntry; stdcall;
+function AllocPage(APageStruct: PPageStruct; AVirtualAddr, APhysicAddr: KernelCardinal; RWAble: TBit1; var Tracks: PPPageTable; var TrackCount: KernelCardinal): PPageTableEntry; stdcall;
 var
   i: Integer;
-  Size: Cardinal;
+  Size: KernelCardinal;
   IsPageExistsInTrack: Boolean;
   PageTable: PPageTable;
   Page: PPageTableEntry;
@@ -444,7 +444,7 @@ begin
     APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].Present  := 1;
     APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].RWAble   := RWAble;
     APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].UserMode := 0;
-    APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].TableAddr:= Cardinal(PageTable) div PAGE_SIZE;
+    APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].TableAddr:= KernelCardinal(PageTable) div PAGE_SIZE;
   end;
   // Now we look for our page table entry
   Page := @PageTable^.Entries[AVirtualAddr mod PAGE_MEMORY_BLOCK div PAGE_SIZE];
@@ -465,10 +465,10 @@ begin
   FillChar(p^, SizeOf(TPageStruct), 0);
   if IsPaging then
   begin
-    p^.PhysAddr:= Cardinal(@p^.Directory) - KERNEL_HEAP_START + KERNEL_SIZE;
+    p^.PhysAddr:= KernelCardinal(@p^.Directory) - KERNEL_HEAP_START + KERNEL_SIZE;
   end
   else
-    p^.PhysAddr:= Cardinal(@p^.Directory);
+    p^.PhysAddr:= KernelCardinal(@p^.Directory);
   Spinlock.Unlock(SLock);
   exit(p);
 end;
@@ -477,8 +477,8 @@ procedure Init; stdcall;
 var
   i,
   addr,
-  KernelFrameCount: Cardinal;
-  KernelFrames    : PCardinal;
+  KernelFrameCount: KernelCardinal;
+  KernelFrames    : PKernelCardinal;
   PageTable: PPageTable;
 begin
   Console.WriteStr('Enabling Paging... ');
@@ -494,7 +494,7 @@ begin
 
   // Let's make a page directory.
   KernelPageStruct_:= VMM.CreatePageDirectory;
-  KernelPageStruct_^.PhysAddr:= Cardinal(KernelPageStruct_);
+  KernelPageStruct_^.PhysAddr:= KernelCardinal(KernelPageStruct_);
 
   if GlobalMB^.mem_upper * 1024 < KERNEL_SIZE + MINIMAL_SIZE then
   begin

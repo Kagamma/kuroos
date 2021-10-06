@@ -14,7 +14,7 @@ unit spinlock;
 interface
 
 type
-  TSpinlock = Cardinal;
+  TSpinlock = KernelCardinal;
   PSpinLock = ^TSpinlock;
 
 function  Create: PSpinLock; stdcall;
