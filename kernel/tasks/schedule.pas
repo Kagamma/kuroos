@@ -208,6 +208,7 @@ begin
       Cardinal(PKEXHeader(ABuf)^.StartAddr) + i*PAGE_SIZE,
       Cardinal(Task^.Code) - KERNEL_HEAP_START + KERNEL_SIZE + i*PAGE_SIZE, 1);
   end;
+  Pointer(Task^.Code):= Pointer(Task^.Code) + PKEXHeader(ABuf)^.CodePoint;
   // Set virtual memory for heap code
   for i := 0 to PROCESS_HEAP_SIZE div PAGE_SIZE do
   begin
@@ -215,7 +216,6 @@ begin
       Cardinal(PKEXHeader(ABuf)^.HeapAddr) + i*PAGE_SIZE,
       Cardinal(Task^.HeapAddr) - KERNEL_HEAP_START + KERNEL_SIZE + i*PAGE_SIZE, 1);
   end;
-  Pointer(Task^.Code):= Pointer(Task^.Code) + PKEXHeader(ABuf)^.CodePoint;
   // Generate default stack
   GENERATE_STACK;
   //
@@ -263,7 +263,7 @@ begin
   // if it was allocated at higher than 4MB of kernel heap
   if AStackSize < 1024 then AStackSize:= 1024;
   if AStackSize > 1024*1024 then AStackSize:= 1024*1024;
-  Task^.StackAddr:= KHeap.AllocAligned(AStackSize);
+  Task^.StackAddr:= KHeap.Alloc(AStackSize);
   Task^.Stack:= Task^.StackAddr + AStackSize;
   KHeap.SetOwner(Task^.StackAddr, Task^.PID);
   //
