@@ -19,4 +19,3 @@
 #### Things that need more work
 - All process runs at ring 0 at the moment
 - Memory manager is pretty barebone. Process doesn't have any ways to request for more memory
-- Process stack is pointed to kernel's address space instead of it's own address space
