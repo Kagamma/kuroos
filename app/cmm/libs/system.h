@@ -22,6 +22,8 @@ struct DateTime_t {
   byte hour;
 };
 
+char BASENUMBERS[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+
 inline fastcall void exit() {
   EAX = 4;
   ECX = DSDWORD[ESP + 4];
@@ -76,9 +78,9 @@ void itoa(int num, char* c, byte base) {
   } else {
     do {
       str -= 1;
-      EAX = digit % 10 + 0x30;
+      EAX = BASENUMBERS[digit % base];
       *str = AL;
-      digit /= 10;
+      digit /= base;
     } while (digit != 0);
   }
   str = #buf[0];

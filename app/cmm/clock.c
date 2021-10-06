@@ -21,7 +21,8 @@ void timeDigit(dword num, char* c) {
   digit = num;
   do {
     str -= 1;
-    *str = digit % 10 + 0x30;
+    EAX = BASENUMBERS[digit % 10];
+    *str = AL;
     digit /= 10;
   } while (digit != 0);
   str = #buf[0];
