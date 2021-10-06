@@ -400,6 +400,7 @@ begin
   if ATask^.PPID = 0 then
     for I := 0 to ATask^.TrackCount - 1 do
       FreePageTable(ATask^.Tracks[I]);
+  FreeMem(ATask^.Tracks);
   FreeAllMemory(ATask^.PID);
 end;
 

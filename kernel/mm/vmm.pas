@@ -107,7 +107,8 @@ uses
   pmm,
   vbe,
   schedule,
-  spinlock;
+  spinlock,
+  kheap;
 
 var
   NumFrames: Cardinal;
@@ -405,6 +406,7 @@ end;
 function AllocPage(APageStruct: PPageStruct; AVirtualAddr, APhysicAddr: Cardinal; RWAble: TBit1; var Tracks: PPPageTable; var TrackCount: Cardinal): PPageTableEntry; stdcall;
 var
   i: Integer;
+  Size: Cardinal;
   IsPageExistsInTrack: Boolean;
   PageTable: PPageTable;
   Page: PPageTableEntry;
@@ -431,6 +433,10 @@ begin
     end;
     if not IsPageExistsInTrack then
     begin
+      Size := GetSize(Tracks);
+      // ReAlloc track if number of PageTables exceeds the limit
+      if TrackCount >= Size div SizeOf(PPageTable) then
+        Tracks := KHeap.ReAlloc(Tracks, Size + 256 * SizeOf(PPageTable));
       Tracks[TrackCount] := PageTable;
       Inc(TrackCount);
     end;
