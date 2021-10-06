@@ -95,7 +95,7 @@ procedure FreePageTable(PageTable: PPageTable); stdcall;
 // Ask for a new empty page for the next virtual address
 function AllocPage(APageStruct: PPageStruct; AVirtualAddr: Cardinal; RWAble: TBit1): PPageTableEntry; stdcall; overload;
 // Ask for a new empty page for the next virtual address, with custom physic address
-function AllocPage(APageStruct: PPageStruct; AVirtualAddr, APhysicAddr: Cardinal; RWAble: TBit1; Tracks: PPPageTable; var TrackCount: Byte): PPageTableEntry; stdcall; overload;
+function AllocPage(APageStruct: PPageStruct; AVirtualAddr, APhysicAddr: Cardinal; RWAble: TBit1; var Tracks: PPPageTable; var TrackCount: Cardinal): PPageTableEntry; stdcall; overload;
 function  CreatePageDirectory: Pointer; stdcall;
 // Perform mapping kernel to virtual memory
 procedure Init; stdcall;
@@ -402,7 +402,7 @@ begin
   exit(Page);
 end;
 
-function AllocPage(APageStruct: PPageStruct; AVirtualAddr, APhysicAddr: Cardinal; RWAble: TBit1; Tracks: PPPageTable; var TrackCount: Byte): PPageTableEntry; stdcall;
+function AllocPage(APageStruct: PPageStruct; AVirtualAddr, APhysicAddr: Cardinal; RWAble: TBit1; var Tracks: PPPageTable; var TrackCount: Cardinal): PPageTableEntry; stdcall;
 var
   i: Integer;
   PageTable: PPageTable;
