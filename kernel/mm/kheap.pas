@@ -16,10 +16,6 @@ interface
 uses
   console;
 
-const
-  KERNEL_HEAP_MAGIC = $DEADC0DE;
-  PROCESS_HEAP_SIZE = 4096 * 16;
-
 type
   PHeapEntry = ^THeapEntry;
   THeapEntry = packed record

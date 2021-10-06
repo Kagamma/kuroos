@@ -11,7 +11,6 @@ type
     Version: Cardinal;
     Size: Cardinal;
     StartAddr: Cardinal;
-    HeapAddr: Cardinal;
     StackSize: Cardinal;
     CodePoint: Cardinal;
     IconAddr : Cardinal;

@@ -18,6 +18,16 @@
             AL = 4: Kill task
                 ECX: Task ID.
         AH = 1: Memory
+            AL = 1: GetSize
+                ESI: Pointer
+                <-
+                EAX: Size
+            AL = 2: Alloc (aligned)
+                ECX: Size
+                <-
+                EAX: Pointer
+            AL = 3: Free
+                ESI: Pointer
         AH = 2: Timer
             AL = 2: GetTime
                 <-
@@ -43,7 +53,7 @@ procedure Init; stdcall;
 implementation
 
 uses
-  rtc,
+  rtc, kheap, vmm,
   schedule;
 
 // Private
@@ -54,6 +64,8 @@ procedure Callback(r: TRegisters); stdcall;
 var
   r_ah,
   r_al: Byte;
+  I: Integer;
+  Size: Cardinal;
 begin
   r_ah:= (r.eax and $FF00) shr 8;
   r_al:= (r.eax and $FF);
@@ -72,6 +84,24 @@ begin
         4: // Kill task
           begin
             Schedule.KillProcess(r.ecx);
+          end;
+      end;
+    1: //
+      case r_al of
+        1: // GetSize
+          begin
+            IRQEAXHave:= 1;
+            IRQEAXValue := KHeap.GetSize(Pointer(r.esi));
+          end;
+        2: // Alloc (aligned)
+          begin
+            IRQEAXHave:= 1;
+            IRQEAXValue := Cardinal(KHeap.AllocAligned(r.ecx));
+          end;
+        3: // Free
+          begin
+            //Size := KHeap.GetSize(Pointer(r.esi));
+            KHeap.Free(Pointer(r.esi));
           end;
       end;
     2:

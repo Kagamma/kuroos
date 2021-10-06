@@ -9,7 +9,6 @@ char  name[4]     = {'K', '3', '2', 0};
 dword version     = 1;
 dword size        = #endofcode - 0x04000000;
 dword startupCode = 0x04000000;
-dword startupHeap = 0x05000000;
 dword stackSize   = 0x400;
 dword codePoint   = #main - 0x04000000;
 dword icon        = 0;
@@ -32,14 +31,14 @@ inline fastcall void exit() {
   }
 }
 
-// ESI: char*
-inline fastcall void printf(dword ESI) {
-  EAX = 1;
-  $int 0x71;
-}
-
 inline fastcall void yield() {
   $int 0x20;
+}
+
+// ESI: char*
+void printf(dword ESI) {
+  EAX = 1;
+  $int 0x71;
 }
 
 // EDI: DateTime_t*
@@ -104,4 +103,20 @@ dword rnd() {
   seed = 214013 * seed + 2531011;
   EAX = seed >> 16;
   return (EAX & 0x7FFF);
+}
+
+// Memory
+dword msize(dword ESI) {
+  EAX = 0x101;
+  $int 0x61;
+}
+
+dword malloc(dword ECX) {
+  EAX = 0x102;
+  $int 0x61;
+}
+
+void free(dword ESI) {
+  EAX = 0x103;
+  $int 0x61;
 }

@@ -69,8 +69,8 @@ type
     StackAddr: Pointer;
     // Stack pointer
     Stack: Pointer;
-    // TODO: Heap header address
-    HeapAddr: Pointer;
+    //
+    Heap: Pointer;
     // Task priority
     Priority: Cardinal;
     // Task's own paging
@@ -186,9 +186,6 @@ begin
   Task^.StackAddr:= KHeap.Alloc(PKEXHeader(ABuf)^.StackSize);
   Task^.Stack:= Task^.StackAddr + (PKEXHeader(ABuf)^.StackSize);
   KHeap.SetOwner(Task^.StackAddr, Task^.PID);
-  // Allocate 64KB "heap starter"
-  Task^.HeapAddr := KHeap.AllocAligned(PROCESS_HEAP_SIZE);
-  KHeap.SetOwner(Task^.HeapAddr, Task^.PID);
   // Allocate RAM for the task
   CodeSize:= KHeap.CalcAlign(SizeOf(ABuf), PAGE_SIZE);
   Pointer(Task^.Code):= KHeap.AllocAligned(CodeSize);
@@ -209,13 +206,6 @@ begin
       Cardinal(Task^.Code) - KERNEL_HEAP_START + KERNEL_SIZE + i*PAGE_SIZE, 1);
   end;
   Pointer(Task^.Code):= Pointer(Task^.Code) + PKEXHeader(ABuf)^.CodePoint;
-  // Set virtual memory for heap code
-  for i := 0 to PROCESS_HEAP_SIZE div PAGE_SIZE do
-  begin
-    AllocPage(Task^.Page,
-      Cardinal(PKEXHeader(ABuf)^.HeapAddr) + i*PAGE_SIZE,
-      Cardinal(Task^.HeapAddr) - KERNEL_HEAP_START + KERNEL_SIZE + i*PAGE_SIZE, 1);
-  end;
   // Generate default stack
   GENERATE_STACK;
   //
@@ -266,8 +256,6 @@ begin
   Task^.StackAddr:= KHeap.Alloc(AStackSize);
   Task^.Stack:= Task^.StackAddr + AStackSize;
   KHeap.SetOwner(Task^.StackAddr, Task^.PID);
-  //
-  Task^.HeapAddr := TaskParent^.HeapAddr;
   // Set this task as alive
   Task^.State:= TASK_ALIVE;
 
@@ -327,8 +315,6 @@ begin
   Task^.StackAddr:= KHeap.Alloc(AStackSize);
   Task^.Stack:= Task^.StackAddr + AStackSize;
   KHeap.SetOwner(Task^.StackAddr, Task^.PID);
-  //
-  Task^.HeapAddr := Pointer(KERNEL_HEAP_START);
   // Set this task as alive
   Task^.State:= TASK_ALIVE;
   // Use the same address page with kernel

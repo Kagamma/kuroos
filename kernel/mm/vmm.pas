@@ -22,6 +22,7 @@ const
   KERNEL_HEAP_END    = $DE000000;
   PAGE_MEMORY_BLOCK  = $400000;
   KERNEL_SIZE        = 1024 * 1024 * 8;
+  MINIMAL_SIZE       = 1024 * 1024 * 4;
   FIXED_PAGETABLE_SIZE = 768;
 
 type
@@ -474,7 +475,7 @@ begin
   KernelPageStruct_:= VMM.CreatePageDirectory;
   KernelPageStruct_^.PhysAddr:= Cardinal(KernelPageStruct_);
 
-  if GlobalMB^.mem_upper * 1024 < KERNEL_SIZE * 2 then
+  if GlobalMB^.mem_upper * 1024 < KERNEL_SIZE + MINIMAL_SIZE then
   begin
     Console.WriteStr('Not enough memory. Need at least ');
     Console.WriteDec(KERNEL_SIZE * 2 div 1024 div 1024);
