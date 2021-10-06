@@ -58,7 +58,7 @@ const
   ATA_CTL_SRST = $04;
   ATA_CTL_nIEN = $02;
 
-  ATA_TIMEOUT = 1000;
+  ATA_TIMEOUT = 10000;
 
   ATA_SECTOR_SIZE = 512;
 
@@ -138,14 +138,11 @@ var
 
 // Delay for 400ns
 procedure ATADelay(const ABus: Word); inline;
-var
-  i: Word;
 begin
-  i:= ABus + $206;
-  inb(i);
-  inb(i);
-  inb(i);
-  inb(i);
+  inb(ABus + $206);
+  inb(ABus + $206);
+  inb(ABus + $206);
+  inb(ABus + $206);
 end;
 
 procedure FixIDEString(const APtr: Pointer; const ACount: Cardinal);
@@ -329,6 +326,8 @@ var
   port : Word;
   drive: Byte;
   buf  : array[0..511] of Byte;
+  I    : Byte;
+  Status: Boolean;
 begin
   port := ADriveInfoSt^.ControllerPort;
   drive:= ADriveInfoSt^.DriveNumber;
@@ -336,7 +335,9 @@ begin
   outb(port + ATA_DRV_SELECT, $A0 + $10 * drive);
   //PIC.Sleep(1);
   ATADelay(port);
-  if Boolean(inb(port + ATA_STATUS)) then
+  for I := 0 to ATA_TIMEOUT - 1 do
+    Status := Boolean(inb(port + ATA_STATUS));
+  if Status then
   begin
     ADriveInfoSt^.Present:= True;
     exit(True);
@@ -498,15 +499,14 @@ begin
         { Send the command "Read" ($20) to ATA_COMMAND. }
         outb(port+ATA_COMMAND, ATA_READ);
         buf:= ABuf;
-	{ Wait for the controller. }
-	//PIC.Sleep(1);
+	      { Wait for the controller. }
         ATADelay(port);
         if IDE.Polling(ADriveInfoSt, ATA_STATUS_BSY, 0, ATA_TIMEOUT) = 0 then
         begin
           _mutex:= False;
           exit(False);
         end;
-	{ Verify if there are errors }
+	      { Verify if there are errors }
         if (inb(port + ATA_STATUS) and ATA_STATUS_ERR) <> 0 then
         begin
           _mutex:= False;
@@ -519,7 +519,7 @@ begin
       begin
 	outb(port+ATA_COMMAND, ATA_WRITE);
         buf:= ABuf;
-	{ Wait for the controller. }
+        { Wait for the controller. }
 	//PIC.Sleep(1);
         ATADelay(port);
         if IDE.Polling(ADriveInfoSt, ATA_STATUS_BSY, 0, ATA_TIMEOUT) = 0 then
@@ -527,7 +527,7 @@ begin
           _mutex:= False;
           exit(False);
         end;
-	{ Verify if there are errors }
+	     { Verify if there are errors }
         if (inb(port + ATA_STATUS) and ATA_STATUS_ERR) <> 0 then
         begin
           _mutex:= False;
@@ -653,8 +653,8 @@ begin
 end;
 
 function  LBA_ReadSector(const ADriveInfoSt: PDriveInfoStruct;
-                               const ABuf: Pointer;
-			       const LBA: Cardinal): Boolean; stdcall;
+                         const ABuf: Pointer;
+			                   const LBA: Cardinal): Boolean; stdcall;
 begin
   Spinlock.Lock(SLock);
   if ADriveInfoSt^.ATAPI then
@@ -665,8 +665,8 @@ begin
 end;
 
 function  LBA_WriteSector(const ADriveInfoSt: PDriveInfoStruct;
-                                const ABuf: Pointer;
-				const LBA: Cardinal): Boolean; stdcall;
+                          const ABuf: Pointer;
+				                  const LBA: Cardinal): Boolean; stdcall;
 begin
   Spinlock.Lock(SLock);
   if ADriveInfoSt^.ATAPI then

@@ -19,7 +19,7 @@ uses
 
 const
   KERNEL_HEAP_START  = $80000000;
-  KERNEL_HEAP_END    = $DE000000;
+  KERNEL_HEAP_END    = $DFFF0000;
   PAGE_MEMORY_BLOCK  = $400000;
   KERNEL_SIZE        = 1024 * 1024 * 12;
   MINIMAL_SIZE       = 1024 * 1024 * 4;
@@ -74,8 +74,6 @@ var
   PageTables: PPageTable;
   PageTableTracks: array[0..FIXED_PAGETABLE_SIZE div 32 - 1] of KernelCardinal;
 
-
-function IsFixedPageTable(APageFrame: KernelCardinal): Boolean;
 procedure SetFrame(AFrames: PKernelCardinal; Addr: KernelCardinal); stdcall;
 function  GetFrame(AFrames: PKernelCardinal; Addr: KernelCardinal): KernelCardinal; stdcall;
 procedure ClearFrame(AFrames: PKernelCardinal; Addr: KernelCardinal); stdcall;
@@ -122,17 +120,6 @@ end;
 function  GetOffset(AValue: KernelCardinal): KernelCardinal; inline;
 begin
   GetOffset:= AValue mod 32;
-end;
-
-function IsFixedPageTable(APageFrame: KernelCardinal): Boolean;
-var
-  APhysAddr: KernelCardinal;
-begin
-  APageFrame := APageFrame * PAGE_SIZE;
-  if (APhysAddr >= KernelCardinal(@PageTables[0])) and
-    (APhysAddr + SizeOf(TPageTable) <= KernelCardinal(@PageTables[FIXED_PAGETABLE_SIZE-1])) then
-    exit(true);
-  exit(false);
 end;
 
 procedure SetFrame(AFrames: PKernelCardinal; Addr: KernelCardinal); stdcall;
@@ -513,7 +500,7 @@ begin
 
   // Map the physical video memory to virtual memory.
   addr:= VBEVideoModes[0].Info.LFB;
-  while addr < (VBEVideoModes[0].Info.LFB + (1920*1080*32)) do
+  while addr < (VBEVideoModes[0].Info.LFB + (1024*768*32)) do
   begin
     PageTable := VMM.CreatePageTable(KernelPageStruct_, addr, 0);
     VMM.FillPageTable(PageTable, addr, 0);
