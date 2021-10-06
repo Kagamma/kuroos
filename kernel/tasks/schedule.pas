@@ -167,10 +167,6 @@ begin
   IRQ_DISABLE;
   //
   IncreaseTaskCount;
-  // Create new task
-  Inbetween:= True;
- // TaskArray:= KHeap.ReAlloc(TaskArray, SizeOf(TTaskStruct) * TaskCount);
-  Inbetween:= False;
   //
   if TaskCurrent <> nil then
     TaskCurrent:= @TaskArray[TaskPtr];
@@ -235,10 +231,6 @@ begin
   IRQ_DISABLE;
   //
   IncreaseTaskCount;
-  // Create new task
-  Inbetween:= True;
- // TaskArray:= KHeap.ReAlloc(TaskArray, SizeOf(TTaskStruct) * TaskCount);
-  Inbetween:= False;
   //
   if TaskCurrent <> nil then
     TaskCurrent:= @TaskArray[TaskPtr];
@@ -299,10 +291,6 @@ begin
   IRQ_DISABLE;
   //
   IncreaseTaskCount;
-  // Create new task
-  Inbetween:= True;
- // TaskArray:= KHeap.ReAlloc(TaskArray, SizeOf(TTaskStruct) * TaskCount);
-  Inbetween:= False;
   if TaskCurrent <> nil then
     TaskCurrent:= @TaskArray[TaskPtr];
   //
