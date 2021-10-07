@@ -29,11 +29,6 @@ uses
 
 implementation
 
-procedure EnableA20;
-begin
-  outb($92, (inb($92) or 2) and $FE);
-end;
-
 procedure k_Main(mbInfo: PMB_Info; LoaderMagic: Cardinal; KernelStack: Cardinal); stdcall;
     [public, alias: 'k_main'];
 var
