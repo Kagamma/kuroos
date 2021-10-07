@@ -19,33 +19,33 @@ struct KuroView_t {
 };
 
 // ESI: KuroView_t*
-dword CreateWindow(dword ESI) {
+dword kwmCreateWindow(dword ESI) {
   EAX = 1;
   $int 0x69;
 }
 
 // ESI: KuroView_t*
-dword CreateButton(dword ESI) {
+dword kwmCreateButton(dword ESI) {
   EAX = 2;
   $int 0x69;
 }
 
 // ESI: KuroView_t*
 // ECX: Image path
-dword CreateImage(dword ESI, ECX) {
+dword kwmCreateImage(dword ESI, ECX) {
   EAX = 3;
   $int 0x69;
 }
 
 // ESI: handle
-dword CloseHandle(dword ESI) {
+dword kwmCloseHandle(dword ESI) {
   EAX = 0x301;
   $int 0x69;
 }
 
 // ESI: handle
 // ECX: char*
-void SetName(dword ESI, ECX) {
+void kwmSetName(dword ESI, ECX) {
   EAX = 0x201;
   $int 0x69;
 }
@@ -53,14 +53,14 @@ void SetName(dword ESI, ECX) {
 // ESI: handle
 // ECX: X
 // EDX: Y
-void SetPosition(dword ESI, dword ECX, dword EDX) {
+void kwmSetPosition(dword ESI, dword ECX, dword EDX) {
   EAX = 0x202;
   $int 0x69;
 }
 
 // ESI: handle
 // msg: result message
-dword CheckMessage(dword ESI, dword *msg) {
+dword kwmCheckMessage(dword ESI, dword *msg) {
   EAX = 0x401;
   $int 0x69;
   $mov DSDWORD[msg],ebx;

@@ -16,19 +16,19 @@ void main() {
   win.width = 200;
   win.height = 150;
   win.isMovable = 1;
-  winHandle = CreateWindow(#win);
+  winHandle = kwmCreateWindow(#win);
   image.name = "image";
   image.parent = winHandle;
   image.x = 2;
   image.y = 2;
   image.isMovable = 0;
-  imageHandle = CreateImage(#image, imagePath);
+  imageHandle = kwmCreateImage(#image, imagePath);
   x = image.x;
   y = image.y;
   while (1) {
-    if (CheckMessage(winHandle, #msg) == 1) {
+    if (kwmCheckMessage(winHandle, #msg) == 1) {
       if (msg == KM_CLOSE) {
-        CloseHandle(winHandle);
+        kwmCloseHandle(winHandle);
         break;
       }
     }
@@ -36,7 +36,7 @@ void main() {
     y += dy;
     if ((x > 200 - 68) || (x < 2)) dx = -dx;
     if ((y > 150 - 68) || (y < 2)) dy = -dy;
-    SetPosition(imageHandle, x, y);
+    kwmSetPosition(imageHandle, x, y);
     yield();
   }
   exit();

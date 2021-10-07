@@ -15,28 +15,28 @@ include 'include/macro/proc32.inc'
 ; beware these procs dont follow stdcall rules so they will destroy registers ..
 ; they only serve as a shortcut to interrupt calls
 
-proc CreateWindow kuro_struct
+proc kwmCreateWindow kuro_struct
     mov   eax,1
     mov   esi,[kuro_struct]
     int   0x69
     ret
 endp
 
-proc CreateButton kuro_struct
+proc kwmCreateButton kuro_struct
     mov   eax,2
     mov   esi,[kuro_struct]
     int   0x69
     ret
 endp
 
-proc CloseHandle kuro_handle
+proc kwmCloseHandle kuro_handle
     mov   eax,0x301
     mov   esi,[kuro_handle]
     int   0x69
     ret
 endp
 
-proc SetName kuro_handle,name
+proc kwmSetName kuro_handle,name
     mov   eax,0x201
     mov   esi,[kuro_handle]
     mov   ecx,[name]
@@ -44,14 +44,14 @@ proc SetName kuro_handle,name
     ret
 endp
 
-proc CheckMessage kuro_handle
+proc kwmCheckMessage kuro_handle
     mov   eax,0x401
     mov   esi,[kuro_handle]
     int   0x69
     ret
 endp
 
-proc SendMessage command, param1, param2
+proc kwmSendMessage command, param1, param2
     mov   eax,0x402
     mov   esi,[kuro_handle]
     mov   ebx,[command]

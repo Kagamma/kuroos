@@ -46,7 +46,7 @@ void main() {
   win.width = 228;
   win.height = 34;
   win.isMovable = 1;
-  winHandle = CreateWindow(#win);
+  winHandle = kwmCreateWindow(#win);
   btn.name = "";
   btn.parent = winHandle;
   btn.x = 4;
@@ -54,12 +54,12 @@ void main() {
   btn.width = 220;
   btn.height = 26;
   btn.isMovable = 0;
-  buttonHandle = CreateButton(#btn);
+  buttonHandle = kwmCreateButton(#btn);
   sec = 0xff;
   while (1) {
-    if (CheckMessage(winHandle, #msg) == 1) {
+    if (kwmCheckMessage(winHandle, #msg) == 1) {
       if (msg == KM_CLOSE) {
-        CloseHandle(winHandle);
+        kwmCloseHandle(winHandle);
         break;
       }
     }
@@ -71,7 +71,7 @@ void main() {
       timeDigit(dt.day, #timeText + 12);
       timeDigit(dt.month, #timeText + 9);
       timeDigit(dt.year, #timeText + 6);
-      SetName(buttonHandle, #timeText);
+      kwmSetName(buttonHandle, #timeText);
       sec = dt.second;
     }
     yield();

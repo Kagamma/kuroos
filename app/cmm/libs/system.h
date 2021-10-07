@@ -10,7 +10,7 @@ dword version     = 1;
 dword size        = #endofcode - 0x04000000;
 dword startupCode = 0x04000000;
 dword stackSize   = 0x400;
-dword codePoint   = #main - 0x04000000;
+dword entryPoint  = #main - 0x04000000;
 dword icon        = 0;
 
 struct DateTime_t {

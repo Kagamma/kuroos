@@ -207,7 +207,7 @@ begin
       KernelCardinal(Task^.Code) - KERNEL_HEAP_START + KERNEL_SIZE + i*PAGE_SIZE, 1,
       Task^.Tracks, Task^.TrackCount);
   end;
-  Pointer(Task^.Code):= Pointer(Task^.Code) + PKEXHeader(ABuf)^.CodePoint;
+  Pointer(Task^.Code):= Pointer(Task^.Code) + PKEXHeader(ABuf)^.EntryPoint;
   // Generate default stack
   GENERATE_STACK;
   //
