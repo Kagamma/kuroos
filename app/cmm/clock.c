@@ -44,7 +44,7 @@ void main() {
   win.x = rnd() % 400 + 10;
   win.y = rnd() % 400 + 10;
   win.width = 228;
-  win.height = 59;
+  win.height = 34;
   win.isMovable = 1;
   winHandle = CreateWindow(#win);
   btn.name = "";
@@ -71,7 +71,7 @@ void main() {
       timeDigit(dt.day, #timeText + 12);
       timeDigit(dt.month, #timeText + 9);
       timeDigit(dt.year, #timeText + 6);
-      UpdateName(buttonHandle, #timeText);
+      SetName(buttonHandle, #timeText);
       sec = dt.second;
     }
     yield();

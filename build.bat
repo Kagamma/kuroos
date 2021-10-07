@@ -15,10 +15,10 @@ mkdir libs
 cd app
 cd cmm
 @c-- /OS /5 helloc.c
-@c-- /OS /5 winc.c
+@c-- /OS /5 nep.c
 @c-- /OS /5 clock.c
 @move helloc.bin ../../grub/helloc.kex
-@move winc.bin ../../grub/winc.kex
+@move nep.bin ../../grub/nep.kex
 @move clock.bin ../../grub/clock.kex
 cd ..
 cd ..

@@ -29,3 +29,13 @@
     procedure SetPosition(const AX, AY: LongInt); virtual;
     procedure SetSize(const AWidth, AHeight: Cardinal); virtual;
   end;
+
+  PKuroImage = ^TKuroImage;
+  TKuroImage = object(TKuroView)
+    Buffer: GLuint;
+    constructor Init(const AParent: PKuroObject);
+    destructor Done; virtual;
+    procedure Render; virtual;
+    procedure SetImage(const AName: PChar); virtual;
+    procedure ProcessMessages(const M: PKuroMessage; const IsChild: Boolean); virtual;
+  end;

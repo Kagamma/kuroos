@@ -18,12 +18,12 @@ uses
   idt;
 
 // PIC callback, call at a frequent of 1ms/call
-function  Callback(AStack: Cardinal): Cardinal; stdcall;
-procedure Init(frequency: Cardinal); stdcall;
+function  Callback(AStack: KernelCardinal): KernelCardinal; stdcall;
+procedure Init(frequency: KernelCardinal); stdcall;
 //
-function  GetTickCount: Cardinal; stdcall;
+function  GetTickCount: KernelCardinal; stdcall;
 // Reinstall the freq
-procedure Freq(const ATime: Cardinal); stdcall;
+procedure Freq(const ATime: KernelCardinal); stdcall;
 
 implementation
 
@@ -32,9 +32,9 @@ uses
   schedule;
 
 var
-  _tickCount       : Cardinal = 0;
+  _tickCount       : KernelCardinal = 0;
 
-function  Callback(AStack: Cardinal): Cardinal; stdcall;
+function  Callback(AStack: KernelCardinal): KernelCardinal; stdcall;
 begin
   Inc(_tickCount);
   { We can perform task switching in here }
@@ -44,9 +44,9 @@ begin
     exit(AStack);
 end;
 
-procedure Init(frequency: Cardinal); stdcall;
+procedure Init(frequency: KernelCardinal); stdcall;
 var
-  divisor: Cardinal;
+  divisor: KernelCardinal;
 begin
   IRQ_DISABLE;
 
@@ -64,14 +64,14 @@ begin
   IRQ_ENABLE;
 end;
 
-function  GetTickCount: Cardinal; stdcall;
+function  GetTickCount: KernelCardinal; stdcall;
 begin
   exit(_tickCount);
 end;
 
-procedure Freq(const ATime: Cardinal); stdcall;
+procedure Freq(const ATime: KernelCardinal); stdcall;
 var
-  divisor: Cardinal;
+  divisor: KernelCardinal;
 begin
   divisor:= 1193180 div ATime;
 

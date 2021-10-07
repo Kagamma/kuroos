@@ -30,7 +30,7 @@ start:
     stdcall CheckMessage, [btn_handle]
     .if eax = 1
       .if ebx = KM_MOUSEUP
-        stdcall UpdateName, [kuro_handle], btn_clicked_str
+        stdcall SetName, [kuro_handle], btn_clicked_str
       .endif
     .endif
     stdcall CheckMessage, [kuro_handle]        ; Check the message to see if any incoming message around
@@ -39,14 +39,14 @@ start:
         .if cl = 27                            ; ESC? Terminate process
           stdcall Kill
         .else
-          stdcall UpdateName, [kuro_handle], key_down_str
+          stdcall SetName, [kuro_handle], key_down_str
         .endif
       .elseif ebx = KM_KEYUP
-        stdcall UpdateName, [kuro_handle], key_up_str
+        stdcall SetName, [kuro_handle], key_up_str
       .elseif ebx = KM_MOUSEDOWN
-        stdcall UpdateName, [kuro_handle], mouse_down_str
+        stdcall SetName, [kuro_handle], mouse_down_str
       .elseif ebx = KM_MOUSEUP
-        stdcall UpdateName, [kuro_handle], mouse_up_str
+        stdcall SetName, [kuro_handle], mouse_up_str
       .elseif ebx = KM_CLOSE
         stdcall Kill
       .endif
@@ -65,7 +65,7 @@ data_section:
     kuro_win_struct:
       dd kuro_name                      ; Name
       dd 0                              ; Parent
-      dd 255, 87, 300, 200              ; X, Y, Width, Height
+      dd 255, 87, 300, 175              ; X, Y, Width, Height
       dd 1                              ; IsMovable
 
     btn_struct:

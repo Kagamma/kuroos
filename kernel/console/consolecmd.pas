@@ -224,7 +224,7 @@ begin
   end;
 end;
 
-procedure BtnRunWinC(const Sender: PKuroObject; const M: PKuroMessage); public;
+procedure BtnRunNep(const Sender: PKuroObject; const M: PKuroMessage); public;
 var
   CM: TKuroMessage;
   i: Integer;
@@ -233,12 +233,12 @@ begin
   if (M^.Command = KM_MOUSEUP) and (Boolean(M^.LoShort1 and $01)) and PKuroButton(Sender)^.IsFocused then
   begin
     IRQ_ENABLE;
-    p:= CDFSObj^.Loader(IDE.FindDrive(True), 'winc.kex');
+    p:= CDFSObj^.Loader(IDE.FindDrive(True), 'nep.kex');
     IRQ_DISABLE;
     if p <> nil then
     begin
       // Create a new process
-      Schedule.CreateProcessFromBuffer('winc.kex', p);
+      Schedule.CreateProcessFromBuffer('nep.kex', p);
       FreeMem(p);
     end;
   end;
@@ -319,10 +319,10 @@ begin
   Btn^.OnCallback := @BtnRunWin;
 
   New(Btn, Init(Taskbar));
-  Btn^.Name := 'Run winc.kex';
+  Btn^.Name := 'Run nep.kex';
   Btn^.SetPosition(290, 2);
   Btn^.SetSize(160, 24);
-  Btn^.OnCallback := @BtnRunWinC;
+  Btn^.OnCallback := @BtnRunNep;
 
   New(Btn, Init(Taskbar));
   Btn^.Name := 'Run clock.kex';

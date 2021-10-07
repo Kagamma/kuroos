@@ -27,6 +27,7 @@ const
   KM_MOUSEMOVE = $60;
   KM_PAINT = $70;
   KM_CLOSE = $80;
+  KM_IMAGE_LOAD = $F000;
 
   TAG_KUROWM = $6900;
   TAG_KUROVIEW = $6910;
@@ -93,7 +94,7 @@ type
 
     constructor Init;
     destructor Done; virtual;
-    procedure ProcessMessages;
+    procedure ProcessMessages; virtual;
     procedure ClearScreen;
     procedure TextMode;
     procedure GraphicsMode;
@@ -228,7 +229,7 @@ begin
     glBindBuffer(WallpaperTextureScaled);
     glBindTexture(GL_TEXTURE_2D, Self.WallpaperTexture);
     glRasterBlitScale(0, 0, Width, Height);
-    glDeleteTexture(Self.WallpaperTexture);
+    glDeleteTexture(@Self.WallpaperTexture);
     Self.WallpaperTexture := WallpaperTextureScaled;
     glBindBuffer(BackBuffer);
   end;
@@ -248,9 +249,9 @@ end;
 
 destructor TKuroWM.Done;
 begin
-  glDeleteTexture(WallpaperTexture);
-  glDeleteTexture(CursorTexture);
-  glDeleteTexture(BackBuffer);
+  glDeleteTexture(@WallpaperTexture);
+  glDeleteTexture(@CursorTexture);
+  glDeleteTexture(@BackBuffer);
   glDeleteContext(GLContext);
 
   Console.SetBgColor(0);
@@ -396,6 +397,7 @@ begin
       if Self.CursorBackTexture <> 0 then
       begin
         // Restore surface under mouse cursor
+        glBindBuffer(Self.BackBuffer);
         glBindTexture(GL_TEXTURE_2D, Self.CursorBackTexture);
         glRasterBlitFast(Self.E.MouseOld.X, Self.E.MouseOld.Y);
       end;
@@ -409,6 +411,7 @@ begin
           V^.Render;
         end;
       end;
+      glBindBuffer(Self.BackBuffer);
       glViewport(0, 0, Self.Width, Self.Height);
       // First time we handle kurowm
       if Self.CursorBackTexture = 0 then
@@ -514,6 +517,8 @@ destructor TKuroView.Done;
 begin
   if Self.Name <> nil then
     FreeMem(Self.Name);
+  if Self.Parent <> nil then
+    Self.Parent^.Delete(Self.Parent^.IndexOf(@Self));
   inherited;
 end;
 
@@ -795,7 +800,7 @@ procedure TKuroView.ReceiveMessage(const Command, Param1, Param2: LongInt);
 var
   CM: PKuroMessage;
 begin
-  if (PID <> 0) and (IsFocused) then
+  if PID <> 0 then
   begin
     if MessageReceivedCount < Length(MessagesReceived)-1 then
     begin
@@ -804,6 +809,7 @@ begin
       CM^.LoLong  := Param1;
       CM^.HiLong  := Param2;
       Inc(MessageReceivedCount);
+      Self.RenderUpdate;
     end;
   end;
 end;

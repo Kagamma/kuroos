@@ -13,10 +13,19 @@
                 ESI: KuroStruct's address
                 <-
                 EAX: Window handler
+            AL = 3: Create new Image
+                ESI: KuroStruct's address
+                ECX: Image path
+                <-
+                EAX: Window handler
         AH = 1: // Update
             AL = 1: Update name
                 ESI: KuroStruct's address
                 ECX: New name
+            AL = 2: Update position
+                ESI: KuroStruct's address
+                ECX: X
+                EDX: Y
         AH = 3: // Delete
             AL = 1: Delete
                 ESI: KuroStruct's address
@@ -70,7 +79,7 @@ implementation
 
 uses
   schedule,
-  vmm,
+  vmm, kheap,
   kurowm;
 
 // Private
@@ -101,11 +110,12 @@ var
   Parent: PKuroObject;
   TaskBackup: PTaskStruct;
   B: PKuroButton;
+  Image: PKuroImage;
   W: PKuroWindow;
   V: PKuroView;
   K: TKuroStruct;
-  S: PChar;
-  i, j: LongInt;
+  S, S2: PChar;
+  i, j, size: LongInt;
 
 begin
   // Make sure KuroWM is initialized
@@ -172,6 +182,37 @@ begin
             IRQEAXHave := 1;
             IRQEAXValue := Cardinal(B);
           end;
+        3: // Create Image
+          begin
+            K := PKuroStruct(r.esi)^;
+            if K.Name <> nil then
+              S := K.Name
+            else
+              S := ' ';
+            if K.Parent <> nil then
+              Parent := K.Parent
+            else
+              Parent := GetKuroWMInstance;
+            if r.ecx <> 0 then
+            begin
+              size := Length(PChar(r.ecx)) + 1;
+              S2 := Alloc(size);
+              Move(PChar(r.ecx)[0], S2[0], size);
+            end else
+              S2 := nil;
+            New(Image, Init(Parent));
+            with Image^ do
+            begin
+              SetPosition(K.X, K.Y);
+              SetSize(K.Width, K.Height);
+              SetImage(S2);
+              IsMoveable := Boolean(K.IsMoveable);
+              PID := TaskBackup^.PID;
+              SetName(S);
+            end;
+            IRQEAXHave := 1;
+            IRQEAXValue := Cardinal(Image);
+          end;
       end;
     2:
       case r_al of
@@ -183,6 +224,12 @@ begin
             else
               S := ' ';
             V^.SetName(S);
+            V^.RenderUpdate;
+          end;
+        2:
+          begin
+            V := PKuroView(r.esi);
+            V^.SetPosition(r.ecx, r.edx);
             V^.RenderUpdate;
           end;
       end;

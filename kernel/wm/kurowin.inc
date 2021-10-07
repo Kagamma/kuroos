@@ -125,6 +125,69 @@ end;
 procedure TKuroWindow.SetSize(const AWidth, AHeight: Cardinal);
 begin
   inherited;
-  Body^.SetSize(AWidth, AHeight - 25);
+  Body^.SetSize(AWidth, AHeight);
   BtnClose^.X := AWidth - 26;
+end;
+
+constructor TKuroImage.Init(const AParent: PKuroObject);
+begin
+  inherited;
+  Self.Buffer := 0;
+end;
+
+destructor TKuroImage.Done;
+begin
+  if Self.Buffer <> 0 then
+  begin
+    glDeleteTexture(@Self.Buffer);
+  end;
+  inherited;
+end;
+
+procedure TKuroImage.Render;
+var
+  PX, PY: LongInt;
+begin
+  if Self.Buffer <> 0 then
+  begin
+    glBindTexture(GL_TEXTURE_2D, Self.Buffer);
+    GetRealPosition(PX, PY);
+    glViewport(PX, PY, Width, Height);
+    glRasterBlit(0, 0);
+  end;
+  Self.IsRenderUpdate := False;
+end;
+
+procedure TKuroImage.SetImage(const AName: PChar);
+begin
+  Self.ReceiveMessage(KM_IMAGE_LOAD, LongWord(AName), 0);
+end;
+
+procedure TKuroImage.ProcessMessages(const M: PKuroMessage; const IsChild: Boolean);
+var
+  i: Integer;
+  V: PKuroView;
+  FileName: PChar;
+begin
+  // Process parent's message
+  case M^.Command of
+    KM_IMAGE_LOAD:
+      begin;
+        FileName := PChar(M^.LoLong);
+        if Self.Buffer <> 0 then
+        begin
+          glDeleteTexture(@Self.Buffer);
+        end;
+        glGenTexture(@Self.Buffer);
+        glBindTexture(GL_TEXTURE_2D, Self.Buffer);
+        IRQ_ENABLE;
+        glLoadTexture(GL_BGRA8, FileName);
+        IRQ_DISABLE;
+        glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, @Self.Width);
+        glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, @Self.Height);
+        Self.RenderUpdate;
+        Free(FileName);
+      end;
+  end;
+  inherited;
 end;

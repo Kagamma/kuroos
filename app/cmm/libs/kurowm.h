@@ -19,31 +19,46 @@ struct KuroView_t {
 };
 
 // ESI: KuroView_t*
-inline fastcall dword CreateWindow(dword ESI) {
+dword CreateWindow(dword ESI) {
   EAX = 1;
   $int 0x69;
 }
 
 // ESI: KuroView_t*
-inline fastcall dword CreateButton(dword ESI) {
+dword CreateButton(dword ESI) {
   EAX = 2;
   $int 0x69;
 }
 
 // ESI: KuroView_t*
-inline fastcall dword CloseHandle(dword ESI) {
+// ECX: Image path
+dword CreateImage(dword ESI, ECX) {
+  EAX = 3;
+  $int 0x69;
+}
+
+// ESI: handle
+dword CloseHandle(dword ESI) {
   EAX = 0x301;
   $int 0x69;
 }
 
-// ESI: KuroView_t*
+// ESI: handle
 // ECX: char*
-inline fastcall void UpdateName(dword ESI, ECX) {
+void SetName(dword ESI, ECX) {
   EAX = 0x201;
   $int 0x69;
 }
 
-// ESI: KuroView_t*
+// ESI: handle
+// ECX: X
+// EDX: Y
+void SetPosition(dword ESI, dword ECX, dword EDX) {
+  EAX = 0x202;
+  $int 0x69;
+}
+
+// ESI: handle
 // msg: result message
 dword CheckMessage(dword ESI, dword *msg) {
   EAX = 0x401;

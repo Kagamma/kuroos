@@ -92,7 +92,7 @@ procedure glClear(Mask: GLuint) ; stdcall;
 
 procedure glGenTexture(APtr: PGLuint); stdcall;
 procedure glTexStorage2D(ATexType, Levels, InternalFormat, Width, Height: GLuint); stdcall;
-procedure glDeleteTexture(APtr: GLuint); stdcall;
+procedure glDeleteTexture(APtr: PGLuint); stdcall;
 procedure glBindTexture(ATexType: GLuint; APtr: GLuint); stdcall;
 procedure glBindBuffer(APtr: GLuint); stdcall;
 procedure glSwapBuffers; stdcall;
@@ -315,14 +315,15 @@ begin
   tex^.Data := KHeap.Alloc((Width * Height) shl 2);
 end;
 
-procedure glDeleteTexture(APtr: GLuint); stdcall;
+procedure glDeleteTexture(APtr: PGLuint); stdcall;
 var
   tex: PGLTexture;
 begin
-  tex:= PGLTexture(APtr);
+  tex:= PGLTexture(APtr^);
   if tex^.Data <> nil then
     KHeap.Free(tex^.Data);
   KHeap.Free(tex);
+  APtr^ := 0;
 end;
 
 procedure glBindTexture(ATexType: GLuint; APtr: GLuint); stdcall;

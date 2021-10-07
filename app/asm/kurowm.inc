@@ -36,7 +36,7 @@ proc CloseHandle kuro_handle
     ret
 endp
 
-proc UpdateName kuro_handle,name
+proc SetName kuro_handle,name
     mov   eax,0x201
     mov   esi,[kuro_handle]
     mov   ecx,[name]
