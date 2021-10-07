@@ -18,3 +18,4 @@
 
 #### Things that need more work
 - All process runs at ring 0 at the moment
+- APIC & PCI
