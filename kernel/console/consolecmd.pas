@@ -101,7 +101,7 @@ begin
     if Cmd = 'help' then
     begin
       Writeln(' - help       : You are looking at it');
-      Writeln(' - dir        : List all files on CD''s root directory');
+      Writeln(' - ls         : List all files on CD''s root directory');
       Writeln(' - kill [pid] : Delete a process by pid');
       Writeln(' - mem [pid]  : Print memory blocks of a single task, or all if pid is empty');
       Writeln(' - ps         : Print all tasks');
@@ -124,7 +124,7 @@ begin
       Debug_PrintMemoryBlocks(-1);
     end
     else
-    if Cmd = 'dir' then
+    if Cmd = 'ls' then
     begin
       Dir;
     end
