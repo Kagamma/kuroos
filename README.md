@@ -22,4 +22,4 @@
 - Ramdisk
 - Write to FAT32
 - Ext2
-- ELF reader
+- ELF loader
