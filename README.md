@@ -16,7 +16,8 @@
 
 #### Things that need more work
 - Userspace
-- APIC & PCI
+- Replace PIC with APIC
+- PCI
 - ACPI
 - Ramdisk
 - ELF reader
