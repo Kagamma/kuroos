@@ -51,6 +51,7 @@ const
   TASK_PRIORITY_HIGH = 10;
   TASK_PRIORITY_VHIGH = 15;
   TASK_PRIORITY_REALTIME = 100;
+  PROCESS_STARTUP_CODE = $04000000;
 
 type
   TaskProc = procedure(PID: PtrUInt); stdcall;
@@ -203,11 +204,11 @@ begin
   for i := 0 to GetSize(ABuf) div PAGE_SIZE do
   begin
     AllocPage(Task^.Page,
-      KernelCardinal(PKEXHeader(ABuf)^.StartAddr) + i*PAGE_SIZE,
+      PROCESS_STARTUP_CODE + i*PAGE_SIZE,
       KernelCardinal(Task^.Code) - KERNEL_HEAP_START + KERNEL_SIZE + i*PAGE_SIZE, 1,
       Task^.Tracks, Task^.TrackCount);
   end;
-  Pointer(Task^.Code):= Pointer(Task^.Code) + PKEXHeader(ABuf)^.EntryPoint;
+  Pointer(Task^.Code):= Pointer(Task^.Code) + (PKEXHeader(ABuf)^.EntryPoint - PROCESS_STARTUP_CODE);
   // Generate default stack
   GENERATE_STACK;
   //

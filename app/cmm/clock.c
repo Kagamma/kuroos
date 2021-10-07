@@ -47,7 +47,7 @@ void main() {
   win.height = 34;
   win.isMovable = 1;
   winHandle = kwmCreateWindow(#win);
-  btn.name = "";
+  btn.name = "View";
   btn.parent = winHandle;
   btn.x = 4;
   btn.y = 4;

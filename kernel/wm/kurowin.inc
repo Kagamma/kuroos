@@ -125,6 +125,7 @@ end;
 procedure TKuroWindow.SetSize(const AWidth, AHeight: Cardinal);
 begin
   inherited;
+  Self.Height := AHeight + 25;
   Body^.SetSize(AWidth, AHeight);
   BtnClose^.X := AWidth - 26;
 end;
