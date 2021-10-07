@@ -68,7 +68,7 @@ type
     X, Y: LongInt;
     Width,
     Height: Cardinal;
-    IsMoveable: Cardinal;
+    AttrFlag: Cardinal;
   end;
 
 procedure Callback(r: TRegisters); stdcall;
@@ -151,7 +151,7 @@ begin
             begin
               SetPosition(K.X, K.Y);
               SetSize(K.Width, K.Height);
-              IsMoveable := Boolean(K.IsMoveable and 1 <> 0);
+              IsMoveable := Boolean(K.AttrFlag and 1 <> 0);
               PID := TaskBackup^.PID;
               Body^.SetName(S);
               Focus;
@@ -175,7 +175,7 @@ begin
             begin
               SetPosition(K.X, K.Y);
               SetSize(K.Width, K.Height);
-              IsMoveable := Boolean(K.IsMoveable);
+              IsMoveable := Boolean(K.AttrFlag and 1 <> 0);
               PID := TaskBackup^.PID;
               SetName(S);
             end;
@@ -206,7 +206,7 @@ begin
               SetPosition(K.X, K.Y);
               SetSize(K.Width, K.Height);
               SetImage(S2);
-              IsMoveable := Boolean(K.IsMoveable);
+              IsMoveable := Boolean(K.AttrFlag and 1 <> 0);
               PID := TaskBackup^.PID;
               SetName(S);
             end;
