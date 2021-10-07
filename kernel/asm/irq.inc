@@ -180,11 +180,11 @@ irqpicstub:
     push  fs
     push  gs
 
-     mov   ax,0x10                          ; load the kernel data segment descriptor
-     mov   ds,ax
-     mov   es,ax
+    mov   ax,0x10                          ; load the kernel data segment descriptor
+    mov   ds,ax
+    mov   es,ax
     mov   fs,ax
-     mov   gs,ax
+    mov   gs,ax
 
     ; push  8
     ; push  eax
@@ -201,7 +201,7 @@ call  k_PIC_Handler
     mov   al,0x20                          ; ack IRQ
     out   0x20,al
 
-     pop   gs
+    pop   gs
     pop   fs
     pop   es
     pop   ds
