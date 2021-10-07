@@ -9,15 +9,8 @@ MB_HEADER_MAGIC	    equ 0x1BADB002
 MB_HEADER_FLAGS	    equ MB_PAGE_ALIGN or MB_MEMORY_INFO
 MB_CHECKSUM         equ -(MB_HEADER_MAGIC + MB_HEADER_FLAGS)
 
-KERNEL_VIRTUAL_BASE equ 0xC0000000                   ; 3GB
-KERNEL_PAGE_INDEX   equ (KERNEL_VIRTUAL_BASE >> 22)  ; Page directory index of kernel's 4MB PTE.
-
 ; Kernel stack size
 KERNEL_STACKSIZE    equ 0x10000
-
-; ------------------------------
-; ------------------------------
-; ------------------------------
 
 section '.text' executable
 use32
@@ -52,10 +45,6 @@ k_start:
 include 'gdt.inc'
 include 'idt.inc'
 include 'pm2rm.inc'
-
-; ------------------------------
-; ------------------------------
-; ------------------------------
 
 section '.bss'
 
