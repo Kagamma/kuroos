@@ -19,6 +19,8 @@
                 <-
                 EAX: Window handler
         AH = 1: // Update
+            AL = 0: Repaint
+                ESI: KuroStruct's address
             AL = 1: Update name
                 ESI: KuroStruct's address
                 ECX: New name
@@ -216,6 +218,11 @@ begin
       end;
     2:
       case r_al of
+        0:
+          begin
+            V := PKuroView(r.esi);
+            V^.RenderUpdate;
+          end;
         1:
           begin
             V := PKuroView(r.esi);

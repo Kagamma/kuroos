@@ -370,9 +370,9 @@ begin
       end;
 
       // Paint should come last
-      Inc(MCount);
-      M := @Messages[MCount - 1];
-      M^.Command := KM_PAINT;
+      //Inc(MCount);
+      //M := @Messages[MCount - 1];
+      //M^.Command := KM_PAINT;
 
       for j := 0 to MCount - 1 do
       begin
@@ -622,6 +622,9 @@ begin
             PKuroView(Parent)^.IsMouseDown := false;
             PKuroView(Parent)^.IsMoveBlocked := true;
           end;
+        end else
+        begin
+          Blur;
         end;
         if IsSelected(M) and (not Kuro^.IsMoved) then
         begin
@@ -633,6 +636,9 @@ begin
         if not IsSelected(M) then
         begin
           Blur;
+        end else
+        begin
+          Focus;
         end;
         IsMouseDown := false;
         Kuro^.IsMoved := false;
@@ -670,6 +676,11 @@ begin
         begin
           TransferMessageWithCallback(M, IsChild);
         end;
+      end;
+    KM_PAINT:
+      begin
+        TransferMessageWithCallback(M, IsChild);
+        Self.RenderUpdate;
       end;
   end;
   Callback(M);
