@@ -117,6 +117,8 @@ begin
   Console.WriteStr('Stack trace: '#10#13);
   for I := 0 to 10 do
   begin
+    if Trace^.EIP = 0 then
+      break;
     Console.WriteStr('    0x');
     Console.WriteHex(Trace^.EIP, 8);
     if Trace^.EIP <> 0 then
@@ -148,21 +150,15 @@ begin
     begin
       VBE.ReturnToTextMode;
     end;
-    {if r.int_no <> 3 then
-    begin
-      t := r.cs;
-      r.cs := r.eip;
-      r.eip := t;
-    end;}
     // Console.SaveState;
-    Console.SetFgColor(15);
-    Console.SetBgColor(1);
+    Console.SetFgColor(12);
+    Console.SetBgColor(0);
 
     //Console.ClearScreen;
     //attrib:= (1 shl 4) or (15 and $0F);
     //for i:= 0 to (VGA.GetScreenWidth * 7)-1 do
     //  TEXTMODE_MEMORY[i]:= Word((attrib shl 8) or TEXTMODE_BLANK);
-    Console.SetCursorPos(0, 0);
+    // Console.SetCursorPos(0, 0);
     //Console.WriteStr('Kernel Panic!'#10#13#10#13);
 
     Console.WriteStr('Exception ');
@@ -177,6 +173,7 @@ begin
     Console.WriteStr('Error Code: ');
     Console.WriteDec(r.err_code, 0);
 
+    Console.SetFgColor(7);
     k_IDT_WriteRegisters(r);
     if TaskCurrent <> nil then
     begin
@@ -195,9 +192,12 @@ begin
 
     IDTHandle:= IDTHandles[r.int_no];
     if IDTHandle <> nil then
-      IDTHandle(r)
-    else
+    begin
+      IDTHandle(r);
+    end else
+    begin
       INFINITE_LOOP;
+    end;
 
     // Console.LoadState;
     if lIsGUI then

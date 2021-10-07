@@ -30,9 +30,10 @@ var
   buf: TKeyBuffer;
 begin
   Keyboard.ClearBuffer;
-  // Console.WriteStr('Press any key to continue...');
-  // IRQ_ENABLE;
-  while Keyboard.GetLastKeyStroke = 0 do CPU_HALT ;
+  Console.WriteStr('Press any key to continue...');
+  IRQ_ENABLE;
+  while Keyboard.GetLastKeyStroke = 0 do CPU_HALT;
+  Console.WriteStr(#10#13);
   Keyboard.ClearBuffer;
 end;
 

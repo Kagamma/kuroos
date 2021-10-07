@@ -232,6 +232,7 @@ begin
   r.bx:= CurrentVBEVideoMode_^.Mode or $4000;
   BIOS.Int(r, $10);
   IsGUI:= True;
+  Mouse.SetBoundary(0, 0, CurrentVBEVideoMode_^.Info.XRes, CurrentVBEVideoMode_^.Info.YRes);
 end;
 
 end.
