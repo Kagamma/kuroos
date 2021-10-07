@@ -487,7 +487,7 @@ begin
   if GlobalMB^.mem_upper * 1024 < KERNEL_SIZE + MINIMAL_SIZE then
   begin
     Console.WriteStr('Not enough memory. Need at least ');
-    Console.WriteDec(KERNEL_SIZE + MINIMAL_SIZE div 1024 div 1024);
+    Console.WriteDec((KERNEL_SIZE + MINIMAL_SIZE) div 1024 div 1024);
     Console.WriteStr('MB RAM');
     INFINITE_LOOP;
   end;
