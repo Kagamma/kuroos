@@ -45,7 +45,7 @@ void main() {
   win.y = rnd() % 400 + 10;
   win.width = 228;
   win.height = 34;
-  win.isMovable = 1;
+  win.attrFlag = 1;
   winHandle = kwmCreateWindow(#win);
   btn.name = 0;
   btn.parent = winHandle;
@@ -53,7 +53,7 @@ void main() {
   btn.y = 4;
   btn.width = 220;
   btn.height = 26;
-  btn.isMovable = 0;
+  btn.attrFlag = 0;
   buttonHandle = kwmCreateButton(#btn);
   sec = 0xff;
   while (1) {

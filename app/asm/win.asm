@@ -65,13 +65,13 @@ data_section:
       dd kuro_name                      ; Name
       dd 0                              ; Parent
       dd 255, 87, 300, 175              ; X, Y, Width, Height
-      dd 1                              ; IsMovable
+      dd 1                              ; attrFlag
 
     btn_struct:
       dd btn_str                        ; Name
       dd 0                              ; Parent
       dd 80, 130, 140, 24               ; X, Y, Width, Height
-      dd 0                              ; IsMovable
+      dd 0                              ; attrFlag
 
     kuro_name        db 'Hello, KuroWin!',0
     key_down_str     db 'Key pressed!',0

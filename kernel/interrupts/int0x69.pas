@@ -151,7 +151,7 @@ begin
             begin
               SetPosition(K.X, K.Y);
               SetSize(K.Width, K.Height);
-              IsMoveable := Boolean(K.IsMoveable);
+              IsMoveable := Boolean(K.IsMoveable and 1 <> 0);
               PID := TaskBackup^.PID;
               Body^.SetName(S);
               Focus;

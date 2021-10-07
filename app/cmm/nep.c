@@ -15,13 +15,13 @@ void main() {
   win.y = 100;
   win.width = 200;
   win.height = 150;
-  win.isMovable = 1;
+  win.attrFlag = 1;
   winHandle = kwmCreateWindow(#win);
   image.name = "image";
   image.parent = winHandle;
   image.x = 2;
   image.y = 2;
-  image.isMovable = 0;
+  image.attrFlag = 0;
   imageHandle = kwmCreateImage(#image, imagePath);
   x = image.x;
   y = image.y;

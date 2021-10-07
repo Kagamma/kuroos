@@ -15,7 +15,7 @@ struct KuroView_t {
   dword y;
   dword width;
   dword height;
-  dword isMovable;
+  dword attrFlag;
 };
 
 // ESI: KuroView_t*
