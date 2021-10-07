@@ -14,7 +14,7 @@
 - Preemptive multi-tasking
 - Basic window manager
 
-#### Things that need more work
+#### TODO
 - Userspace
 - Replace PIC with APIC
 - PCI
