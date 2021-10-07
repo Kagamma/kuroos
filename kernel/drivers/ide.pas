@@ -58,7 +58,7 @@ const
   ATA_CTL_SRST = $04;
   ATA_CTL_nIEN = $02;
 
-  ATA_TIMEOUT = 10000;
+  ATA_TIMEOUT = 65536;
 
   ATA_SECTOR_SIZE = 512;
 
@@ -327,7 +327,6 @@ var
   drive: Byte;
   buf  : array[0..511] of Byte;
   I    : Byte;
-  Status: Boolean;
 begin
   port := ADriveInfoSt^.ControllerPort;
   drive:= ADriveInfoSt^.DriveNumber;
@@ -336,17 +335,15 @@ begin
   //PIC.Sleep(1);
   ATADelay(port);
   for I := 0 to ATA_TIMEOUT - 1 do
-    Status := Boolean(inb(port + ATA_STATUS));
-  if Status then
   begin
-    ADriveInfoSt^.Present:= True;
-    exit(True);
-  end
-  else
-  begin
-    ADriveInfoSt^.Present:= False;
-    exit(False);
+    if Boolean(inb(port + ATA_STATUS)) then
+    begin
+      ADriveInfoSt^.Present:= True;
+      exit(True);
+    end
   end;
+  ADriveInfoSt^.Present:= False;
+  exit(False);
 end;
 
 // Read data from DATA_REGISTER ($1F0 or $170).
