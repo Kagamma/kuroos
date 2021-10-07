@@ -13,6 +13,7 @@
 {$DEFINE INFINITE_LOOP:= ;
   asm
     @loop:
+      hlt
       jmp @loop
   end
 }

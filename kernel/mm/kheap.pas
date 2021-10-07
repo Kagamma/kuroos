@@ -68,7 +68,7 @@ function  Debug_PrintProcessMemoryUsage(const PID: PtrUInt): KernelCardinal; std
 implementation
 
 uses
-  vmm, pmm,
+  vmm, pmm, vbe,
   spinlock,
   schedule;
 
@@ -337,7 +337,9 @@ begin
     // Try to ask VMM to allocate new page if possible
     // ExpandHeap(GetHeapNode, ASize);
     // p:= KHeap.FindUseableChunk(GetHeapNode, ASize, 2);
-    Console.WriteStr('KHeap.Alloc: Not enough memory!');
+    if IsGUI then
+      VBE.ReturnToTextMode;
+    Console.WriteStr('KHeap.Alloc: Not enough memory.');
     INFINITE_LOOP;
   end;
   Spinlock.Unlock(PMM.SLock);
@@ -397,7 +399,9 @@ begin
     // Try to ask VMM to allocate new page if possible
     // ExpandHeap(GetHeapNode, ASize);
     // p:= KHeap.FindUseableChunk(GetHeapNode, ASize, PAGE_SIZE);
-    Console.WriteStr('KHeap.AllocAligned: Not enough memory!');
+    if IsGUI then
+      VBE.ReturnToTextMode;
+    Console.WriteStr('KHeap.AllocAligned: Not enough memory.');
     INFINITE_LOOP;
   end;
   Spinlock.Unlock(PMM.SLock);
