@@ -267,6 +267,7 @@ var
   SectorNum: Cardinal;
 
 begin
+  IRQ_ENABLE;
   Buf:= nil;
   UFileName:= UpperCase(AFileName);
   // Load root directory from CD
