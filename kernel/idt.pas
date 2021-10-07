@@ -33,9 +33,8 @@ type
   PIDTPtr = ^TIDTPtr;
 
   TRegisters = packed record
-    //ds, es, fs, gs,
     gs, fs, es, ds,
-    edi, esi, ebp, useless_value, ebx, edx, ecx, eax,
+    edi, esi, ebp, kesp, ebx, edx, ecx, eax,
     int_no, err_code,
     eip, cs, eflags, esp, ss: Cardinal;
   end;

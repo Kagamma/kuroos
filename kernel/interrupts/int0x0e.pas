@@ -45,15 +45,15 @@ begin
   Console.WriteStr('Faulting (');
 
   if Boolean(present) then
-    Console.WriteStr(' present ');
+    Console.WriteStr(' present');
   if Boolean(rw) then
-    Console.WriteStr(' read-only ');
+    Console.WriteStr(' read-only');
   if Boolean(us) then
-    Console.WriteStr(' user-mode ');
+    Console.WriteStr(' user-mode');
   if Boolean(reserved) then
-    Console.WriteStr(' reserved ');
+    Console.WriteStr(' reserved');
 
-  Console.WriteStr(') at 0x'); Console.WriteHex(faultAddr, 8);
+  Console.WriteStr(' ) at 0x'); Console.WriteHex(faultAddr, 8);
   Console.WriteStr(#10#13);
 
   INFINITE_LOOP;

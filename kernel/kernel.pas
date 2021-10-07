@@ -112,7 +112,6 @@ begin
   // KHeap.Test;
 
   //CDFSObj^.Test;
-
   // We init multi-tasking in here
   Schedule.Init;
   // Create default tasks
