@@ -181,9 +181,7 @@ begin
         end;
         glGenTexture(@Self.Buffer);
         glBindTexture(GL_TEXTURE_2D, Self.Buffer);
-        IRQ_ENABLE;
         glLoadTexture(GL_BGRA8, FileName);
-        IRQ_DISABLE;
         glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, @Self.Width);
         glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, @Self.Height);
         Self.RenderUpdate;

@@ -212,9 +212,7 @@ var
 begin
   if (M^.Command = KM_MOUSEUP) and (Boolean(M^.LoShort1 and $01)) and PKuroButton(Sender)^.IsFocused then
   begin
-    IRQ_ENABLE;
     p:= CDFSObj^.Loader(IDE.FindDrive(True), 'win.kex');
-    IRQ_DISABLE;
     if p <> nil then
     begin
       // Create a new process
@@ -232,9 +230,7 @@ var
 begin
   if (M^.Command = KM_MOUSEUP) and (Boolean(M^.LoShort1 and $01)) and PKuroButton(Sender)^.IsFocused then
   begin
-    IRQ_ENABLE;
     p:= CDFSObj^.Loader(IDE.FindDrive(True), 'nep.kex');
-    IRQ_DISABLE;
     if p <> nil then
     begin
       // Create a new process
@@ -252,9 +248,7 @@ var
 begin
   if (M^.Command = KM_MOUSEUP) and (Boolean(M^.LoShort1 and $01)) and PKuroButton(Sender)^.IsFocused then
   begin
-    IRQ_ENABLE;
     p:= CDFSObj^.Loader(IDE.FindDrive(True), 'clock.kex');
-    IRQ_DISABLE;
     if p <> nil then
     begin
       // Create a new process

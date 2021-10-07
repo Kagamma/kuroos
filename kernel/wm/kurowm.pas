@@ -289,7 +289,6 @@ var
 begin
   while IsGUI do
   begin
-    IRQ_DISABLE;
     IsCleared := false;
     IsKeyEvent := Keyboard.IsEvent;
     IsMouseEvent := Mouse.IsEvent;
@@ -451,7 +450,6 @@ begin
       end;
       Keyboard.ClearBuffer;
     end;
-    IRQ_ENABLE;
     CPU_HALT;
   end;
   VBE.ReturnToTextMode;
