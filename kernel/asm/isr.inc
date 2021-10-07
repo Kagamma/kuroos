@@ -6,7 +6,7 @@ func:
 	cli
 	push  0
 	push  n
-	jmp   isr_common_stub
+	jmp   isrstub
 }
 
 ISR k_IDT_ISR0, 0
@@ -45,7 +45,7 @@ ISR k_IDT_ISR31, 31
 ; ------------------------------
 extrn k_IDT_ISR_FaultHandler                   ; Call from Pascal code
 ; ------------------------------
-isr_common_stub:
+isrstub:
 		pusha
 		push  ds
 		push  es

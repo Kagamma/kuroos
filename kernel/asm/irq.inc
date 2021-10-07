@@ -6,7 +6,7 @@ func:
 	cli
   push  0                        ; TODO: We need to replace this line and push proper error code to stack.
 	push  n
-	jmp   irq_common_stub
+	jmp   irqstub
 }
 
 macro IRQ_PIC func,n {
@@ -15,7 +15,7 @@ public func
 ; ------------------------------
 func:
 	cli
-	jmp   irq_pic_stub
+	jmp   irqpicstub
 }
 
 IRQ_PIC k_IDT_IRQ0, 32
@@ -71,7 +71,7 @@ IRQEDIHave  dd 0
 IRQEDIValue dd 0
 tmp      dd 0
 ; ------------------------------
-irq_common_stub:
+irqstub:
 		pusha
 		push  ds
 		push  es
@@ -173,7 +173,7 @@ irq_stub_end:
 		sti
    	iret                                   ; pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP
 
-irq_pic_stub:
+irqpicstub:
 		pusha
 		push  ds
 		push  es
