@@ -14,7 +14,7 @@ unit KuroWM;
 interface
 
 uses
-  kurogl, objects, vga, vbe, console,
+  kurogl, objects, vbe, console,
   mouse, keyboard, sysutils, int0x69;
 
 const
@@ -452,7 +452,6 @@ begin
     CPU_HALT;
   end;
   VBE.ReturnToTextMode;
-  Mouse.SetBoundary(0, 0, VGA.GetScreenWidth, VGA.GetScreenHeight);
   Writeln('Back to Text Mode!');
 end;
 

@@ -32,7 +32,7 @@ function  k_PIC_Handler(AStack: Cardinal): Cardinal; cdecl;
 implementation
 
 uses
-  vga, vbe, schedule, trace;
+  vbe, schedule, trace;
 
 const
   ISR_ERRORCODE: array[0..15] of PChar =
@@ -146,19 +146,15 @@ begin
     if lIsGUI then
     begin
       VBE.ReturnToTextMode;
-    end
-    else
-    begin
-      Console.SaveState;
-      VGA.SetMode(vga80x25x4);
     end;
+    // Console.SaveState;
     Console.SetFgColor(15);
     Console.SetBgColor(1);
 
     //Console.ClearScreen;
-    attrib:= (1 shl 4) or (15 and $0F);
-    for i:= 0 to (VGA.GetScreenWidth * 7)-1 do
-      TEXTMODE_MEMORY[i]:= Word((attrib shl 8) or TEXTMODE_BLANK);
+    //attrib:= (1 shl 4) or (15 and $0F);
+    //for i:= 0 to (VGA.GetScreenWidth * 7)-1 do
+    //  TEXTMODE_MEMORY[i]:= Word((attrib shl 8) or TEXTMODE_BLANK);
     Console.SetCursorPos(0, 0);
     //Console.WriteStr('Kernel Panic!'#10#13#10#13);
 
@@ -196,7 +192,7 @@ begin
     else
       INFINITE_LOOP;
 
-    Console.LoadState;
+    // Console.LoadState;
     if lIsGUI then
     begin
       VBE.ReturnToGraphicsMode;

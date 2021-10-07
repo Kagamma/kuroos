@@ -72,7 +72,7 @@ procedure ReturnToGraphicsMode; stdcall;
 implementation
 
 uses
-  vga;
+  vga, mouse;
 
 var
   CurrentVBEVideoMode_: PVBEVideoModeStruct;
@@ -216,6 +216,7 @@ begin
   VGA.SetMode(vga80x25x4);
   Console.LoadState;
   IsGUI:= False;
+  Mouse.SetBoundary(0, 0, VGA.GetScreenWidth, VGA.GetScreenHeight);
 end;
 
 procedure ReturnToGraphicsMode; stdcall;

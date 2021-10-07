@@ -204,23 +204,6 @@ begin
   end;
 end;
 
-procedure PointRotate(X, Y, AX, AY, Angle: Single; var RX, RY: LongInt); public;
-var
-  S, C,
-  XNew, YNew: Single;
-begin
-  X := X-AX;
-  Y := Y-AY;
-  S := Sin(Angle);
-  C := Cos(Angle);
-
-  XNew := X * C - Y * S;
-  YNew := X * S + Y * C;
-
-  RX := Round(XNew+AX);
-  RY := Round(YNew+AY);
-end;
-
 procedure BtnRunWin(const Sender: PKuroObject; const M: PKuroMessage); public;
 var
   CM: TKuroMessage;
