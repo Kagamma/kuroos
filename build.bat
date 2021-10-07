@@ -17,9 +17,11 @@ cd cmm
 @c-- /OS /5 helloc.c
 @c-- /OS /5 nep.c
 @c-- /OS /5 clock.c
+@c-- /OS /5 memtest.c
 @move helloc.bin ../../grub/helloc.kex
 @move nep.bin ../../grub/nep.kex
 @move clock.bin ../../grub/clock.kex
+@move memtest.bin ../../grub/memtest.kex
 cd ..
 cd ..
 
