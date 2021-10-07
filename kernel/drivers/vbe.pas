@@ -17,6 +17,9 @@ uses
   sysutils,
   console, bios;
 
+const
+  VBE_VIRTUAL_LFB = $70000000;
+
 type
   PVBEInfoStruct = ^TVBEInfoStruct;
   TVBEInfoStruct = packed record

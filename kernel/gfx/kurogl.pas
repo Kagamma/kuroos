@@ -242,7 +242,7 @@ begin
   screen^.Height := AHeight;
   screen^.Format := GL_BGRA8;
   screen^.Depth := 2;
-  screen^.Data := Pointer(VBE.GetCurrentMode^.Info.LFB);
+  screen^.Data := Pointer(VBE_VIRTUAL_LFB);//Pointer(VBE.GetCurrentMode^.Info.LFB);
   context^.ScreenBuffer := GLuint(screen);
   context^.Viewport.X1 := 0;
   context^.Viewport.Y1 := 0;

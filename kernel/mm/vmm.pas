@@ -19,7 +19,7 @@ uses
 
 const
   KERNEL_HEAP_START  = $80000000;
-  KERNEL_HEAP_END    = $DFFF0000;
+  KERNEL_HEAP_END    = $FFFF0000;
   PAGE_MEMORY_BLOCK  = $400000;
   KERNEL_SIZE        = 1024 * 1024 * 12;
   MINIMAL_SIZE       = 1024 * 1024 * 4;
@@ -464,6 +464,7 @@ procedure Init; stdcall;
 var
   i,
   addr,
+  vaddr,
   KernelFrameCount: KernelCardinal;
   KernelFrames    : PKernelCardinal;
   PageTable: PPageTable;
@@ -500,11 +501,13 @@ begin
 
   // Map the physical video memory to virtual memory.
   addr:= VBEVideoModes[0].Info.LFB;
+  vaddr := VBE_VIRTUAL_LFB;
   while addr < (VBEVideoModes[0].Info.LFB + (1024*768*32)) do
   begin
-    PageTable := VMM.CreatePageTable(KernelPageStruct_, addr, 0);
+    PageTable := VMM.CreatePageTable(KernelPageStruct_, vaddr, 0);
     VMM.FillPageTable(PageTable, addr, 0);
     Inc(addr, PAGE_MEMORY_BLOCK);
+    Inc(vaddr, PAGE_MEMORY_BLOCK);
   end;
 
   // Now we map all remaining RAM for heap.
