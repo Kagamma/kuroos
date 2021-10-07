@@ -3,10 +3,10 @@ macro ISR func,n {
 public func                                    ; Allow the Pascal code to call k_IDT_ISRXX()
 ; ------------------------------
 func:
-	cli
-	push  0
-	push  n
-	jmp   isrstub
+  cli
+  push  0
+  push  n
+  jmp   isrstub
 }
 
 ISR k_IDT_ISR0, 0
@@ -46,23 +46,23 @@ ISR k_IDT_ISR31, 31
 extrn k_IDT_ISR_FaultHandler                   ; Call from Pascal code
 ; ------------------------------
 isrstub:
-		pusha
-		push  ds
-		push  es
-		push  fs
-		push  gs
+    pusha
+    push  ds
+    push  es
+    push  fs
+    push  gs
 
-		mov   ax,0x10                          ; load the kernel data segment descriptor
-		mov   ds,ax
-		mov   es,ax
+    mov   ax,0x10                          ; load the kernel data segment descriptor
+    mov   ds,ax
+    mov   es,ax
 
-		call  k_IDT_ISR_FaultHandler
+    call  k_IDT_ISR_FaultHandler
 
-		pop   gs
-		pop   fs
-		pop   es
-		pop   ds
-		popa
-		add   esp,8                            ; Cleans up the pushed error code and pushed ISR number
-		sti
-		iret                                    ; pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP
+    pop   gs
+    pop   fs
+    pop   es
+    pop   ds
+    popa
+    add   esp,8                            ; Cleans up the pushed error code and pushed ISR number
+    sti
+    iret                                    ; pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP

@@ -16,16 +16,16 @@ k_BIOS_JumpToRM:
     out   0xA1,al
     out   0x21,al
 
-  	mov   ax,ss
+    mov   ax,ss
     mov   [save_ss],ax        ; Save SS
-	  mov   eax,esp
+    mov   eax,esp
     mov   [save_esp],eax      ; Save ESP
-  	mov   eax,cr3
+    mov   eax,cr3
     mov   [save_cr3],eax      ; Save CR3
     mov   eax,cr0
     mov   [save_cr0],eax      ; Save CR0
-	and   eax,0x7FFFFFFF      ; Disable PG.
-  	mov   cr0,eax
+    and   eax,0x7FFFFFFF      ; Disable PG.
+    mov   cr0,eax
 
 ; Store the address of return code to 0x7CFC
     mov   esi,0x7CFC
