@@ -82,7 +82,7 @@ type
   end;
 
 procedure glGenContext(AHandle: Handle; APtr: PGLuint; AWidth, AHeight, ABpp: GLuint); stdcall;
-procedure glDeleteContext(APtr: GLuint); stdcall;
+procedure glDeleteContext(APtr: PGLuint); stdcall;
 procedure glSetContext(APtr: GLuint); stdcall;
 // Viewport based on current Buffer
 procedure glViewport(X, Y: GLint; Width, Height: GLuint); stdcall;
@@ -250,9 +250,9 @@ begin
   context^.Viewport.Y2 := AHeight;
 end;
 
-procedure glDeleteContext(APtr: GLuint); stdcall;
+procedure glDeleteContext(APtr: PGLuint); stdcall;
 begin
-  if PLGLContext(APtr)^.Handle = nil then
+  if PLGLContext(APtr^)^.Handle = nil then
   begin
     VBE.SetMode(80, 25, 4);
     Mouse.SetBoundary(0, 0, VGA.GetScreenWidth, VGA.GetScreenHeight);

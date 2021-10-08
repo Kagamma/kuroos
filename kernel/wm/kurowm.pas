@@ -252,7 +252,7 @@ begin
   glDeleteTexture(@WallpaperTexture);
   glDeleteTexture(@CursorTexture);
   glDeleteTexture(@BackBuffer);
-  glDeleteContext(GLContext);
+  glDeleteContext(@GLContext);
 
   Console.SetBgColor(0);
   Console.SetFgColor(7);
