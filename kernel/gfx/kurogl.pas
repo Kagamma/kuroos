@@ -346,7 +346,7 @@ end;
 //   y     : Word;
 //   tex   : PGLTexture;
 // begin
-//   if NOT FAT.FileOpen(APath, @f) then
+//   if not FAT.FileOpen(APath, @f) then
 //   begin
 //     FAT.FileClose(@f);
 //     exit;

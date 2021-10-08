@@ -112,9 +112,9 @@ begin
   status:= RTC.ReadRegister($0B);
   status:= status or $02;                 // 24 Hour clock
   status:= status and $10;                // No update ended interrupts
-  status:= status and NOT $20;            // No alarm interrupts
+  status:= status and not $20;            // No alarm interrupts
   status:= status or $40;                 // Enable periodic interrupt
-  IsBCD := Boolean(NOT (status and $04)); // Check if data type is BCD
+  IsBCD := Boolean(not (status and $04)); // Check if data type is BCD
   RTC.WriteRegister($0B, status);
   // Change freq
   // RTC.WriteRegister($8A, (RTC.ReadRegister($71) and $F0) or 6);
@@ -134,7 +134,7 @@ var
   DateTime  : TDateTime;
 begin
   // Grab from PIC
-  while true do
+  while True do
   begin
     IRQ_DISABLE;
     OldBgColor:= Console.GetBgColor;

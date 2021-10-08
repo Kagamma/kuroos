@@ -83,9 +83,9 @@ begin
         end;
     end;
     KHeap.Free(p);
-    exit(true);
+    exit(True);
   end;
-  exit(false);
+  exit(False);
 end;
 
 end.

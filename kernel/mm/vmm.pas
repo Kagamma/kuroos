@@ -155,7 +155,7 @@ begin
   frame := Addr div PAGE_SIZE;
   index := GetIndex(frame);
   offset:= GetOffset(frame);
-  AFrames[index]:= AFrames[index] and NOT (1 shl offset);
+  AFrames[index]:= AFrames[index] and not (1 shl offset);
 end;
 
 function  FindFirstFreeFrame(AFrames: PKernelCardinal): KernelCardinal; stdcall;
@@ -226,7 +226,7 @@ var
 begin
   index := GetIndex(Ind);
   offset:= GetOffset(Ind);
-  PageTableTracks[index]:= PageTableTracks[index] and NOT (1 shl offset);
+  PageTableTracks[index]:= PageTableTracks[index] and not (1 shl offset);
 end;
 
 function  FindFirstTrack: KernelCardinal; stdcall;

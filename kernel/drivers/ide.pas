@@ -108,11 +108,11 @@ function  ResetController(const ADriveInfoSt: PDriveInfoStruct): Boolean;
 function  Polling(const ADriveInfoSt: PDriveInfoStruct;
                   const AMask, AValue: Byte; const ATimeout: Cardinal): Cardinal; stdcall;
 
-// Read functions. Return false when failed to access the drive.
+// Read functions. Return False when failed to access the drive.
 function  LBA_ReadSector(const ADriveInfoSt: PDriveInfoStruct;
                                const ABuf: Pointer;
 			       const LBA: Cardinal): Boolean; stdcall;
-// Write functions. Return false when failed to access the drive.
+// Write functions. Return False when failed to access the drive.
 function  LBA_WriteSector(const ADriveInfoSt: PDriveInfoStruct;
                                 const ABuf: Pointer;
 				const LBA: Cardinal): Boolean; stdcall;

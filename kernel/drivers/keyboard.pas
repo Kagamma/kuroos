@@ -144,12 +144,12 @@ var
   _keyBufferFull: Boolean = False;
   _HasKeyStroke : Boolean = False;
   _HasKeyRelease: Boolean = False;
-  _IsEvent      : Boolean = false;
+  _IsEvent      : Boolean = False;
 
 function IsEvent: Boolean; stdcall;
 begin
   IsEvent := _IsEvent;
-  _IsEvent := false;
+  _IsEvent := False;
 end;
 
 procedure Callback(r: TRegisters); stdcall;
@@ -226,7 +226,7 @@ begin
         end;
     end;
   end;
-  _IsEvent := true;
+  _IsEvent := True;
 end;
 
 procedure ClearBuffer; stdcall;

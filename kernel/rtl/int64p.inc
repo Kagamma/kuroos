@@ -100,7 +100,7 @@ var
   q1,q2,q3 : qword;
 begin
   begin
-    sign:=false;
+    sign:=False;
     if f1<0 then
     begin
       sign:=not(sign);
@@ -133,7 +133,7 @@ var
 begin
   fpc_mul_qword:=0;
   bitpos:=1;
-  f1overflowed:=false;
+  f1overflowed:=False;
 
   for l:=0 to 63 do
     begin

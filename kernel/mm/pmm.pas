@@ -43,7 +43,7 @@ function  Alloc_Default(const ASize: KernelCardinal; const isAligned: Boolean): 
 var
   p: Pointer;
 begin
-  if NOT IsPaging then
+  if not IsPaging then
   begin
     if isAligned and ((KernelCardinal(PlacementAddr) mod PAGE_SIZE) <> 0) then
     begin

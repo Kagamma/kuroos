@@ -93,12 +93,12 @@ begin
     inc(lowstart);
   { Check for another reuse, then we can't use
     the append optimization and need to use a temp }
-  needtemp:=false;
+  needtemp:=False;
   for i:=lowstart to high(sarr) do
     begin
       if Pointer(@DestS)=Pointer(sarr[i]) then
         begin
-          needtemp:=true;
+          needtemp:=True;
           break;
         end;
     end;

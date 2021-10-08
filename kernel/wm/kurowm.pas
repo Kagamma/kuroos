@@ -241,8 +241,8 @@ begin
   Self.CursorBackTexture := 0;
 
   FocusedView := nil;
-  IsRenderUpdate := true;
-  IsMoved := false;
+  IsRenderUpdate := True;
+  IsMoved := False;
   Kuro := @Self;
   Tag := TAG_KUROWM;
 end;
@@ -290,7 +290,7 @@ begin
   while IsGUI do
   begin
     IRQ_DISABLE;
-    IsCleared := false;
+    IsCleared := False;
     IsKeyEvent := Keyboard.IsEvent;
     IsMouseEvent := Mouse.IsEvent;
     if IsKeyEvent or IsMouseEvent or IsRenderUpdate then
@@ -323,7 +323,7 @@ begin
           M := @Messages[MCount - 1];
           M^.Command := KM_KEYDOWN;
           M^.LoShort1 := W;
-          IsRenderUpdate := true;
+          IsRenderUpdate := True;
         end;
         W := E.Keyboard.KeyReleased;
         if W <> 0 then
@@ -332,7 +332,7 @@ begin
           M := @Messages[MCount - 1];
           M^.Command := KM_KEYUP;
           M^.LoShort1 := W;
-          IsRenderUpdate := true;
+          IsRenderUpdate := True;
         end;
       end;
 
@@ -346,7 +346,7 @@ begin
           M^.LoShort1 := E.Mouse.MouseButton;
           M^.LoShort2 := E.Mouse.X;
           M^.HiShort2 := E.Mouse.Y;
-          IsRenderUpdate := true;
+          IsRenderUpdate := True;
         end;
         if E.Mouse.IsMouseUp then
         begin
@@ -356,7 +356,7 @@ begin
           M^.LoShort1 := E.Mouse.MouseButton;
           M^.LoShort2 := E.Mouse.X;
           M^.HiShort2 := E.Mouse.Y;
-          IsRenderUpdate := true;
+          IsRenderUpdate := True;
         end;
         if E.Mouse.IsMouseMove then
         begin
@@ -366,7 +366,7 @@ begin
           M^.LoShort1 := E.Mouse.MouseButton;
           M^.LoShort2 := E.Mouse.X;
           M^.HiShort2 := E.Mouse.Y;
-         // IsRenderUpdate := true;
+         // IsRenderUpdate := True;
         end;
       end;
 
@@ -381,10 +381,10 @@ begin
         begin
           V := Items[i];
           M := @Messages[j];
-          V^.IsMoveBlocked := false;
-          V^.ProcessMessages(M, true);
+          V^.IsMoveBlocked := False;
+          V^.ProcessMessages(M, True);
           if V^.IsRenderUpdate then
-            IsRenderUpdate := true;
+            IsRenderUpdate := True;
           // Look for task, if it's not available, clean up window
           if V^.IsClosed or (FindProcess(V^.PID) = nil) then
           begin
@@ -445,7 +445,7 @@ begin
       if IsRenderUpdate or IsMouseEvent then
       begin
         glSwapBuffers;
-        IsRenderUpdate := false;
+        IsRenderUpdate := False;
         Self.E.MouseOld.X := Self.E.Mouse.X;
         Self.E.MouseOld.Y := Self.E.Mouse.Y;
       end;
@@ -482,21 +482,21 @@ begin
     end
     else
       glClear(GL_COLOR_BUFFER_BIT);
-    IsCleared := true;
+    IsCleared := True;
   end;
 end;
 
 constructor TKuroView.Init(const AParent: PKuroObject);
 begin
   inherited Init;
-  IsFocused := false;
-  IsRenderUpdate := true;
-  Kuro^.IsRenderUpdate := true;
-  IsMoveable := false;
-  IsClosed := false;
-  IsMouseDown := false;
-  IsChildPriority := false;
-  IsCanBeSelected := true;
+  IsFocused := False;
+  IsRenderUpdate := True;
+  Kuro^.IsRenderUpdate := True;
+  IsMoveable := False;
+  IsClosed := False;
+  IsMouseDown := False;
+  IsChildPriority := False;
+  IsCanBeSelected := True;
   Parent := AParent;
   AParent^.Add(@Self);
   Tag := TAG_KUROVIEW;
@@ -543,7 +543,7 @@ begin
   glRasterFlatRect(Width-3, 0, 3, Height, BorderColor);
   glRasterFlatRect(0, Height-2, Width, 2, BorderColor);
   glRasterFlatRect(0, 0, 3, Height, BorderColor);
-  IsRenderUpdate := false;
+  IsRenderUpdate := False;
   // Process child
   for i := Count-1 downto 0 do
   begin
@@ -564,7 +564,7 @@ begin
   if Parent^.Tag <> TAG_KUROWM then
   begin
     if not PKuroView(Parent)^.IsFocused then
-      exit(false);
+      exit(False);
   end;
   GetRealPosition(X1, Y1);
   XX := M^.LoShort2;
@@ -583,7 +583,7 @@ begin
       V^.GetRealPosition(VX, VY);
       if V^.IsCanBeSelected and InRect(XX, YY, VX, VY, VX + V^.Width, VY + V^.Height) then
       begin
-        exit(false);
+        exit(False);
       end
     end;
   end;
@@ -616,13 +616,13 @@ begin
             MouseXOld := M^.LoShort2;
             MouseYOld := M^.HiShort2;
             if (not Kuro^.IsMoved) and (not IsMoveBlocked) then
-              IsMouseDown := true;
+              IsMouseDown := True;
           end;
           // BLock parent's moveable ability
           if (Parent^.Tag <> TAG_KUROWM) and not Kuro^.IsMoved then
           begin
-            PKuroView(Parent)^.IsMouseDown := false;
-            PKuroView(Parent)^.IsMoveBlocked := true;
+            PKuroView(Parent)^.IsMouseDown := False;
+            PKuroView(Parent)^.IsMoveBlocked := True;
           end;
         end else
         begin
@@ -642,8 +642,8 @@ begin
         begin
           Focus;
         end;
-        IsMouseDown := false;
-        Kuro^.IsMoved := false;
+        IsMouseDown := False;
+        Kuro^.IsMoved := False;
         TransferMessageWithCallback(M, IsChild);
       end;
     KM_MOUSEMOVE:
@@ -657,12 +657,12 @@ begin
         // Move the view and it's child around
         if IsMouseDown and IsMoveable then
         begin
-          Kuro^.IsMoved := true;
+          Kuro^.IsMoved := True;
           X := X + M^.LoShort2 - MouseXOld;
           Y := Y + M^.HiShort2 - MouseYOld;
           MouseXOld := M^.LoShort2;
           MouseYOld := M^.HiShort2;
-        //  IsRenderUpdate := true;
+        //  IsRenderUpdate := True;
         end;
       end;
     KM_KEYDOWN:
@@ -691,7 +691,7 @@ begin
     for i := Count-1 downto 0 do
     begin
       V := Items[i];
-      V^.IsMoveBlocked := false;
+      V^.IsMoveBlocked := False;
       V^.ProcessMessages(M, IsChild);
       if V^.IsClosed then
       begin
@@ -707,7 +707,7 @@ begin
     begin
       while MessageReceivedCount > 0 do
       begin
-        ProcessMessages(@MessagesReceived[0], false);
+        ProcessMessages(@MessagesReceived[0], False);
         Dec(MessageReceivedCount);
         //
         if MessageReceivedCount > 0 then
@@ -728,11 +728,11 @@ begin
   end
   else
   begin
-    PKuroView(Kuro^.FocusedView)^.IsChildPriority := true;
+    PKuroView(Kuro^.FocusedView)^.IsChildPriority := True;
   end;
   Kuro^.FocusedView := @Self;
-  IsFocused := true;
-  IsRenderUpdate := true;
+  IsFocused := True;
+  IsRenderUpdate := True;
   Kuro^.ChangeFocus(@Self);
 end;
 
@@ -740,9 +740,9 @@ procedure TKuroView.Blur;
 var
   i: Integer;
 begin
-  IsFocused := false;
-  IsChildPriority := false;
-  IsRenderUpdate := true;
+  IsFocused := False;
+  IsChildPriority := False;
+  IsRenderUpdate := True;
   if Kuro^.FocusedView = @Self then
     Kuro^.FocusedView := nil;
   for i := 0 to Count-1 do
@@ -752,8 +752,8 @@ end;
 procedure TKuroView.Close;
 begin
   Blur;
-  IsClosed := true;
-  Kuro^.IsRenderUpdate := true;
+  IsClosed := True;
+  Kuro^.IsRenderUpdate := True;
 end;
 
 procedure TKuroView.TransferMessage(const M: PKuroMessage);
@@ -801,10 +801,10 @@ begin
     //
     if MessageSentCount > 0 then
       Move(MessagesSent[1], MessagesSent[0], MessageSentCount * SizeOf(TKuroMessage));
-    SendMessage := true;
+    SendMessage := True;
   end
   else
-    SendMessage := false;
+    SendMessage := False;
 end;
 
 procedure TKuroView.ReceiveMessage(const Command, Param1, Param2: LongInt);
@@ -827,8 +827,8 @@ end;
 
 procedure TKuroView.RenderUpdate;
 begin
-  IsRenderUpdate := true;
-  Kuro^.IsRenderUpdate := true;
+  IsRenderUpdate := True;
+  Kuro^.IsRenderUpdate := True;
 end;
 
 procedure TKuroView.SetPosition(const AX, AY: LongInt);

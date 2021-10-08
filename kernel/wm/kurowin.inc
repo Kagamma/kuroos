@@ -103,7 +103,7 @@ procedure TKuroWindow.Callback(const M: PKuroMessage);
 begin
   Body^.PID := PID;
   if IsFocused then
-    Body^.IsFocused := true;
+    Body^.IsFocused := True;
   inherited;
 end;
 

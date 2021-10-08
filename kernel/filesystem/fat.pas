@@ -247,7 +247,7 @@ begin
   for i:= 0 to ACount * mbr^.SecPerClus - 1 do
   begin
     result:= IDE.LBA_ReadSector(ADrive, ABuf + i*512, GetFirstDataSector(ADrive) + AFirstCluster*mbr^.SecPerClus + i - GetFirstRootDirSector(ADrive));
-    if NOT result then
+    if not result then
       break;
   end;
   exit(result);
@@ -267,7 +267,7 @@ begin
   for i:= 0 to ACount * mbr^.SecPerClus - 1 do
   begin
     result:= IDE.LBA_WriteSector(ADrive, ABuf + i*512, GetFirstDataSector(ADrive) + AFirstCluster*mbr^.SecPerClus + i - GetFirstRootDirSector(ADrive));
-    if NOT result then
+    if not result then
       break;
   end;
   exit(result);
@@ -466,9 +466,9 @@ begin
     Move(buf2[0], sector1^, 512);
 
     { Read first sector to the buffer. }
-    if NOT drive^.ATAPI then
-      if (NOT IDE.LBA_ReadSector(drive, mbrSt, 0)) or
-         (NOT IDE.LBA_ReadSector(drive, sector1, 1)) then
+    if not drive^.ATAPI then
+      if (not IDE.LBA_ReadSector(drive, mbrSt, 0)) or
+         (not IDE.LBA_ReadSector(drive, sector1, 1)) then
         continue;
 
     Console.SetFgColor(14);
@@ -476,7 +476,7 @@ begin
     Console.SetFgColor(7);
 
     { Check to see if this drive is FAT or not. }
-    if (NOT IsValidFAT(drive) and not drive^.ATAPI) then
+    if (not IsValidFAT(drive) and not drive^.ATAPI) then
     begin
       Writeln(' - File System       : Unknown');
       continue;
@@ -603,7 +603,7 @@ var
   mbrSt    : PFATMBRStruct;
   i        : Cardinal;
 begin
-  if NOT AFile^.Opened then
+  if not AFile^.Opened then
     exit;
 
   fatSt:= AFile^.Drive^.FileSystem;
@@ -639,7 +639,7 @@ var
   csize,
   i         : Cardinal;
 begin
-  if NOT AFile^.Opened then
+  if not AFile^.Opened then
     exit(result);
 
   fatSt:= AFile^.Drive^.FileSystem;
@@ -684,7 +684,7 @@ var
   fatSt    : PFATStruct;
   mbrSt    : PFATMBRStruct;
 begin
-  if NOT AFile^.Opened then
+  if not AFile^.Opened then
     exit(True);
 
   fatSt:= AFile^.Drive^.FileSystem;

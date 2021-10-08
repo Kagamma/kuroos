@@ -477,7 +477,7 @@ begin
   Task:= FindProcess(PID);
   if Task <> nil then
     Task^.Priority:= TASK_PRIORITY_VLOW;
-  while true do;
+  while True do;
 end;
 
 procedure Debug_PrintTasks; stdcall;

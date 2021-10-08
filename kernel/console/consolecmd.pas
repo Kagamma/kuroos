@@ -295,14 +295,14 @@ begin
   // New(Win2, Init(@KuroWM));
   // Win2^.SetPosition(150, 200);
   // Win2^.SetSize(200, 150);
-  // Win2^.IsMoveable := true;
+  // Win2^.IsMoveable := True;
 
   New(Taskbar, Init(@WM));
   Taskbar^.X := 0;
   Taskbar^.Y := WM.Height - 30;
   Taskbar^.Width := WM.Width;
   Taskbar^.Height := 30;
-  Taskbar^.IsMoveable := false;
+  Taskbar^.IsMoveable := False;
   Taskbar^.Focus;
   Taskbar^.BgColor := $FF404040;
   Taskbar^.BgColorSelected := Taskbar^.BgColor;
@@ -336,7 +336,7 @@ begin
   // Win3^.Y := 30;
   // Win3^.Width := 200;
   // Win3^.Height := 120;
-  // Win3^.IsMoveable := false;
+  // Win3^.IsMoveable := False;
   // Win3^.BgColor := $FF808080;
   // Win3^.BgColorSelected := $FFA0A0A0;
 

@@ -36,7 +36,7 @@ begin
     mov  faultAddr,eax
   end ['eax'];
 
-  present := NOT (r.err_code and 1);
+  present := not (r.err_code and 1);
   rw      := r.err_code and 2;
   us      := r.err_code and 4;
   reserved:= r.err_code and 8;

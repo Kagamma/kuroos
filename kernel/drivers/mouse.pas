@@ -51,15 +51,15 @@ uses
 var
   _mouseCycle   : Byte;
   _mousePacket  : array[0..2] of ShortInt;
-  _storedAttrib : Byte = $17 XOR $77; // Store the current position's attribute.
+  _storedAttrib : Byte = $17 xor $77; // Store the current position's attribute.
   _mouseState   : TMouseStruct;
   _mouseBoundary: TRect;
-  _IsEvent      : Boolean = false;
+  _IsEvent      : Boolean = False;
 
 function IsEvent: Boolean; stdcall;
 begin
   IsEvent := _IsEvent;
-  _IsEvent := false;
+  _IsEvent := False;
 end;
 
 function  Wait(const AType: Byte): Boolean; stdcall;
@@ -134,11 +134,11 @@ begin
         oldPosY:= _mouseState.Y;
 
         if _mouseState.IsMouseUp then
-          _mouseState.IsMouseUp := false;
+          _mouseState.IsMouseUp := False;
         if (_mousePacket[1] <> 0) or (_mousePacket[2] <> 0) then
-          _mouseState.IsMouseMove := true
+          _mouseState.IsMouseMove := True
         else
-          _mouseState.IsMouseMove := false;
+          _mouseState.IsMouseMove := False;
 
         _mouseState.Left  := Boolean(_mousePacket[0] and $01);
         _mouseState.Right := Boolean(_mousePacket[0] and $02);
@@ -146,13 +146,13 @@ begin
 
         if (not _mouseState.Left) and (not _mouseState.Right) and (not _mouseState.Middle) and _mouseState.IsMouseDown then
         begin
-          _mouseState.IsMouseUp := true;
-           _mouseState.IsMouseDown := false;
+          _mouseState.IsMouseUp := True;
+           _mouseState.IsMouseDown := False;
         end;
         if _mouseState.Left or _mouseState.Right or _mouseState.Middle then
         begin
-          _mouseState.IsMouseDown := true;
-          _mouseState.IsMouseUp := false;
+          _mouseState.IsMouseDown := True;
+          _mouseState.IsMouseUp := False;
           _mouseState.MouseButton := _mousePacket[0];
         end;
 
@@ -178,14 +178,14 @@ begin
             if (oldPosX <> _mouseState.X) or (oldPosY <> _mouseState.Y) then
             begin
               oldLocation:= oldPosY * VGA.GetScreenWidth + oldPosX;
-              TEXTMODE_MEMORY[oldLocation]:= ((_storedAttrib XOR $77) shl 8) or Byte(TEXTMODE_MEMORY[oldLocation]);
+              TEXTMODE_MEMORY[oldLocation]:= ((_storedAttrib xor $77) shl 8) or Byte(TEXTMODE_MEMORY[oldLocation]);
             end;
-            _storedAttrib:= attrib XOR $77;
+            _storedAttrib:= attrib xor $77;
             TEXTMODE_MEMORY[currentLocation]:= (_storedAttrib shl 8) or Byte(TEXTMODE_MEMORY[currentLocation]);
           end;
         end;
         _mouseCycle:= 0;
-        _IsEvent := true;
+        _IsEvent := True;
       end;
   end;
 end;
@@ -228,9 +228,9 @@ begin
   _mouseState.Left:= False;
   _mouseState.Right:= False;
   _mouseState.Middle:= False;
-  _mouseState.IsMouseMove := false;
-  _mouseState.IsMouseUp := false;
-  _mouseState.IsMouseDown := false;
+  _mouseState.IsMouseMove := False;
+  _mouseState.IsMouseUp := False;
+  _mouseState.IsMouseDown := False;
 
   Mouse.SetBoundary(0, 0, VGA.GetScreenWidth, VGA.GetScreenHeight);
 
