@@ -468,7 +468,7 @@ begin
   port := ADriveInfoSt^.ControllerPort;
   drive:= ADriveInfoSt^.DriveNumber;
 
-  if (NOT IDE.DetectController(port)) or (NOT IDE.DetectDrive(ADriveInfoSt)) then
+  if (not IDE.DetectController(port)) or (not IDE.DetectDrive(ADriveInfoSt)) then
   begin
     _mutex:= False;
     exit(False);
@@ -578,7 +578,7 @@ begin
       msArr:= 1;
   end;
 
-  if (NOT IDE.DetectController(port)) or (NOT IDE.DetectDrive(ADriveInfoSt)) then
+  if (not IDE.DetectController(port)) or (not IDE.DetectDrive(ADriveInfoSt)) then
   begin
     _mutex:= False;
     exit(False);
