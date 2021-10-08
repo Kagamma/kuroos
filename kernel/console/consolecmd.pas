@@ -27,7 +27,7 @@ procedure StartKuroWM; stdcall;
 implementation
 
 uses
-  sysutils,
+  sysutils, apm,
   console, keyboard, rtc,
   kheap,
   schedule,
@@ -106,7 +106,13 @@ begin
       Writeln(' - mem [pid]  : Print memory blocks of a single task, or all if pid is empty');
       Writeln(' - ps         : Print all tasks');
       Writeln(' - wm         : Kuro Window Manager');
+      Writeln(' - shutdown   : Turn off the system');
       Writeln(' - testtrace  : Test stack trace');
+    end
+    else
+    if Cmd = 'shutdown' then
+    begin
+      Shutdown;
     end
     else
     if Cmd = 'wm' then
