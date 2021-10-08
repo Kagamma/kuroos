@@ -27,7 +27,7 @@ begin
   R.ax := $5300;
   R.bx := 0;
   BIOS.Int(R, $15);
-  if (BCDToBin(R.ax shr 8) >= 1) and (BCDToBin(R.ax) >= 1) then
+  if (BCDToBin(R.ax shr 8) >= 1) and (BCDToBin(Byte(R.ax)) >= 1) then
     exit(True);
   exit(False);
 end;
