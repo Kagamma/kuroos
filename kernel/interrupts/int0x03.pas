@@ -30,7 +30,9 @@ var
   buf: TKeyBuffer;
 begin
   Keyboard.ClearBuffer;
+  Console.SetFgColor(14);
   Console.WriteStr('Press any key to continue...');
+  Console.SetFgColor(7);
   IRQ_ENABLE;
   while Keyboard.GetLastKeyStroke = 0 do CPU_HALT;
   Console.WriteStr(#10#13);
