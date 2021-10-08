@@ -79,7 +79,7 @@ begin
   Console.WriteStr('    ES : 0x'); Console.WriteHex(r.es , 8);
   Console.WriteStr('    SS : 0x'); Console.WriteHex(r.ss , 8); Console.WriteStr(#10#13);
 
-  Console.WriteStr(    'DS : 0x'); Console.WriteHex(r.ds , 8);
+  Console.WriteStr(    'FS : 0x'); Console.WriteHex(r.fs , 8);
   Console.WriteStr('    GS : 0x'); Console.WriteHex(r.gs , 8);
   Console.WriteStr('    EIP: 0x'); Console.WriteHex(r.eip, 8);
   Console.WriteStr('    EF : 0x'); Console.WriteHex(r.eflags, 8); Console.WriteStr(#10#13);
