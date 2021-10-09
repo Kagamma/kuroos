@@ -11,8 +11,9 @@ unit schedule;
 
 {$I KOS.INC}
 {$DEFINE GENERATE_STACK:= ;
-  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= TaskIdPtr;
   Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= 0;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= TaskIdPtr;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $10;
   Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $202;  // EFLAGS
   Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $08;   // CS
   Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= KernelCardinal(Task^.Code);  // EIP
@@ -30,6 +31,29 @@ unit schedule;
   Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $10;
   Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $10;
   Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $10
+}
+
+{$DEFINE GENERATE_STACK_USER:= ;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= 0;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= TaskIdPtr;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $20;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $202;  // EFLAGS
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $18;   // CS
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= KernelCardinal(Task^.Code);  // EIP
+
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= 0;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= 0;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= 0;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= 0;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= 0;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= 0;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= 0;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= 0;
+
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $20;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $20;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $20;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $20
 }
 
 interface
