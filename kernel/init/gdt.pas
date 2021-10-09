@@ -35,18 +35,18 @@ type
 
 var
   GDTEntries: array[0..6] of TGDTEntry;
-  GDTPtr    : TGDTPtr;
+  GDTPtr    : PGDTPtr = Pointer($7F00);
 
 procedure Flush(AGDTPtr: Cardinal); stdcall; external name 'k_GDT_Flush';
 // Set gate
-procedure SetGate(AIndex: LongInt; ABase, ALimit: Cardinal; AFlag, AAccess: Byte); stdcall;
+procedure SetGate(AIndex: LongInt; ABase, ALimit: Cardinal; AAccess, AFlag: Byte); stdcall;
 // Init table
 procedure Init; stdcall;
 
 implementation
 
 // Set gate
-procedure SetGate(AIndex: LongInt; ABase, ALimit: Cardinal; AFlag, AAccess: Byte); stdcall; inline;
+procedure SetGate(AIndex: LongInt; ABase, ALimit: Cardinal; AAccess, AFlag: Byte); stdcall; inline;
 begin
   GDTEntries[AIndex].base_low   := (ABase and $FFFF);
   GDTEntries[AIndex].base_middle:= (ABase shr 16) and $FF;
@@ -66,18 +66,18 @@ begin
   IRQ_DISABLE;
   //Console.WriteStr('Installing GDT... ');
 
-  GDTPtr.limit:= (SizeOf(TGDTEntry) * 7) - 1;
-  GDTPtr.base := Cardinal(@GDTEntries);
+  GDTPtr^.limit:= (SizeOf(TGDTEntry) * 7) - 1;
+  GDTPtr^.base := Cardinal(@GDTEntries);
 
-  GDT.SetGate(0, 0, 0, $CF, 0);           // Null segment
-  GDT.SetGate(1, 0, $FFFFFFFF, $CF, $9A); // Code segment
-  GDT.SetGate(2, 0, $FFFFFFFF, $CF, $92); // Data segment
-  GDT.SetGate(3, 0, $FFFFFFFF, $CF, $FA); // User mode code segment
-  GDT.SetGate(4, 0, $FFFFFFFF, $CF, $F2); // User mode data segment
-  GDT.SetGate(5, 0, $FF, $8F, $9A); // Code segment (16 bit)
-  GDT.SetGate(6, 0, $FF, $8F, $92); // Data segment (16 bit)
+  GDT.SetGate(0, 0, 0, 0, $CF);           // Null segment
+  GDT.SetGate(1, 0, $FFFFFFFF, $9A, $CF); // Code segment
+  GDT.SetGate(2, 0, $FFFFFFFF, $92, $CF); // Data segment
+  GDT.SetGate(3, 0, $FFFFFFFF, $FA, $CF); // User mode code segment
+  GDT.SetGate(4, 0, $FFFFFFFF, $F2, $CF); // User mode data segment
+  GDT.SetGate(5, 0, $FF, $9A, $8F); // Code segment (16 bit)
+  GDT.SetGate(6, 0, $FF, $92, $8F); // Data segment (16 bit)
 
-  GDT.Flush(Cardinal(@GDTPtr));
+  GDT.Flush(Cardinal(GDTPtr));
 
   //Console.WriteStr(stOk);
   IRQ_ENABLE;
