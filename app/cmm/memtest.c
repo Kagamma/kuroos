@@ -10,7 +10,6 @@ void main() {
   printf(c);
   printf(" bytes allocated!\n");
   printf("The OS should automatically clean up allocated memory even if the process doesn't free it.\n");
-  exit();
 }
 
 byte endofcode;

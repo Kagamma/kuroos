@@ -39,7 +39,6 @@ void main() {
     kwmSetPosition(imageHandle, x, y);
     yield();
   }
-  exit();
 }
 
 byte endofcode;

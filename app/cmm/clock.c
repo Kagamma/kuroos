@@ -76,7 +76,6 @@ void main() {
     }
     yield();
   }
-  exit();
 }
 
 byte endofcode;
