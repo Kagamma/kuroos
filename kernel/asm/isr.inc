@@ -1,7 +1,6 @@
 macro ISR func1,n {
 public func1
 func1:
-	cli
 	push  0
 	push  n
 	jmp   isrstub
@@ -10,7 +9,6 @@ func1:
 macro ISRERR func2,n {
 public func2
 func2:
-	cli
 	push  n
 	jmp   isrstub
 }

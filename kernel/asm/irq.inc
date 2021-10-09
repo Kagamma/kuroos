@@ -3,8 +3,7 @@ macro IRQ func,n {
 public func
 ; ------------------------------
 func:
-  cli
-  push  0                        ; TODO: We need to replace this line and push proper error code to stack.
+  push  0
   push  n
   jmp   irqstub
 }
@@ -14,7 +13,6 @@ macro IRQ_PIC func,n {
 public func
 ; ------------------------------
 func:
-  cli
   jmp   irqpicstub
 }
 
