@@ -24,7 +24,7 @@ struct DateTime_t {
 char BASENUMBERS[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
 inline fastcall void exit() {
-  EAX = 4;
+  EAX = 3;
   ECX = DSDWORD[ESP + 4];
   $int 0x61;
   while (1) {
@@ -38,13 +38,13 @@ inline fastcall void yield() {
 
 // ESI: char*
 void printf(dword ESI) {
-  EAX = 1;
+  EAX = 0;
   $int 0x71;
 }
 
 // EDI: DateTime_t*
 void GetDateTime(dword EDI) {
-  EAX = 0x202;
+  EAX = 7;
   $int 0x61;
   EDI.DateTime_t.second = AL;
   EDI.DateTime_t.minute = AH;
@@ -108,16 +108,16 @@ dword rnd() {
 
 // Memory
 dword msize(dword ESI) {
-  EAX = 0x101;
+  EAX = 4;
   $int 0x61;
 }
 
 dword malloc(dword ECX) {
-  EAX = 0x102;
+  EAX = 5;
   $int 0x61;
 }
 
 void free(dword ESI) {
-  EAX = 0x103;
+  EAX = 6;
   $int 0x61;
 }

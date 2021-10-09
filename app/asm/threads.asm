@@ -10,7 +10,7 @@ use32
     dd    0                          ; Icon location.
 
 code_section:
-    mov   eax,1
+    xor   eax,eax
     mov   esi,str_lfcr
     int   0x71
     mov   esi,str_hello
@@ -19,13 +19,13 @@ code_section:
     int   0x71
 
     ; Create a new thread
-    mov   eax,1
+    xor   eax,eax
     mov   ecx,0x400
     mov   esi,thread_proc
     int   0x61
     hlt
     ;
-    mov   eax,1
+    xor   eax,eax
     mov   ecx,0x400
     mov   esi,thread_proc
     int   0x61
@@ -43,13 +43,13 @@ endprog:
 
 thread_proc:
 
-    mov   eax,1
+    xor   eax,eax
     mov   esi,str_t1
     int   0x71
-    mov   eax,2
+    mov   eax,1
     mov   ecx,[esp + 4]
     int   0x71
-    mov   eax,1
+    xor   eax,eax
     mov   esi,str_t2
     int   0x71
     mov   esi,str_lfcr

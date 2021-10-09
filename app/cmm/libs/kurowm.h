@@ -20,33 +20,33 @@ struct KuroView_t {
 
 // ESI: KuroView_t*
 dword kwmCreateWindow(dword ESI) {
-  EAX = 1;
+  EAX = 0;
   $int 0x69;
 }
 
 // ESI: KuroView_t*
 dword kwmCreateButton(dword ESI) {
-  EAX = 2;
+  EAX = 1;
   $int 0x69;
 }
 
 // ESI: KuroView_t*
 // ECX: Image path
 dword kwmCreateImage(dword ESI, ECX) {
-  EAX = 3;
+  EAX = 2;
   $int 0x69;
 }
 
 // ESI: handle
 dword kwmCloseHandle(dword ESI) {
-  EAX = 0x301;
+  EAX = 200;
   $int 0x69;
 }
 
 // ESI: handle
 // ECX: char*
 void kwmSetName(dword ESI, ECX) {
-  EAX = 0x201;
+  EAX = 101;
   $int 0x69;
 }
 
@@ -54,14 +54,14 @@ void kwmSetName(dword ESI, ECX) {
 // ECX: X
 // EDX: Y
 void kwmSetPosition(dword ESI, dword ECX, dword EDX) {
-  EAX = 0x202;
+  EAX = 102;
   $int 0x69;
 }
 
 // ESI: handle
 // msg: result message
 dword kwmCheckMessage(dword ESI, dword *msg) {
-  EAX = 0x401;
+  EAX = 300;
   $int 0x69;
   $mov DSDWORD[msg],ebx;
 }

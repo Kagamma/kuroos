@@ -10,7 +10,7 @@ use32
     dd    0                          ; Icon location.
 
 code_section:
-    mov   eax,1
+    xor   eax,eax
     mov   esi,str_lfcr
     int   0x71
     mov   esi,str_p1
@@ -20,9 +20,9 @@ code_section:
     mov   esi,str_pid
     int   0x71
     mov   ecx,[esp + 4]
-    mov   eax,2
-    int   0x71
     mov   eax,1
+    int   0x71
+    xor   eax,eax
     mov   esi,str_lfcr
     int   0x71
 

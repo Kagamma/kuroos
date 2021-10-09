@@ -10,7 +10,7 @@ use32
     dd    0                          ; Icon location.
 
 code_section:
-    mov   eax,1
+    xor   eax,eax
     mov   esi,str_lfcr
     int   0x71
     mov   esi,str_hello
@@ -19,7 +19,7 @@ code_section:
     int   0x71
 
     ; We kill this process...
-    mov   eax,4
+    mov   eax,3
     mov   ecx,[esp + 4]
     int   0x61
 

@@ -16,28 +16,28 @@ include 'include/macro/proc32.inc'
 ; they only serve as a shortcut to interrupt calls
 
 proc kwmCreateWindow kuro_struct
-    mov   eax,1
+    xor   eax,eax
     mov   esi,[kuro_struct]
     int   0x69
     ret
 endp
 
 proc kwmCreateButton kuro_struct
-    mov   eax,2
+    mov   eax,1
     mov   esi,[kuro_struct]
     int   0x69
     ret
 endp
 
 proc kwmCloseHandle kuro_handle
-    mov   eax,0x301
+    mov   eax,200
     mov   esi,[kuro_handle]
     int   0x69
     ret
 endp
 
 proc kwmSetName kuro_handle,name
-    mov   eax,0x201
+    mov   eax,101
     mov   esi,[kuro_handle]
     mov   ecx,[name]
     int   0x69
@@ -45,14 +45,14 @@ proc kwmSetName kuro_handle,name
 endp
 
 proc kwmCheckMessage kuro_handle
-    mov   eax,0x401
+    mov   eax,300
     mov   esi,[kuro_handle]
     int   0x69
     ret
 endp
 
 proc kwmSendMessage command, param1, param2
-    mov   eax,0x402
+    mov   eax,301
     mov   esi,[kuro_handle]
     mov   ebx,[command]
     mov   ecx,[param1]
@@ -67,7 +67,7 @@ proc Yield
 endp
 
 proc EndProcess process_id
-    mov   eax,4
+    mov   eax,3
     mov   ecx,[process_id]
     int   0x61
 iloop:
