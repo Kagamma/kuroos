@@ -34,7 +34,7 @@ inline fastcall main_start() {
 
 inline fastcall void exit() {
   EAX = 3;
-  ECX = DSDWORD[ESP + 4];
+  ECX = pid;
   $int 0x61;
   while (1) {
     $hlt;
