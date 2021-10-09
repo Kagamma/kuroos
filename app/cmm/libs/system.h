@@ -7,9 +7,9 @@
 
 char  name[4]     = {'K', '3', '2', 0};
 dword version     = 1;
-dword size        = #endofcode - 0x04000000;
+dword size        = #__endofcode - 0x04000000;
 dword stackSize   = 0x400;
-dword entryPoint  = #main_start;
+dword entryPoint  = #__entry;
 dword icon        = 0;
 
 struct DateTime_t {
@@ -22,11 +22,11 @@ struct DateTime_t {
 };
 
 char BASENUMBERS[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
-dword pid;
+dword __pid;
 dword __argPtr;
 
-inline fastcall main_start() {
-  pid = SSDWORD[ESP + 4];
+inline fastcall __entry() {
+  __pid = SSDWORD[ESP + 4];
   __argPtr = SSDWORD[ESP];
   main();
   exit();
@@ -34,7 +34,7 @@ inline fastcall main_start() {
 
 inline fastcall void exit() {
   EAX = 3;
-  ECX = pid;
+  ECX = __pid;
   $int 0x61;
   while (1) {
     $hlt;

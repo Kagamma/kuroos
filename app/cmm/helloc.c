@@ -4,4 +4,4 @@ void main() {
   printf("Hello World using Sphinx C--!\n");
 }
 
-byte endofcode;
+byte __endofcode;

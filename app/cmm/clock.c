@@ -78,4 +78,4 @@ void main() {
   }
 }
 
-byte endofcode;
+byte __endofcode;

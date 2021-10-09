@@ -12,4 +12,4 @@ void main() {
   printf("The OS should automatically clean up allocated memory even if the process doesn't free it.\n");
 }
 
-byte endofcode;
+byte __endofcode;
