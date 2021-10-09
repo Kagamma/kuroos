@@ -170,8 +170,7 @@ edi_nothave:
 edi_end:
 
 irq_stub_end:
-    sti
-     iret                                   ; pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP
+    iret                                   ; pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP
 
 irqpicstub:
     pusha
@@ -205,7 +204,6 @@ call  k_PIC_Handler
     pop   fs
     pop   es
     pop   ds
-     popa
+    popa
 pic_end:
-    sti
-     iret
+    iret
