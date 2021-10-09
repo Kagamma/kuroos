@@ -143,12 +143,9 @@ procedure SetGate(AIndex: LongInt; ABase: Cardinal; sel: Word; attr: Byte); stdc
 begin
   IDTEntries[AIndex].base_lo:= ABase and $FFFF;
   IDTEntries[AIndex].base_hi:= (ABase shr 16) and $FFFF;
-
   IDTEntries[AIndex].sel    := sel;
   IDTEntries[AIndex].zero   := 0;
-  // We must uncomment the or below when we get to using user-mode.
-  // It sets the interrupt gate's privilege level to 3.
-  IDTEntries[AIndex].attr   := attr; // or $60
+  IDTEntries[AIndex].attr   := attr or $60
 end;
 
 // Init interrupt descriptor table
