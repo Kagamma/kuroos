@@ -16,6 +16,21 @@ func:
   jmp   irqpicstub
 }
 
+macro HAVE reg,have,value,nothavejmp,endjmp {
+    mov   [tmp],reg
+    mov   reg,[have]
+    cmp   reg,0
+    je    nothavejmp
+
+    xor   reg,reg
+    mov   [have],reg
+    mov   reg,[value]
+    jmp   endjmp
+nothavejmp:
+    mov   reg,[tmp]
+endjmp:
+}
+
 IRQ_PIC k_IDT_IRQ0, 32
 IRQ k_IDT_IRQ1, 33
 IRQ k_IDT_IRQ2, 34
@@ -89,83 +104,12 @@ irqstub:
     popa
     add   esp,8                            ; Cleans up the pushed error code and pushed ISR number
 
-    mov   [tmp],eax
-    mov   eax,[IRQEAXHave]
-    cmp   eax,0
-    je    eax_nothave
-eax_have:
-    xor   eax,eax
-    mov   [IRQEAXHave],eax
-    mov   eax,[IRQEAXValue]
-    jmp   eax_end
-eax_nothave:
-    mov   eax,[tmp]
-eax_end:
-
-    mov   [tmp],ebx
-    mov   ebx,[IRQEBXHave]
-    cmp   ebx,0
-    je    ebx_nothave
-ebx_have:
-    xor   ebx,ebx
-    mov   [IRQEBXHave],ebx
-    mov   ebx,[IRQEBXValue]
-    jmp   ebx_end
-ebx_nothave:
-    mov   ebx,[tmp]
-ebx_end:
-
-    mov   [tmp],ecx
-    mov   ecx,[IRQECXHave]
-    cmp   ecx,0
-    je    ecx_nothave
-ecx_have:
-    xor   ecx,ecx
-    mov   [IRQECXHave],ecx
-    mov   ecx,[IRQECXValue]
-    jmp   ecx_end
-ecx_nothave:
-    mov   ecx,[tmp]
-ecx_end:
-
-    mov   [tmp],edx
-    mov   edx,[IRQEDXHave]
-    cmp   edx,0
-    je    edx_nothave
-edx_have:
-    xor   edx,edx
-    mov   [IRQEDXHave],edx
-    mov   edx,[IRQEDXValue]
-    jmp   edx_end
-edx_nothave:
-    mov   edx,[tmp]
-edx_end:
-
-    mov   [tmp],esi
-    mov   esi,[IRQESIHave]
-    cmp   esi,0
-    je    esi_nothave
-esx_have:
-    xor   esi,esi
-    mov   [IRQESIHave],edx
-    mov   esi,[IRQESIValue]
-    jmp   esi_end
-esi_nothave:
-    mov   esi,[tmp]
-esi_end:
-
-    mov   [tmp],edi
-    mov   edi,[IRQEDIHave]
-    cmp   edi,0
-    je    edi_nothave
-edi_have:
-    xor   edi,edi
-    mov   [IRQEDIHave],edi
-    mov   edi,[IRQEDIValue]
-    jmp   edi_end
-edi_nothave:
-    mov   edi,[tmp]
-edi_end:
+    HAVE  eax,IRQEAXHave,IRQEAXValue,eaxnot,eaxend
+    HAVE  ebx,IRQEBXHave,IRQEBXValue,ebxnot,ebxend
+    HAVE  ecx,IRQECXHave,IRQECXValue,ecxnot,ecxend
+    HAVE  edx,IRQEDXHave,IRQEDXValue,edxnot,edxend
+    HAVE  esi,IRQESIHave,IRQESIValue,esinot,esiend
+    HAVE  edi,IRQEDIHave,IRQEDIValue,edinot,ediend
 
 irq_stub_end:
     iret                                   ; pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP
