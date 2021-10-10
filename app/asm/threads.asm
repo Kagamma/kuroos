@@ -6,7 +6,7 @@ use32
     dd    1                          ; Version
     dd    image_end - 0x04000000     ; Image size.
     dd    0x400                      ; Stack size.
-    dd    code_section               ; code point
+    dd    code_section               ; entry point
     dd    0                          ; Icon location.
 
 code_section:

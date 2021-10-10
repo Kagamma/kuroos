@@ -62,7 +62,7 @@ begin
   Limit := Base + SizeOf(TTSSEntry);
   GDT.SetGate(Num, Base, Limit, $E9, $00);
   FillChar(TSSEntry, SizeOf(TTSSEntry), 0);
-  TSSEntry.ss0 := $08;
+  TSSEntry.ss0 := $10;
   TSSEntry.esp0 := Cardinal(@KernelStack) + SizeOf(KernelStack) - 4;
   TSSEntry.cs := $0B;
   TSSEntry.ss := $13;
