@@ -20,7 +20,7 @@ void timeDigit(dword num, char* c) {
   *str = 0;
   digit = num;
   do {
-    str -= 1;
+    str--;
     EAX = BASENUMBERS[digit % 10];
     *str = AL;
     digit /= 10;
