@@ -26,8 +26,8 @@ dword __pid;
 dword __argPtr;
 
 inline fastcall __entry() {
-  __pid = DSDWORD[ESP + 4];
-  __argPtr = DSDWORD[ESP + 8];
+  __pid = DSDWORD[ESP + 8];
+  __argPtr = DSDWORD[ESP + 12];
   main();
   exit();
 }

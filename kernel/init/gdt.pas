@@ -34,7 +34,7 @@ type
   PGDTPtr = ^TGDTPtr;
 
 var
-  GDTEntries: array[0..6] of TGDTEntry;
+  GDTEntries: array[0..7] of TGDTEntry;
   GDTPtr    : PGDTPtr = Pointer($7F00);
 
 procedure Flush(AGDTPtr: Cardinal); stdcall; external name 'k_GDT_Flush';
@@ -44,6 +44,9 @@ procedure SetGate(AIndex: LongInt; ABase, ALimit: Cardinal; AAccess, AFlag: Byte
 procedure Init; stdcall;
 
 implementation
+
+uses
+  tss;
 
 // Set gate
 procedure SetGate(AIndex: LongInt; ABase, ALimit: Cardinal; AAccess, AFlag: Byte); stdcall; inline;
@@ -66,7 +69,7 @@ begin
   IRQ_DISABLE;
   //Console.WriteStr('Installing GDT... ');
 
-  GDTPtr^.limit:= (SizeOf(TGDTEntry) * 7) - 1;
+  GDTPtr^.limit:= (SizeOf(TGDTEntry) * 8) - 1;
   GDTPtr^.base := Cardinal(@GDTEntries);
 
   GDT.SetGate(0, 0, 0, 0, $CF);           // Null segment
@@ -76,6 +79,7 @@ begin
   GDT.SetGate(4, 0, $FFFFFFFF, $F2, $CF); // User mode data segment
   GDT.SetGate(5, 0, $FF, $9A, $8F); // Code segment (16 bit)
   GDT.SetGate(6, 0, $FF, $92, $8F); // Data segment (16 bit)
+  TSS.SetTSS(7);
 
   GDT.Flush(Cardinal(GDTPtr));
 

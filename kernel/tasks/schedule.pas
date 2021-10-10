@@ -13,7 +13,8 @@ unit schedule;
 {$DEFINE GENERATE_STACK:= ;
   Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= 0;
   Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= TaskIdPtr;
-  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $10;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $10;   // SS
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= KernelCardinal(Task^.Stack); // ESP
   Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $202;  // EFLAGS
   Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $08;   // CS
   Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= KernelCardinal(Task^.Code);  // EIP
@@ -36,9 +37,10 @@ unit schedule;
 {$DEFINE GENERATE_STACK_USER:= ;
   Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= 0;
   Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= TaskIdPtr;
-  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $20;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $23;   // SS
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= KernelCardinal(Task^.Stack); // ESP
   Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $202;  // EFLAGS
-  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $18;   // CS
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $1B;   // CS
   Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= KernelCardinal(Task^.Code);  // EIP
 
   Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= 0;
@@ -50,10 +52,10 @@ unit schedule;
   Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= 0;
   Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= 0;
 
-  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $20;
-  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $20;
-  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $20;
-  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $20
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $23;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $23;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $23;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $23
 }
 
 interface
@@ -90,6 +92,9 @@ type
     Spin : KernelCardinal;
     //
     State: KernelCardinal;
+    // Kernel stack pointer (Unused at the moment)
+    KernelStack: Pointer;
+    KernelStackAddr: Pointer;
     //
     StackAddr: Pointer;
     // Stack pointer
@@ -109,7 +114,7 @@ type
 var
   Inbetween  : Boolean = True;
   TaskCurrent: PTaskStruct;
-  TaskArray  : array[0..2999] of TTaskStruct;
+  TaskArray  : array[0..1999] of TTaskStruct;
   TaskCount  : Integer;
   TaskPtr    : Integer;
   SLock      : PSpinLock;
@@ -205,6 +210,10 @@ begin
   Task^.Priority:= TASK_PRIORITY_VLOW;
   // Set this task as alive
   Task^.State:= TASK_ALIVE;
+  // Allocate RAM for kernel stack
+ // Task^.KernelStackAddr := KHeap.Alloc(1024);
+ // Task^.KernelStack:= Task^.KernelStackAddr + 1020;
+ // KHeap.SetOwner(Task^.KernelStackAddr, Task^.PID);
   // Allocate RAM for stack
   Task^.StackAddr:= KHeap.Alloc(PKEXHeader(ABuf)^.StackSize);
   Task^.Stack:= Task^.StackAddr + (PKEXHeader(ABuf)^.StackSize);
@@ -421,6 +430,7 @@ function  Run(AStack: KernelCardinal): KernelCardinal; stdcall;
 var
   i: Integer;
   TaskCur: PTaskStruct;
+  Code: Cardinal;
 label
   Start;
 begin

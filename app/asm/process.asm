@@ -19,7 +19,7 @@ code_section:
     int   0x71
     mov   esi,str_pid
     int   0x71
-    mov   ecx,[esp + 4]
+    mov   ecx,[esp + 8]
     mov   eax,1
     int   0x71
     xor   eax,eax

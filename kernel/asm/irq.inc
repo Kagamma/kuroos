@@ -86,8 +86,8 @@ irqstub:
     pop   fs
     pop   es
     pop   ds
-     popa
-     add   esp,8                            ; Cleans up the pushed error code and pushed ISR number
+    popa
+    add   esp,8                            ; Cleans up the pushed error code and pushed ISR number
 
     mov   [tmp],eax
     mov   eax,[IRQEAXHave]

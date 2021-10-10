@@ -44,6 +44,7 @@ k_start:
 ; ------------------------------
 include 'gdt.inc'
 include 'idt.inc'
+include 'tss.inc'
 include 'pm2rm.inc'
 
 section '.bss'

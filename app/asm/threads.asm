@@ -47,7 +47,7 @@ thread_proc:
     mov   esi,str_t1
     int   0x71
     mov   eax,1
-    mov   ecx,[esp + 4]
+    mov   ecx,[esp + 8]
     int   0x71
     xor   eax,eax
     mov   esi,str_t2

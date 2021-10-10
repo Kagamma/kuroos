@@ -196,6 +196,7 @@ begin
       IDTHandle(r);
     end else
     begin
+      IRQ_DISABLE;
       INFINITE_LOOP;
     end;
 

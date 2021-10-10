@@ -20,7 +20,7 @@ code_section:
 
     ; We kill this process...
     mov   eax,3
-    mov   ecx,[esp + 4]
+    mov   ecx,[esp + 8]
     int   0x61
 
 iloop:
