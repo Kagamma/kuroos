@@ -78,6 +78,7 @@ const
   TASK_PRIORITY_VHIGH = 15;
   TASK_PRIORITY_REALTIME = 100;
   PROCESS_STARTUP_CODE = $04000000;
+  KERNEL_STACK_SIZE = 4096;
 
 type
   TaskProc = procedure(PID: PtrUInt); stdcall;
@@ -92,7 +93,7 @@ type
     Spin : KernelCardinal;
     //
     State: KernelCardinal;
-    // Kernel stack pointer (Unused at the moment)
+    // Kernel stack pointer
     KernelStack: Pointer;
     KernelStackAddr: Pointer;
     //
@@ -212,8 +213,8 @@ begin
   // Set this task as alive
   Task^.State:= TASK_ALIVE;
   // Allocate RAM for kernel stack
-  Task^.KernelStackAddr := KHeap.Alloc(4096);
-  Task^.KernelStack:= Task^.KernelStackAddr + 4096;
+  Task^.KernelStackAddr := KHeap.Alloc(KERNEL_STACK_SIZE);
+  Task^.KernelStack:= Task^.KernelStackAddr + KERNEL_STACK_SIZE;
   KHeap.SetOwner(Task^.KernelStackAddr, Task^.PID);
   // Allocate RAM for stack
   Task^.StackAddr:= KHeap.Alloc(PKEXHeader(ABuf)^.StackSize);
@@ -283,8 +284,8 @@ begin
   //
   Task^.Code:= ACode;
   // Allocate RAM for kernel stack
-  Task^.KernelStackAddr := KHeap.Alloc(1024);
-  Task^.KernelStack:= Task^.KernelStackAddr + 1024;
+  Task^.KernelStackAddr := KHeap.Alloc(KERNEL_STACK_SIZE);
+  Task^.KernelStack:= Task^.KernelStackAddr + KERNEL_STACK_SIZE;
   KHeap.SetOwner(Task^.KernelStackAddr, Task^.PID);
   // Allocate RAM for stack
   // TODO: Currently this is broken. As the process wont be able to see the stack
