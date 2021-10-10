@@ -82,6 +82,7 @@ begin
   TSS.SetTSS(7);
 
   GDT.Flush(Cardinal(GDTPtr));
+  TSS.Flush;
 
   //Console.WriteStr(stOk);
   IRQ_ENABLE;

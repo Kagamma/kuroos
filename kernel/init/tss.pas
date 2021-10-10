@@ -46,7 +46,7 @@ var
   TSSEntry: TTSSEntry;
   KernelStack: array[0..4096] of Byte;
 
-procedure Flush(AGDTPtr: Cardinal); stdcall; external name 'k_TSS_Flush';
+procedure Flush; stdcall; external name 'k_TSS_Flush';
 procedure SetTSS(const Num: Integer); stdcall;
 
 implementation
@@ -64,12 +64,12 @@ begin
   FillChar(TSSEntry, SizeOf(TTSSEntry), 0);
   TSSEntry.ss0 := $08;
   TSSEntry.esp0 := Cardinal(@KernelStack) + SizeOf(KernelStack) - 4;
-  {TSSEntry.cs := $0B;
+  TSSEntry.cs := $0B;
   TSSEntry.ss := $13;
   TSSEntry.ds := $13;
   TSSEntry.es := $13;
   TSSEntry.fs := $13;
-  TSSEntry.gs := $13;}
+  TSSEntry.gs := $13;
 end;
 
 end.
