@@ -24,13 +24,13 @@ code_section:
     int   0x61
 
 iloop:
-    hlt
+    int    0x20
     jmp    iloop
 endprog:
     ret
 
 data_section:
-    str_hello    db 'Hello, World!',0
+    str_hello    db 'Hello, World from Userspace!',0
     str_lfcr     db 10,13,0
 
 image_end:

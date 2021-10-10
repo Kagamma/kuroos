@@ -10,8 +10,7 @@ use32
     dd    0                          ; Icon location.
 
 code_section:
-    hlt
-    mov   eax,[esp+4]
+    mov   eax,[esp + 8]
     mov   [process_id],eax
     jmp   start
 

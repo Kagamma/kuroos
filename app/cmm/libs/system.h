@@ -37,7 +37,7 @@ inline fastcall void exit() {
   ECX = __pid;
   $int 0x61;
   while (1) {
-    $hlt;
+    $int 0x20;
   }
 }
 

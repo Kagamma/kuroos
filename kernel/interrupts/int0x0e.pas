@@ -56,6 +56,7 @@ begin
   Console.WriteStr(' ) at 0x'); Console.WriteHex(faultAddr, 8);
   Console.WriteStr(#10#13);
 
+  IRQ_DISABLE;
   INFINITE_LOOP;
 end;
 

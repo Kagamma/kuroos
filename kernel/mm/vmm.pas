@@ -377,14 +377,14 @@ begin
     FillChar(PageTable^, SizeOf(TPageTable), 0);
     APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].Present  := 1;
     APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].RWAble   := RWAble;
-    APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].UserMode := 0;
+    APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].UserMode := 1;
     APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].TableAddr:= KernelCardinal(PageTable) div PAGE_SIZE;
   end;
   // Now we look for our page table entry
   Page := @PageTable^.Entries[AVirtualAddr mod PAGE_MEMORY_BLOCK div PAGE_SIZE];
   Page^.Present  := 1;
   Page^.RWAble   := RWAble;
-  Page^.UserMode := 0;
+  Page^.UserMode := 1;
   Page^.FrameAddr:= Frame;
   Spinlock.Unlock(SLock);
   exit(Page);
@@ -430,14 +430,14 @@ begin
     //
     APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].Present  := 1;
     APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].RWAble   := RWAble;
-    APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].UserMode := 0;
+    APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].UserMode := 1;
     APageStruct^.Directory.Entries[AVirtualAddr div PAGE_MEMORY_BLOCK].TableAddr:= KernelCardinal(PageTable) div PAGE_SIZE;
   end;
   // Now we look for our page table entry
   Page := @PageTable^.Entries[AVirtualAddr mod PAGE_MEMORY_BLOCK div PAGE_SIZE];
   Page^.Present  := 1;
   Page^.RWAble   := RWAble;
-  Page^.UserMode := 0;
+  Page^.UserMode := 1;
   Page^.FrameAddr:= APhysicAddr div PAGE_SIZE;
   Spinlock.Unlock(SLock);
   exit(Page);

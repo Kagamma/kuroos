@@ -23,7 +23,6 @@ code_section:
     mov   ecx,0x400
     mov   esi,thread_proc
     int   0x61
-    hlt
     ;
     xor   eax,eax
     mov   ecx,0x400

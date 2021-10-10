@@ -37,17 +37,17 @@ type
     ds,
     fs,
     gs,
-    ldt: Cardinal;
+    ldt: KernelCardinal;
     trap,
     iomap_base: Word;
   end;
 
 var
   TSSEntry: TTSSEntry;
-  KernelStack: array[0..4096] of Byte;
 
 procedure Flush; stdcall; external name 'k_TSS_Flush';
 procedure SetTSS(const Num: Integer); stdcall;
+procedure SetTSSStack(const Stack: Pointer); stdcall;
 
 implementation
 
@@ -56,20 +56,18 @@ uses
 
 procedure SetTSS(const Num: Integer); stdcall;
 var
-  Base, Limit: Cardinal;
+  Base, Limit: KernelCardinal;
 begin
-  Base := Cardinal(@TSSEntry);
+  Base := KernelCardinal(@TSSEntry);
   Limit := Base + SizeOf(TTSSEntry);
   GDT.SetGate(Num, Base, Limit, $E9, $00);
   FillChar(TSSEntry, SizeOf(TTSSEntry), 0);
   TSSEntry.ss0 := $10;
-  TSSEntry.esp0 := Cardinal(@KernelStack) + SizeOf(KernelStack) - 4;
-  TSSEntry.cs := $0B;
-  TSSEntry.ss := $13;
-  TSSEntry.ds := $13;
-  TSSEntry.es := $13;
-  TSSEntry.fs := $13;
-  TSSEntry.gs := $13;
+end;
+
+procedure SetTSSStack(const Stack: Pointer); stdcall;
+begin
+  TSSEntry.esp0 := KernelCardinal(Stack);
 end;
 
 end.

@@ -254,7 +254,6 @@ var
 begin
   if (M^.Command = KM_MOUSEUP) and (Boolean(M^.LoShort1 and $01)) and PKuroButton(Sender)^.IsFocused then
   begin
-    asm int 3 end;
     p:= CDFSObj^.Loader(IDE.FindDrive(True), 'clock.kex');
     if p <> nil then
     begin

@@ -13,9 +13,9 @@
 - PIC/RTC
 - Preemptive multi-tasking
 - Basic window manager
+- Userspace
 
 #### TODO
-- Userspace
 - Replace PIC with APIC
 - PCI
 - ACPI

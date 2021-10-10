@@ -150,7 +150,8 @@ uses
   pic,
   sysutils,
   vbe,
-  kex;
+  kex,
+  tss;
 
 var
   DirPhys: PPageDir;
@@ -211,9 +212,9 @@ begin
   // Set this task as alive
   Task^.State:= TASK_ALIVE;
   // Allocate RAM for kernel stack
- // Task^.KernelStackAddr := KHeap.Alloc(1024);
- // Task^.KernelStack:= Task^.KernelStackAddr + 1020;
- // KHeap.SetOwner(Task^.KernelStackAddr, Task^.PID);
+  Task^.KernelStackAddr := KHeap.Alloc(4096);
+  Task^.KernelStack:= Task^.KernelStackAddr + 4096;
+  KHeap.SetOwner(Task^.KernelStackAddr, Task^.PID);
   // Allocate RAM for stack
   Task^.StackAddr:= KHeap.Alloc(PKEXHeader(ABuf)^.StackSize);
   Task^.Stack:= Task^.StackAddr + (PKEXHeader(ABuf)^.StackSize);
@@ -242,8 +243,9 @@ begin
       Task^.Tracks, Task^.TrackCount);
   end;
   Pointer(Task^.Code):= Pointer(PKEXHeader(ABuf)^.EntryPoint);
+//  Pointer(Task^.Code):= Pointer(Task^.Code) + (PKEXHeader(ABuf)^.EntryPoint - PROCESS_STARTUP_CODE);
   // Generate default stack
-  GENERATE_STACK;
+  GENERATE_STACK_USER;
   //
   CreateProcessFromBuffer:= TaskIdPtr;
   Inc(TaskIdPtr);
@@ -280,6 +282,10 @@ begin
   Task^.Priority:= TASK_PRIORITY_VLOW;
   //
   Task^.Code:= ACode;
+  // Allocate RAM for kernel stack
+  Task^.KernelStackAddr := KHeap.Alloc(1024);
+  Task^.KernelStack:= Task^.KernelStackAddr + 1024;
+  KHeap.SetOwner(Task^.KernelStackAddr, Task^.PID);
   // Allocate RAM for stack
   // TODO: Currently this is broken. As the process wont be able to see the stack
   // if it was allocated at higher than 4MB of kernel heap
@@ -338,6 +344,9 @@ begin
   Task^.Priority:= TASK_PRIORITY_VLOW;
   //
   Task^.Code:= ACode;
+  //
+  Task^.KernelStackAddr := nil;
+  Task^.KernelStack:= nil;
   // Allocate at least 1KB RAM for stack
   if AStackSize < 1024 then AStackSize:= 1024;
   Task^.StackAddr:= KHeap.Alloc(AStackSize);
@@ -494,6 +503,11 @@ begin
     if DirPhys <> VMM.CurrentPageDir_ then
     begin
       VMM.SwitchPageDir(DirPhys);
+    end;
+    // Switch kernel stack
+    if TaskCur^.KernelStack <> nil then
+    begin
+      TSS.SetTSSStack(TaskCur^.KernelStack);
     end;
     //
     Run:= KernelCardinal(TaskCur^.Stack);
