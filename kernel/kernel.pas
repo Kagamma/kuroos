@@ -16,11 +16,11 @@ interface
 uses
   mboot, real,
   sysutils, math,
-  console, bios,
+  console, bios, cpu,
   gdt, idt, isr_irq,
-  int0x03, int0x0e, int0x61, int0x69, int0x71,
+  int0x03, int0x0d, int0x0e, int0x61, int0x69, int0x71,
   pmm, vmm, kheap,
-  pic, rtc, mouse, keyboard, vga, vbe, ide,
+  pic, rtc, mouse, keyboard, vga, vbe, ide, pci,
   fat, cdfs, filesystem,
   schedule, mutex, spinlock,
   consolecmd, trace,
@@ -69,6 +69,7 @@ begin
 
   //
   Int0x03.Init; // Hardware breakpoint
+  Int0x0d.Init; // GPF
   Int0x0e.Init; // Fault
   Int0x61.Init;
   Int0x69.InitBlank;
@@ -109,6 +110,8 @@ begin
   // Just want to test if the good old Object works...
   CDFSObj:= New(PCDFSObject, Init);
   Trace.Init;
+  CPU.Init;
+  // PCI.Init;
   // KHeap.Test;
 
   //CDFSObj^.Test;

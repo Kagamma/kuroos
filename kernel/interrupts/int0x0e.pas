@@ -22,6 +22,9 @@ procedure Init; stdcall;
 
 implementation
 
+uses
+  schedule;
+
 procedure Callback(r: TRegisters); stdcall;
 var
   present,
@@ -56,7 +59,16 @@ begin
   Console.WriteStr(' ) at 0x'); Console.WriteHex(faultAddr, 8);
   Console.WriteStr(#10#13);
 
-  IRQ_DISABLE;
+  if (TaskCurrent <> nil) and (TaskCurrent^.PID <> 1) then
+  begin
+    WriteStr('Killing process... ');
+    KillProcess(TaskCurrent^.PID);
+    WriteStr(stOk);
+    IRQ_ENABLE;
+  end else
+  begin
+    IRQ_DISABLE;
+  end;
   INFINITE_LOOP;
 end;
 
