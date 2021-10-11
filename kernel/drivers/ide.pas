@@ -326,7 +326,7 @@ var
   port : Word;
   drive: Byte;
   buf  : array[0..511] of Byte;
-  I    : Byte;
+  I    : Word;
 begin
   port := ADriveInfoSt^.ControllerPort;
   drive:= ADriveInfoSt^.DriveNumber;
