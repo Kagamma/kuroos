@@ -129,6 +129,7 @@ begin
 
   Keyboard.ClearBuffer;
 
+  IRQ_ENABLE;
   INFINITE_LOOP;
 end;
 
