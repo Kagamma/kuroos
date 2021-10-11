@@ -30,7 +30,10 @@ begin
   if (TaskCurrent <> nil) and (TaskCurrent^.PID <> 1) then
   begin
     WriteStr('Killing process... ');
-    KillProcess(TaskCurrent^.PID);
+    if TaskCurrent^.PPID <> 0 then
+      KillProcess(TaskCurrent^.PPID)
+    else
+      KillProcess(TaskCurrent^.PID);
     WriteStr(stOk);
     IRQ_ENABLE;
   end else
