@@ -123,7 +123,7 @@ procedure IRQ105; stdcall; external  name 'k_IDT_IRQ105';
 procedure IRQ113; stdcall; external name 'k_IDT_IRQ113';
 
 // Set interrupt
-procedure SetGate(AIndex: LongInt; ABase: Cardinal; sel: Word; attr: Byte); stdcall;
+procedure SetGate(AIndex: LongInt; ABase: Cardinal; sel: Word; attr: Byte; AllowUser: Byte); stdcall;
 // Init interrupt descriptor table
 procedure Init; stdcall;
 // Install Handle
@@ -139,13 +139,13 @@ procedure RestoreIRQs; stdcall;
 implementation
 
 // Set interrupt
-procedure SetGate(AIndex: LongInt; ABase: Cardinal; sel: Word; attr: Byte); stdcall;
+procedure SetGate(AIndex: LongInt; ABase: Cardinal; sel: Word; attr: Byte; AllowUser: Byte); stdcall;
 begin
   IDTEntries[AIndex].base_lo:= ABase and $FFFF;
   IDTEntries[AIndex].base_hi:= (ABase shr 16) and $FFFF;
   IDTEntries[AIndex].sel    := sel;
   IDTEntries[AIndex].zero   := 0;
-  IDTEntries[AIndex].attr   := attr or $60
+  IDTEntries[AIndex].attr   := attr or AllowUser;
 end;
 
 // Init interrupt descriptor table
@@ -161,62 +161,62 @@ begin
   FillChar(IDTHandles[0], SizeOf(TIDTHandle) * 256, 0);
   PICHandle:= nil;
 
-  IDT.SetGate(0, Cardinal(@IDT.ISR0), $08, $8E);
-  IDT.SetGate(1, Cardinal(@IDT.ISR1), $08, $8E);
-  IDT.SetGate(2, Cardinal(@IDT.ISR2), $08, $8E);
-  IDT.SetGate(3, Cardinal(@IDT.ISR3), $08, $8E);
-  IDT.SetGate(4, Cardinal(@IDT.ISR4), $08, $8E);
-  IDT.SetGate(5, Cardinal(@IDT.ISR5), $08, $8E);
-  IDT.SetGate(6, Cardinal(@IDT.ISR6), $08, $8E);
-  IDT.SetGate(7, Cardinal(@IDT.ISR7), $08, $8E);
-  IDT.SetGate(8, Cardinal(@IDT.ISR8), $08, $8E);
-  IDT.SetGate(9, Cardinal(@IDT.ISR9), $08, $8E);
-  IDT.SetGate(10, Cardinal(@IDT.ISR10), $08, $8E);
-  IDT.SetGate(11, Cardinal(@IDT.ISR11), $08, $8E);
-  IDT.SetGate(12, Cardinal(@IDT.ISR12), $08, $8E);
-  IDT.SetGate(13, Cardinal(@IDT.ISR13), $08, $8E);
-  IDT.SetGate(14, Cardinal(@IDT.ISR14), $08, $8E);
-  IDT.SetGate(15, Cardinal(@IDT.ISR15), $08, $8E);
-  IDT.SetGate(16, Cardinal(@IDT.ISR16), $08, $8E);
-  IDT.SetGate(17, Cardinal(@IDT.ISR17), $08, $8E);
-  IDT.SetGate(18, Cardinal(@IDT.ISR18), $08, $8E);
-  IDT.SetGate(19, Cardinal(@IDT.ISR19), $08, $8E);
-  IDT.SetGate(20, Cardinal(@IDT.ISR20), $08, $8E);
-  IDT.SetGate(21, Cardinal(@IDT.ISR21), $08, $8E);
-  IDT.SetGate(22, Cardinal(@IDT.ISR22), $08, $8E);
-  IDT.SetGate(23, Cardinal(@IDT.ISR23), $08, $8E);
-  IDT.SetGate(24, Cardinal(@IDT.ISR24), $08, $8E);
-  IDT.SetGate(25, Cardinal(@IDT.ISR25), $08, $8E);
-  IDT.SetGate(26, Cardinal(@IDT.ISR26), $08, $8E);
-  IDT.SetGate(27, Cardinal(@IDT.ISR27), $08, $8E);
-  IDT.SetGate(28, Cardinal(@IDT.ISR28), $08, $8E);
-  IDT.SetGate(29, Cardinal(@IDT.ISR29), $08, $8E);
-  IDT.SetGate(30, Cardinal(@IDT.ISR30), $08, $8E);
-  IDT.SetGate(31, Cardinal(@IDT.ISR31), $08, $8E);
+  IDT.SetGate(0, Cardinal(@IDT.ISR0), $08, $8E, 0);
+  IDT.SetGate(1, Cardinal(@IDT.ISR1), $08, $8E, 0);
+  IDT.SetGate(2, Cardinal(@IDT.ISR2), $08, $8E, 0);
+  IDT.SetGate(3, Cardinal(@IDT.ISR3), $08, $8E, $60);
+  IDT.SetGate(4, Cardinal(@IDT.ISR4), $08, $8E, 0);
+  IDT.SetGate(5, Cardinal(@IDT.ISR5), $08, $8E, 0);
+  IDT.SetGate(6, Cardinal(@IDT.ISR6), $08, $8E, 0);
+  IDT.SetGate(7, Cardinal(@IDT.ISR7), $08, $8E, 0);
+  IDT.SetGate(8, Cardinal(@IDT.ISR8), $08, $8E, 0);
+  IDT.SetGate(9, Cardinal(@IDT.ISR9), $08, $8E, 0);
+  IDT.SetGate(10, Cardinal(@IDT.ISR10), $08, $8E, 0);
+  IDT.SetGate(11, Cardinal(@IDT.ISR11), $08, $8E, 0);
+  IDT.SetGate(12, Cardinal(@IDT.ISR12), $08, $8E, 0);
+  IDT.SetGate(13, Cardinal(@IDT.ISR13), $08, $8E, 0);
+  IDT.SetGate(14, Cardinal(@IDT.ISR14), $08, $8E, 0);
+  IDT.SetGate(15, Cardinal(@IDT.ISR15), $08, $8E, 0);
+  IDT.SetGate(16, Cardinal(@IDT.ISR16), $08, $8E, 0);
+  IDT.SetGate(17, Cardinal(@IDT.ISR17), $08, $8E, 0);
+  IDT.SetGate(18, Cardinal(@IDT.ISR18), $08, $8E, 0);
+  IDT.SetGate(19, Cardinal(@IDT.ISR19), $08, $8E, 0);
+  IDT.SetGate(20, Cardinal(@IDT.ISR20), $08, $8E, 0);
+  IDT.SetGate(21, Cardinal(@IDT.ISR21), $08, $8E, 0);
+  IDT.SetGate(22, Cardinal(@IDT.ISR22), $08, $8E, 0);
+  IDT.SetGate(23, Cardinal(@IDT.ISR23), $08, $8E, 0);
+  IDT.SetGate(24, Cardinal(@IDT.ISR24), $08, $8E, 0);
+  IDT.SetGate(25, Cardinal(@IDT.ISR25), $08, $8E, 0);
+  IDT.SetGate(26, Cardinal(@IDT.ISR26), $08, $8E, 0);
+  IDT.SetGate(27, Cardinal(@IDT.ISR27), $08, $8E, 0);
+  IDT.SetGate(28, Cardinal(@IDT.ISR28), $08, $8E, 0);
+  IDT.SetGate(29, Cardinal(@IDT.ISR29), $08, $8E, 0);
+  IDT.SetGate(30, Cardinal(@IDT.ISR30), $08, $8E, 0);
+  IDT.SetGate(31, Cardinal(@IDT.ISR31), $08, $8E, 0);
 
-  IDT.SetGate($20, Cardinal(@IDT.IRQ0), $08, $8E);
-  IDT.SetGate($21, Cardinal(@IDT.IRQ1), $08, $8E);
-  IDT.SetGate($22, Cardinal(@IDT.IRQ2), $08, $8E);
-  IDT.SetGate($23, Cardinal(@IDT.IRQ3), $08, $8E);
-  IDT.SetGate($24, Cardinal(@IDT.IRQ4), $08, $8E);
-  IDT.SetGate($25, Cardinal(@IDT.IRQ5), $08, $8E);
-  IDT.SetGate($26, Cardinal(@IDT.IRQ6), $08, $8E);
-  IDT.SetGate($27, Cardinal(@IDT.IRQ7), $08, $8E);
-  IDT.SetGate($28, Cardinal(@IDT.IRQ8), $08, $8E);
-  IDT.SetGate($29, Cardinal(@IDT.IRQ9), $08, $8E);
-  IDT.SetGate($2A, Cardinal(@IDT.IRQ10), $08, $8E);
-  IDT.SetGate($2B, Cardinal(@IDT.IRQ11), $08, $8E);
-  IDT.SetGate($2C, Cardinal(@IDT.IRQ12), $08, $8E);
-  IDT.SetGate($2D, Cardinal(@IDT.IRQ13), $08, $8E);
-  IDT.SetGate($2E, Cardinal(@IDT.IRQ14), $08, $8E);
-  IDT.SetGate($2F, Cardinal(@IDT.IRQ15), $08, $8E);
+  IDT.SetGate($20, Cardinal(@IDT.IRQ0), $08, $8E, $60);
+  IDT.SetGate($21, Cardinal(@IDT.IRQ1), $08, $8E, 0);
+  IDT.SetGate($22, Cardinal(@IDT.IRQ2), $08, $8E, 0);
+  IDT.SetGate($23, Cardinal(@IDT.IRQ3), $08, $8E, 0);
+  IDT.SetGate($24, Cardinal(@IDT.IRQ4), $08, $8E, 0);
+  IDT.SetGate($25, Cardinal(@IDT.IRQ5), $08, $8E, 0);
+  IDT.SetGate($26, Cardinal(@IDT.IRQ6), $08, $8E, 0);
+  IDT.SetGate($27, Cardinal(@IDT.IRQ7), $08, $8E, 0);
+  IDT.SetGate($28, Cardinal(@IDT.IRQ8), $08, $8E, 0);
+  IDT.SetGate($29, Cardinal(@IDT.IRQ9), $08, $8E, 0);
+  IDT.SetGate($2A, Cardinal(@IDT.IRQ10), $08, $8E, 0);
+  IDT.SetGate($2B, Cardinal(@IDT.IRQ11), $08, $8E, 0);
+  IDT.SetGate($2C, Cardinal(@IDT.IRQ12), $08, $8E, 0);
+  IDT.SetGate($2D, Cardinal(@IDT.IRQ13), $08, $8E, 0);
+  IDT.SetGate($2E, Cardinal(@IDT.IRQ14), $08, $8E, 0);
+  IDT.SetGate($2F, Cardinal(@IDT.IRQ15), $08, $8E, 0);
 
-  IDT.SetGate($34, Cardinal(@IDT.IRQ20), $08, $8E);
-  IDT.SetGate($35, Cardinal(@IDT.IRQ21), $08, $8E);
+  IDT.SetGate($34, Cardinal(@IDT.IRQ20), $08, $8E, 0);
+  IDT.SetGate($35, Cardinal(@IDT.IRQ21), $08, $8E, 0);
 
-  IDT.SetGate($61, Cardinal(@IDT.IRQ97), $08, $8E);
-  IDT.SetGate($69, Cardinal(@IDT.IRQ105), $08, $8E);
-  IDT.SetGate($71, Cardinal(@IDT.IRQ113), $08, $8E);
+  IDT.SetGate($61, Cardinal(@IDT.IRQ97), $08, $8E, $60);
+  IDT.SetGate($69, Cardinal(@IDT.IRQ105), $08, $8E, $60);
+  IDT.SetGate($71, Cardinal(@IDT.IRQ113), $08, $8E, $60);
 
   IDT.RemapIRQPM;
   IDT.RestoreIRQs;
