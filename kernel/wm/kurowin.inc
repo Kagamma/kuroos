@@ -82,7 +82,7 @@ begin
   New(Body, Init(@Self));
   New(BtnClose, Init(@Self));
 
-  Body^.BgColor := $FF808080;
+  Body^.BgColor := $FFA0A0A0;
   Body^.BgColorSelected := $FFA0A0A0;
   Body^.X := 0;
   Body^.Y := 25;
@@ -102,8 +102,11 @@ end;
 procedure TKuroWindow.Callback(const M: PKuroMessage);
 begin
   Body^.PID := PID;
-  if IsFocused then
+  if IsFocused and not Body^.IsFocused then
+  begin
     Body^.IsFocused := True;
+    Self.RenderUpdate;
+  end;
   inherited;
 end;
 
