@@ -50,7 +50,7 @@ inline fastcall void yield() {
 
 void parseArgs() {
   dword i;
-  dword len = strlen(__argPtr);
+  dword len;
   dword count = 0;
   dword isFirst = 1;
   dword isQuote = 0;
@@ -58,8 +58,12 @@ void parseArgs() {
   char* arg;
   char c;
   char tmp[256];
+  if (__argPtr == 0) {
+    return;
+  }
   memset(#tmp, 0, 256);
   __argv = 0;
+  len = strlen(__argPtr);
   for (i = 0; i < len; i++) {
     EDI = __argPtr + i;
     c = DSBYTE[EDI];
