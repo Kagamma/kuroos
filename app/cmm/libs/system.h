@@ -50,32 +50,69 @@ inline fastcall void yield() {
 
 void parseArgs() {
   dword i;
-  dword len;
-  dword count;
+  dword len = strlen(__argPtr);
+  dword count = 0;
+  dword isFirst = 1;
+  dword isQuote = 0;
+  dword isSlash = 0;
   char* arg;
   char c;
   char tmp[256];
   memset(#tmp, 0, 256);
   __argv = 0;
-  count = 0;
-  len = strlen(__argPtr);
   for (i = 0; i < len; i++) {
     EDI = __argPtr + i;
     c = DSBYTE[EDI];
-    if (c == ' ') {
-      EDI = #tmp + count;
-      DSBYTE[EDI] = 0;
-      count++;
-      arg = malloc(count);
-      memcpy(arg, #tmp, count);
-      __args[__argv] = arg;
-      count = 0;
-      memset(#tmp, 0, 256);
-      __argv++;
+    if ((isFirst == 1) && (c == '"')) {
+      isQuote = 1;
+      continue;
+    }
+    if (isQuote == 1) {
+      if ((c == '"') && (isSlash == 0)) {
+        EDI = #tmp + count;
+        DSBYTE[EDI] = 0;
+        count++;
+        arg = malloc(count);
+        memcpy(arg, #tmp, count);
+        __args[__argv] = arg;
+        count = 0;
+        memset(#tmp, 0, 256);
+        __argv++;
+        isFirst = 1;
+        isQuote = 0;
+        isSlash = 0;
+      } else if ((isSlash == 0) && (c == '\\')) {
+        isSlash = 1;
+      } else {
+        EDI = #tmp + count;
+        DSBYTE[EDI] = c;
+        count++;
+        isFirst = 0;
+        isSlash = 0;
+      }
     } else {
-      EDI = #tmp + count;
-      DSBYTE[EDI] = c;
-      count++;
+      if ((c == ' ') && (isSlash == 0)) {
+        EDI = #tmp + count;
+        DSBYTE[EDI] = 0;
+        count++;
+        arg = malloc(count);
+        memcpy(arg, #tmp, count);
+        __args[__argv] = arg;
+        count = 0;
+        memset(#tmp, 0, 256);
+        __argv++;
+        isFirst = 1;
+        isQuote = 0;
+        isSlash = 0;
+      } else if ((isSlash == 0) && (c == '\\')) {
+        isSlash = 1;
+      } else {
+        EDI = #tmp + count;
+        DSBYTE[EDI] = c;
+        count++;
+        isFirst = 0;
+        isSlash = 0;
+      }
     }
   }
   if (count > 0) {
@@ -85,8 +122,6 @@ void parseArgs() {
     arg = malloc(count);
     memcpy(arg, #tmp, count);
     __args[__argv] = arg;
-    count = 0;
-    memset(#tmp, 0, 256);
     __argv++;
   }
 }
