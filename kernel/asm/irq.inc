@@ -104,14 +104,14 @@ irqstub:
     popa
     add   esp,8                            ; Cleans up the pushed error code and pushed ISR number
 
-    HAVE  eax,IRQEAXHave,IRQEAXValue,eaxnot,eaxend
+    HAVE  eax,IRQEAXHave,IRQEAXValue,eaxnot,eaxend ; TODO: This may cause race conditional
     HAVE  ebx,IRQEBXHave,IRQEBXValue,ebxnot,ebxend
     HAVE  ecx,IRQECXHave,IRQECXValue,ecxnot,ecxend
     HAVE  edx,IRQEDXHave,IRQEDXValue,edxnot,edxend
     HAVE  esi,IRQESIHave,IRQESIValue,esinot,esiend
     HAVE  edi,IRQEDIHave,IRQEDIValue,edinot,ediend
 
-irq_stub_end:
+irqstubend:
     iret                                   ; pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP
 
 irqpicstub:
@@ -147,5 +147,5 @@ call  k_PIC_Handler
     pop   es
     pop   ds
     popa
-pic_end:
+picend:
     iret
