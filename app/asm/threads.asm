@@ -1,5 +1,6 @@
-include 'system.inc'
-include 'kurowm.inc'
+include 'libs/header.inc'
+include 'libs/system.inc'
+include 'libs/kurowm.inc'
 
 code_section:
     stdcall printf, str_lfcr
