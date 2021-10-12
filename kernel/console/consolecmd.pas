@@ -207,6 +207,8 @@ begin
       end;
       Tmp:= LowerCase(Tmp);
       p:= CDFSObj^.Loader(IDE.FindDrive(True), Tmp);
+      if p = nil then
+        p:= CDFSObj^.Loader(IDE.FindDrive(True), Tmp + '.kex');
       if p <> nil then
       begin
         // Create a new process
