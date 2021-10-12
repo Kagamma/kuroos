@@ -24,11 +24,14 @@ struct DateTime_t {
 char BASENUMBERS[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 dword __pid;
 dword __argPtr;
+dword __argv;
+dword* __args[256];
 
 inline fastcall __entry() {
   __pid = DSDWORD[ESP + 8];
   __argPtr = DSDWORD[ESP + 12];
-  main();
+  parseArgs();
+  main(__argv, #__args);
   exit();
 }
 
@@ -45,9 +48,84 @@ inline fastcall void yield() {
   $int 0x20;
 }
 
+void parseArgs() {
+  dword i;
+  dword len;
+  dword count;
+  char* arg;
+  char c;
+  char tmp[256];
+  memset(#tmp, 0, 256);
+  __argv = 0;
+  count = 0;
+  len = strlen(__argPtr);
+  for (i = 0; i < len; i++) {
+    EDI = __argPtr + i;
+    c = DSBYTE[EDI];
+    if (c == ' ') {
+      EDI = #tmp + count;
+      DSBYTE[EDI] = 0;
+      count++;
+      arg = malloc(count);
+      memcpy(arg, #tmp, count);
+      __args[__argv] = arg;
+      count = 0;
+      memset(#tmp, 0, 256);
+      __argv++;
+    } else {
+      EDI = #tmp + count;
+      DSBYTE[EDI] = c;
+      count++;
+    }
+  }
+  if (count > 0) {
+    EDI = #tmp + count;
+    DSBYTE[EDI] = 0;
+    count++;
+    arg = malloc(count);
+    memcpy(arg, #tmp, count);
+    __args[__argv] = arg;
+    count = 0;
+    memset(#tmp, 0, 256);
+    __argv++;
+  }
+}
+
+void memcpy(char* dst, char* src; dword size) {
+  dword i;
+  for (i = 0; i < size; i++) {
+    EDI = dst + i;
+    ESI = src + i;
+    AL = DSBYTE[ESI];
+    DSBYTE[EDI] = AL;
+  }
+}
+
+void memset(char* dst, byte c, dword size) {
+  dword i;
+  for (i = 0; i < size; i++) {
+    EDI = dst + i;
+    DSBYTE[EDI] = c;
+  }
+}
+
+dword strlen(char* src) {
+  dword i = 0;
+  do {
+    ESI = src + i;
+    if (DSBYTE[ESI] != 0) {
+      i++;
+    } else {
+      break;
+    }
+  } while (0);
+  return i;
+}
+
 // ESI: char*
-void printf(dword ESI) {
+void printf(dword s) {
   EAX = 0;
+  ESI = s;
   $int 0x71;
 }
 
@@ -116,17 +194,20 @@ dword rnd() {
 }
 
 // Memory
-dword msize(dword ESI) {
+dword msize(dword mem) {
   EAX = 4;
+  ESI = mem;
   $int 0x61;
 }
 
-dword malloc(dword ECX) {
+dword malloc(dword size) {
   EAX = 5;
+  ECX = size;
   $int 0x61;
 }
 
-void free(dword ESI) {
+void free(dword mem) {
   EAX = 6;
+  ESI = mem;
   $int 0x61;
 }

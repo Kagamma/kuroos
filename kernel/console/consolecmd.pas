@@ -48,10 +48,12 @@ var
   Cmd: KernelString;
   Tmp: String[32];
   i,
+  Len,
   LID: Integer;
   C  : Char;
   NullPID: Integer = 3;
   p  : Pointer = nil;
+  PC : PChar;
   List: TList;
 begin
   // List.Init;
@@ -195,12 +197,25 @@ begin
     end
     else
     begin
-      p:= CDFSObj^.Loader(IDE.FindDrive(True), Cmd);
+      Len := Length(Cmd);
+      Tmp[0]:= #0;
+      for I := 1 to Len do
+      begin
+        if Cmd[I] = ' ' then
+          break
+        else
+          Tmp := Tmp + Cmd[I];
+      end;
+      p:= CDFSObj^.Loader(IDE.FindDrive(True), Tmp);
       if p <> nil then
       begin
         // Create a new process
-        Schedule.CreateProcessFromBuffer(Cmd, p);
+        PC := KHeap.Alloc(Len + 1);
+        Move(Cmd[1], PC[0], Len);
+        PC[Len] := #0;
+        Schedule.CreateProcessFromBuffer(Tmp, p, PC);
         KHeap.Free(p);
+        KHeap.Free(PC);
       end
       else
       begin
@@ -222,7 +237,7 @@ begin
     if p <> nil then
     begin
       // Create a new process
-      Schedule.CreateProcessFromBuffer('win.kex', p);
+      Schedule.CreateProcessFromBuffer('win.kex', p, nil);
       FreeMem(p);
     end;
   end;
@@ -240,7 +255,7 @@ begin
     if p <> nil then
     begin
       // Create a new process
-      Schedule.CreateProcessFromBuffer('nep.kex', p);
+      Schedule.CreateProcessFromBuffer('nep.kex', p, nil);
       FreeMem(p);
     end;
   end;
@@ -258,7 +273,7 @@ begin
     if p <> nil then
     begin
       // Create a new process
-      Schedule.CreateProcessFromBuffer('clock.kex', p);
+      Schedule.CreateProcessFromBuffer('clock.kex', p, nil);
       FreeMem(p);
     end;
   end;

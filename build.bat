@@ -19,11 +19,13 @@ cd cmm
 @c-- /OS /5 clock.c
 @c-- /OS /5 memtest.c
 @c-- /OS /5 fault.c
+@c-- /OS /5 echo.c
 @move helloc.bin ../../grub/helloc.kex
 @move nep.bin ../../grub/nep.kex
 @move clock.bin ../../grub/clock.kex
 @move memtest.bin ../../grub/memtest.kex
 @move fault.bin ../../grub/fault.kex
+@move echo.bin ../../grub/echo.kex
 cd ..
 cd ..
 

@@ -35,7 +35,7 @@ unit schedule;
 }
 
 {$DEFINE GENERATE_STACK_USER:= ;
-  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= 0;
+  Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= KernelCardinal(Params);
   Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= TaskIdPtr;
   Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= $23;   // SS
   Dec(Task^.Stack, 4); KernelCardinal(Task^.Stack^):= KernelCardinal(Task^.Stack); // ESP
@@ -110,6 +110,7 @@ type
     TrackCount: KernelCardinal;
     // Code's pointer in kernel's address space.
     Code: TaskProc;
+    Ring: Byte;
   end;
 
 var
@@ -123,7 +124,7 @@ var
 
 procedure Init; stdcall;
 // We create a new process from buffer.
-function  CreateProcessFromBuffer(const AName: KernelString; const ABuf: Pointer): PtrUInt; stdcall;
+function  CreateProcessFromBuffer(const AName: KernelString; const ABuf: Pointer; const AParams: PChar): PtrUInt; stdcall;
 // Basically the same as task except this share the same address space with pid
 function  CreateThread(ACode: TaskProc;
     AStackSize: KernelCardinal; const PPID: KernelCardinal): PtrUInt; stdcall;
@@ -180,12 +181,14 @@ begin
   end;
 end;
 
-function  CreateProcessFromBuffer(const AName: KernelString; const ABuf: Pointer): PtrUInt; stdcall;
+function  CreateProcessFromBuffer(const AName: KernelString; const ABuf: Pointer; const AParams: PChar): PtrUInt; stdcall;
 var
   Task: PTaskStruct;
   i: KernelCardinal;
   CodeSize: KernelCardinal;
   PageTable: PPageTable;
+  Len: Cardinal;
+  Params: PChar = nil;
 begin
   if (PKEXHeader(ABuf)^.ID[0] <> 'K') or
      (PKEXHeader(ABuf)^.ID[1] <> '3') or
@@ -216,6 +219,15 @@ begin
   Task^.KernelStackAddr := KHeap.Alloc(KERNEL_STACK_SIZE);
   Task^.KernelStack:= Task^.KernelStackAddr + KERNEL_STACK_SIZE;
   KHeap.SetOwner(Task^.KernelStackAddr, Task^.PID);
+  // Allocate RAM for params
+  if AParams <> nil then
+  begin
+    Len := Length(AParams);
+    Params := KHeap.Alloc(Len + 1);
+    FillChar(Params[0], Len + 1, 0);
+    Move(AParams[0], Params[0], Len);
+    KHeap.SetOwner(Params, Task^.PID);
+  end;
   // Allocate RAM for stack
   Task^.StackAddr:= KHeap.Alloc(PKEXHeader(ABuf)^.StackSize);
   Task^.Stack:= Task^.StackAddr + (PKEXHeader(ABuf)^.StackSize);
@@ -234,6 +246,7 @@ begin
   Task^.TrackCount := 0;
   Task^.Tracks := KHeap.Alloc(256 * SizeOf(PPageTable));
   FillChar(Task^.Tracks[0], 256 * SizeOf(PPageTable), 0);
+  Task^.Ring := 3;
   // Set virtual memory for task code
   // TODO: We somehow skip a 4KB physics memory block if the kernel heap doesnt enough memory to allocate
   for i := 0 to GetSize(ABuf) div PAGE_SIZE do
@@ -262,6 +275,7 @@ var
   Task: PTaskStruct;
   TaskParent: PTaskStruct;
   pp: Pointer;
+  Params: PChar = nil;
 begin
   Spinlock.Lock(Schedule.SLock);
   //
@@ -297,6 +311,7 @@ begin
   KHeap.SetOwner(Task^.StackAddr, Task^.PID);
   // Set this task as alive
   Task^.State:= TASK_ALIVE;
+  Task^.Ring := 3;
 
   // We need to find the process that this thread belongs to.
   TaskParent:= FindProcess(PPID);
@@ -311,7 +326,7 @@ begin
     INFINITE_LOOP;
   end;
   // Generate default stack
-  GENERATE_STACK;
+  GENERATE_STACK_USER;
   //
   CreateThread:= TaskIdPtr;
   Inc(TaskIdPtr);
@@ -355,6 +370,7 @@ begin
   KHeap.SetOwner(Task^.StackAddr, Task^.PID);
   // Set this task as alive
   Task^.State:= TASK_ALIVE;
+  Task^.Ring := 0;
   // Use the same address page with kernel
   Task^.Page:= VMM.KernelPageStruct_;
   // Generate default stack
@@ -506,7 +522,7 @@ begin
       VMM.SwitchPageDir(DirPhys);
     end;
     // Switch kernel stack
-    if TaskCur^.KernelStack <> nil then
+    if TaskCur^.Ring = 3 then
     begin
       TSS.SetTSSStack(TaskCur^.KernelStack);
     end;
