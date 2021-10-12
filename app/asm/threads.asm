@@ -1,38 +1,13 @@
-org 0x04000000
-use32
-
-; KOS header executable (24 bytes).
-    db    'K32',0                    ; Header.
-    dd    1                          ; Version
-    dd    image_end - 0x04000000     ; Image size.
-    dd    0x400                      ; Stack size.
-    dd    code_section               ; entry point
-    dd    0                          ; Icon location.
+include 'system.inc'
+include 'kurowm.inc'
 
 code_section:
-    xor   eax,eax
-    mov   esi,str_lfcr
-    int   0x71
-    mov   esi,str_hello
-    int   0x71
-    mov   esi,str_lfcr
-    int   0x71
+    stdcall printf, str_lfcr
+    stdcall printf, str_hello
+    stdcall printf, str_lfcr
 
-    ; Create a new thread
-    xor   eax,eax
-    mov   ecx,0x400
-    mov   esi,thread_proc
-    int   0x61
-    ;
-    xor   eax,eax
-    mov   ecx,0x400
-    mov   esi,thread_proc
-    int   0x61
-
-    ; We kill this process...
-    ;mov   eax,4
-    ;mov   ecx,[esp + 4]
-    ;int   0x61
+    stdcall ThreadCreate, thread_proc
+    stdcall ThreadCreate, thread_proc
 
 iloop:
     int   0x20
@@ -41,7 +16,6 @@ endprog:
     ret
 
 thread_proc:
-
     xor   eax,eax
     mov   esi,str_t1
     int   0x71
@@ -54,10 +28,6 @@ thread_proc:
     mov   esi,str_lfcr
     int   0x71
 
-    ; We kill this thread...
-    ;mov   eax,2
-    ;mov   ecx,[esp + 4]
-    ;int   0x61
 tloop:
     int   0x20
     jmp   tloop

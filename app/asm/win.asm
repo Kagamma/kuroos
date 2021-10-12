@@ -1,20 +1,9 @@
-org 0x04000000
-use32
-
-; KOS header executable (24 bytes).
-    db    'K32',0                    ; Header.
-    dd    1                          ; Version
-    dd    image_end - 0x04000000     ; Image size.
-    dd    0x400                      ; Stack size.
-    dd    code_section               ; entry point
-    dd    0                          ; Icon location.
+include 'system.inc'
+include 'kurowm.inc'
 
 code_section:
     mov   eax,[esp + 8]
     mov   [process_id],eax
-    jmp   start
-
-include 'kurowm.inc'
 
 start:
     stdcall kwmCreateWindow, kuro_win_struct
@@ -55,7 +44,7 @@ start:
 
 proc Kill
     stdcall kwmCloseHandle, [kuro_handle]
-    stdcall EndProcess, [process_id]
+    stdcall Exit, [process_id]
     ret
 endp
 

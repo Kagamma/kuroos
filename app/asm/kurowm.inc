@@ -65,12 +65,3 @@ proc Yield
     int   0x20
     ret
 endp
-
-proc EndProcess process_id
-    mov   eax,3
-    mov   ecx,[process_id]
-    int   0x61
-iloop:
-    int   0x20
-    jmp   iloop
-endp

@@ -1,30 +1,15 @@
-org 0x04000000
-use32
-
-; KOS header executable (24 bytes).
-    db    'K32',0                    ; Header.
-    dd    1                          ; Version
-    dd    image_end - 0x04000000     ; Image size.
-    dd    0x400                      ; Stack size.
-    dd    code_section               ; entry point
-    dd    0                          ; Icon location.
+include 'system.inc'
+include 'kurowm.inc'
 
 code_section:
-    xor   eax,eax
-    mov   esi,str_lfcr
-    int   0x71
-    mov   esi,str_p1
-    int   0x71
-    mov   esi,str_lfcr
-    int   0x71
-    mov   esi,str_pid
-    int   0x71
-    mov   ecx,[esp + 8]
-    mov   eax,1
-    int   0x71
-    xor   eax,eax
-    mov   esi,str_lfcr
-    int   0x71
+    mov   eax,[esp + 8]
+    mov   [process_id],eax
+    stdcall printf, str_lfcr
+    stdcall printf, str_p1
+    stdcall printf, str_lfcr
+    stdcall printf, str_pid
+    stdcall printfnum, [process_id]
+    stdcall printf, str_lfcr
 
 iloop:
     int   0x20
@@ -36,5 +21,6 @@ data_section:
     str_p1       db 'This is a persistent process! (type "ps" to see it)',0
     str_pid      db 'Process ID: ',0
     str_lfcr     db 10,13,0
+    process_id   dd 0
 
 image_end:

@@ -3,11 +3,11 @@
 #pragma option LST
 #pragma option J0
 
-#imagebase 0x04000000
+#imagebase 0x08048000
 
 char  name[4]     = {'K', '3', '2', 0};
 dword version     = 1;
-dword size        = #__endofcode - 0x04000000;
+dword size        = #__endofcode - 0x08048000;
 dword stackSize   = 0x400;
 dword entryPoint  = #__entry;
 dword icon        = 0;
