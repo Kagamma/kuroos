@@ -99,7 +99,6 @@ begin
     end;
     if Length(Cmd) = 0 then
       continue;
-    Cmd:= LowerCase(Cmd);
     if Cmd = 'help' then
     begin
       Writeln(' - help       : You are looking at it');
@@ -206,6 +205,7 @@ begin
         else
           Tmp := Tmp + Cmd[I];
       end;
+      Tmp:= LowerCase(Tmp);
       p:= CDFSObj^.Loader(IDE.FindDrive(True), Tmp);
       if p <> nil then
       begin
