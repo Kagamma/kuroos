@@ -16,6 +16,16 @@ func:
   jmp   irqpicstub
 }
 
+macro IRQ_USER func,n {
+; ------------------------------
+public func
+; ------------------------------
+func:
+  push  0
+  push  n
+  jmp   irquserstub
+}
+
 macro HAVE reg,have,value,nothavejmp,endjmp {
     mov   [tmp],reg
     mov   reg,[have]
@@ -51,9 +61,9 @@ IRQ k_IDT_IRQ15, 47
 IRQ k_IDT_IRQ20, 52
 IRQ k_IDT_IRQ21, 53
 
-IRQ k_IDT_IRQ97, 0x61
-IRQ k_IDT_IRQ105, 0x69
-IRQ k_IDT_IRQ113, 0x71
+IRQ_USER k_IDT_IRQ97, 0x61
+IRQ_USER k_IDT_IRQ105, 0x69
+IRQ_USER k_IDT_IRQ113, 0x71
 
 ; ------------------------------
 extrn k_IDT_IRQ_FaultHandler                   ; External function from Pascal code
@@ -84,6 +94,37 @@ IRQEDIHave  dd 0
 IRQEDIValue dd 0
 tmp      dd 0
 ; ------------------------------
+irquserstub:
+    pusha
+    push  ds
+    push  es
+    push  fs
+    push  gs
+
+    mov   ax,0x10                          ; load the kernel data segment descriptor
+    mov   ds,ax
+    mov   es,ax
+
+    cli                                    ; TODO: Fix this
+    call  k_IDT_IRQ_FaultHandler
+
+    pop   gs
+    pop   fs
+    pop   es
+    pop   ds
+    popa
+    add   esp,8                            ; Cleans up the pushed error code and pushed ISR number
+
+    HAVE  eax,IRQEAXHave,IRQEAXValue,eaxnot,eaxend ; TODO: Fix this
+    HAVE  ebx,IRQEBXHave,IRQEBXValue,ebxnot,ebxend
+    HAVE  ecx,IRQECXHave,IRQECXValue,ecxnot,ecxend
+    HAVE  edx,IRQEDXHave,IRQEDXValue,edxnot,edxend
+    HAVE  esi,IRQESIHave,IRQESIValue,esinot,esiend
+    HAVE  edi,IRQEDIHave,IRQEDIValue,edinot,ediend
+
+irquserstubend:
+    iret                                   ; pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP
+
 irqstub:
     pusha
     push  ds
@@ -103,13 +144,6 @@ irqstub:
     pop   ds
     popa
     add   esp,8                            ; Cleans up the pushed error code and pushed ISR number
-
-    HAVE  eax,IRQEAXHave,IRQEAXValue,eaxnot,eaxend ; TODO: This may cause race conditional
-    HAVE  ebx,IRQEBXHave,IRQEBXValue,ebxnot,ebxend
-    HAVE  ecx,IRQECXHave,IRQECXValue,ecxnot,ecxend
-    HAVE  edx,IRQEDXHave,IRQEDXValue,edxnot,edxend
-    HAVE  esi,IRQESIHave,IRQESIValue,esinot,esiend
-    HAVE  edi,IRQEDIHave,IRQEDIValue,edinot,ediend
 
 irqstubend:
     iret                                   ; pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP
