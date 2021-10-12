@@ -86,7 +86,8 @@ begin
       end;
       Inc(P);
     end;
-  end;
+  end else
+    Console.WriteStr('?');
 end;
 
 end.
