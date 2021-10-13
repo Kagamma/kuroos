@@ -8,7 +8,7 @@
 char  name[4]     = {'K', '3', '2', 0};
 dword version     = 1;
 dword size        = #__endofcode - 0x08048000;
-dword stackSize   = 0x400;
+dword stackSize   = 0x4000;
 dword entryPoint  = #__entry;
 dword icon        = 0;
 
