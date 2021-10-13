@@ -53,10 +53,9 @@ void parseArgs() {
   dword len;
   dword count = 0;
   dword isFirst = 1;
-  dword isQuote = 0;
   dword isSlash = 0;
   char* arg;
-  char c;
+  char c, cp;
   char tmp[256];
   if (__argPtr == 0) {
     return;
@@ -64,59 +63,35 @@ void parseArgs() {
   memset(#tmp, 0, 256);
   __argv = 0;
   len = strlen(__argPtr);
+  cp = ' ';
   for (i = 0; i < len; i++) {
     EDI = __argPtr + i;
     c = DSBYTE[EDI];
     if ((isFirst == 1) && (c == '"')) {
-      isQuote = 1;
+      cp = '"';
       continue;
     }
-    if (isQuote == 1) {
-      if ((c == '"') && (isSlash == 0)) {
-        EDI = #tmp + count;
-        DSBYTE[EDI] = 0;
-        count++;
-        arg = malloc(count);
-        memcpy(arg, #tmp, count);
-        __args[__argv] = arg;
-        count = 0;
-        memset(#tmp, 0, 256);
-        __argv++;
-        isFirst = 1;
-        isQuote = 0;
-        isSlash = 0;
-      } else if ((isSlash == 0) && (c == '\\')) {
-        isSlash = 1;
-      } else {
-        EDI = #tmp + count;
-        DSBYTE[EDI] = c;
-        count++;
-        isFirst = 0;
-        isSlash = 0;
-      }
+    if ((c == cp) && (isSlash == 0)) {
+      EDI = #tmp + count;
+      DSBYTE[EDI] = 0;
+      count++;
+      arg = malloc(count);
+      memcpy(arg, #tmp, count);
+      __args[__argv] = arg;
+      count = 0;
+      memset(#tmp, 0, 256);
+      __argv++;
+      isFirst = 1;
+      cp = ' ';
+      isSlash = 0;
+    } else if ((isSlash == 0) && (c == '\\')) {
+      isSlash = 1;
     } else {
-      if ((c == ' ') && (isSlash == 0)) {
-        EDI = #tmp + count;
-        DSBYTE[EDI] = 0;
-        count++;
-        arg = malloc(count);
-        memcpy(arg, #tmp, count);
-        __args[__argv] = arg;
-        count = 0;
-        memset(#tmp, 0, 256);
-        __argv++;
-        isFirst = 1;
-        isQuote = 0;
-        isSlash = 0;
-      } else if ((isSlash == 0) && (c == '\\')) {
-        isSlash = 1;
-      } else {
-        EDI = #tmp + count;
-        DSBYTE[EDI] = c;
-        count++;
-        isFirst = 0;
-        isSlash = 0;
-      }
+      EDI = #tmp + count;
+      DSBYTE[EDI] = c;
+      count++;
+      isFirst = 0;
+      isSlash = 0;
     }
   }
   if (count > 0) {
