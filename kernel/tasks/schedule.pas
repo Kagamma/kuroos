@@ -304,7 +304,7 @@ begin
   // Allocate RAM for stack
   // TODO: Currently this is broken. As the process wont be able to see the stack
   // if it was allocated at higher than 4MB of kernel heap
-  if AStackSize < 1024 then AStackSize:= 1024;
+  if AStackSize < 4096 then AStackSize:= 4096;
   if AStackSize > 1024*1024 then AStackSize:= 1024*1024;
   Task^.StackAddr:= KHeap.Alloc(AStackSize);
   Task^.Stack:= Task^.StackAddr + AStackSize;
@@ -363,8 +363,8 @@ begin
   //
   Task^.KernelStackAddr := nil;
   Task^.KernelStack:= nil;
-  // Allocate at least 1KB RAM for stack
-  if AStackSize < 1024 then AStackSize:= 1024;
+  // Allocate at least 4KB RAM for stack
+  if AStackSize < 4096 then AStackSize:= 4096;
   Task^.StackAddr:= KHeap.Alloc(AStackSize);
   Task^.Stack:= Task^.StackAddr + AStackSize;
   KHeap.SetOwner(Task^.StackAddr, Task^.PID);
