@@ -49,6 +49,13 @@ dword kwmCloseHandle(dword h) {
 }
 
 // ESI: handle
+dword kwmRepaint(dword h) {
+  EAX = 100;
+  ESI = h;
+  $int 0x69;
+}
+
+// ESI: handle
 // ECX: char*
 void kwmSetName(dword h, dword s) {
   EAX = 101;

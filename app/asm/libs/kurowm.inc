@@ -36,6 +36,13 @@ proc kwmCloseHandle kuro_handle
     ret
 endp
 
+proc kwmRepaint kuro_handle
+    mov   eax,100
+    mov   esi,[kuro_handle]
+    int   0x69
+    ret
+endp
+
 proc kwmSetName kuro_handle,name
     mov   eax,101
     mov   esi,[kuro_handle]
