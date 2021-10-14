@@ -81,10 +81,11 @@ var
   I: Integer;
 begin
   Inc(HeapEntryCount);
-  for I := HeapEntryCount - 1 downto Index + 1 do
-  begin
-    HeapEntries[I] := HeapEntries[I - 1];
-  end;
+  //for I := HeapEntryCount - 1 downto Index + 1 do
+  //begin
+  //  HeapEntries[I] := HeapEntries[I - 1];
+  //end;
+  Move(HeapEntries[Index], HeapEntries[Index + 1], (HeapEntryCount - Index - 1) * SizeOf(THeapEntry));
   PE := @HeapEntries[Index];
   PENext := @HeapEntries[Index + 1];
   PENext^.Size := PE^.Size - ASize;

@@ -499,10 +499,7 @@ begin
     begin
       FreeProcess(TaskCur);
       // Move all tasks to the left
-      for i:= TaskPtr to TaskCount-2 do
-      begin
-        TaskArray[i]:= TaskArray[i+1];
-      end;
+      Move(TaskArray[TaskPtr + 1], TaskArray[TaskPtr], (TaskCount - TaskPtr - 1) * SizeOf(TTaskStruct));
       //
       Dec(TaskCount);
       // Reallocate task array
