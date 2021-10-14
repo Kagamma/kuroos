@@ -9,7 +9,6 @@ code_section:
 
     stdcall ThreadCreate, thread_proc
     stdcall ThreadCreate, thread_proc
-
 iloop:
     int   0x20
     jmp   iloop
@@ -17,18 +16,12 @@ endprog:
     ret
 
 thread_proc:
-    xor   eax,eax
-    mov   esi,str_t1
-    int   0x71
-    mov   eax,1
-    mov   ecx,[esp + 8]
-    int   0x71
-    xor   eax,eax
-    mov   esi,str_t2
-    int   0x71
-    mov   esi,str_lfcr
-    int   0x71
-
+    mov   eax,[esp + 8]
+    mov   [thread_id],eax
+    stdcall printf, str_t1
+    stdcall printfnum, [thread_id]
+    stdcall printf, str_t2
+    stdcall printf, str_lfcr
 tloop:
     int   0x20
     jmp   tloop
@@ -39,5 +32,6 @@ data_section:
     str_t1       db 'Thread ID ',0
     str_t2       db ' Created!',0
     str_lfcr     db 10,13,0
+    thread_id    dd 0
 
 image_end:

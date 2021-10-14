@@ -134,7 +134,7 @@ begin
   IDT.InstallHandler($71, @Int0x71.Callback);
   FuncTable[0] := @FTWriteStr;
   FuncTable[1] := @FTWriteDec;
-  FuncTable[1] := @FTParseArgs;
+  FuncTable[2] := @FTParseArgs;
   Console.WriteStr(stOK);
 
   IRQ_ENABLE;
