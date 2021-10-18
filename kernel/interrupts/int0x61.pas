@@ -30,6 +30,9 @@
             <-
             EAX: 8 bytes of hh << mm << ss
             ECX: 16 bytes of year << 8 bytes of month << day
+        EAX = 8: GetTickCount
+            <-
+            EAX: Ticks
     License:
         General Public License (GPL)
 }
@@ -50,13 +53,13 @@ procedure Init; stdcall;
 implementation
 
 uses
-  rtc, kheap, vmm,
+  rtc, kheap, vmm, pic,
   schedule;
 
 // Private
 
 var
-  FuncTable: array[0..7] of TIDTHandle;
+  FuncTable: array[0..8] of TIDTHandle;
 
 // Public
 
@@ -106,6 +109,12 @@ begin
   IRQECXValue:= (Cardinal(GlobalTime.Year) shl 16) or (Word(GlobalTime.Month) shl 8) or GlobalTime.DayOfMonth;
 end;
 
+procedure FTGetTickCount(r: TRegisters); stdcall; public;
+begin
+  IRQEAXHave:= 1;
+  IRQEAXValue:= PIC.GetTickCount;
+end;
+
 procedure Callback(r: TRegisters); stdcall;
 begin
   FuncTable[r.eax](r);
@@ -124,6 +133,7 @@ begin
   FuncTable[5] := @FTAlloc;
   FuncTable[6] := @FTFree;
   FuncTable[7] := @FTGetTime;
+  FuncTable[8] := @FTGetTickCount;
   Console.WriteStr(stOK);
 
   IRQ_ENABLE;

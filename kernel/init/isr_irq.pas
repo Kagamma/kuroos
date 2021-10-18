@@ -28,6 +28,7 @@ procedure k_IDT_WriteStackTrace(Trace: PStackTrace); stdcall;
 procedure k_IDT_ISR_FaultHandler(r: TRegisters); cdecl;
 procedure k_IDT_IRQ_FaultHandler(r: TRegisters); cdecl;
 function  k_PIC_Handler(AStack: Cardinal): Cardinal; cdecl;
+function  k_Coop_Handler(AStack: Cardinal): Cardinal; cdecl;
 
 implementation
 
@@ -227,6 +228,14 @@ begin
     k_PIC_Handler:= PICHandle(AStack)
   else
     k_PIC_Handler:= AStack;
+end;
+
+function  k_Coop_Handler(AStack: Cardinal): Cardinal; cdecl; [public, alias: 'k_Coop_Handler'];
+begin
+  if IDTHandles[$60] <> nil then
+    k_Coop_Handler:= TPICHandle(IDTHandles[$60])(AStack)
+  else
+    k_Coop_Handler:= AStack;
 end;
 
 end.

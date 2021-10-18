@@ -45,7 +45,7 @@ inline fastcall void exit() {
 }
 
 inline fastcall void yield() {
-  $int 0x20;
+  $int 0x60;
 }
 
 void parseArgs() {
@@ -155,6 +155,11 @@ void GetDateTime(dword EDI) {
   EDI.DateTime_t.year = dword ECX >> 16;
   if (EDI.DateTime_t.hour > 80)
     EDI.DateTime_t.hour = EDI.DateTime_t.hour - 80 + 12;
+}
+
+dword GetTickCount() {
+  EAX = 8;
+  $int 0x61;
 }
 
 void itoa(int num, char* c, byte base) {

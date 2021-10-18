@@ -76,7 +76,7 @@ begin
   Int0x71.Init; // Text mode handling
 
   //
-  PIC.Init(300);
+  PIC.Init(250);
   RTC.Init;
 
   //

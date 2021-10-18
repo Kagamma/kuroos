@@ -32,3 +32,8 @@ proc ThreadCreate proc
     int   0x61
     ret
 endp
+
+proc Yield
+    int   0x60
+    ret
+endp

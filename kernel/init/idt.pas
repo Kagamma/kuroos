@@ -118,6 +118,7 @@ procedure IRQ15; stdcall; external name 'k_IDT_IRQ15';
 procedure IRQ20; stdcall; external name 'k_IDT_IRQ20';
 procedure IRQ21; stdcall; external name 'k_IDT_IRQ21';
 
+procedure IRQ96; stdcall; external  name 'k_IDT_IRQ96';
 procedure IRQ97; stdcall; external  name 'k_IDT_IRQ97';
 procedure IRQ105; stdcall; external  name 'k_IDT_IRQ105';
 procedure IRQ113; stdcall; external name 'k_IDT_IRQ113';
@@ -129,6 +130,7 @@ procedure Init; stdcall;
 // Install Handle
 procedure InstallHandler(AIndex: Byte; AHandle: TIDTHandle); stdcall;
 procedure InstallPICHandler(AHandle: TPICHandle); stdcall;
+procedure InstallCooperativeHandler(AIndex: Byte; AHandle: TPICHandle); stdcall;
 // Remap the irq for pm.
 procedure RemapIRQPM; stdcall;
 // Remap the irq for rm.
@@ -214,6 +216,7 @@ begin
   IDT.SetGate($34, Cardinal(@IDT.IRQ20), $08, $8E, 0);
   IDT.SetGate($35, Cardinal(@IDT.IRQ21), $08, $8E, 0);
 
+  IDT.SetGate($60, Cardinal(@IDT.IRQ96), $08, $8E, $60);
   IDT.SetGate($61, Cardinal(@IDT.IRQ97), $08, $8E, $60);
   IDT.SetGate($69, Cardinal(@IDT.IRQ105), $08, $8E, $60);
   IDT.SetGate($71, Cardinal(@IDT.IRQ113), $08, $8E, $60);
@@ -229,6 +232,11 @@ end;
 procedure InstallHandler(AIndex: Byte; AHandle: TIDTHandle); stdcall; [public, alias: 'k_IDT_InstallHandle'];
 begin
   IDTHandles[AIndex]:= AHandle;
+end;
+
+procedure InstallCooperativeHandler(AIndex: Byte; AHandle: TPICHandle); stdcall; [public, alias: 'k_IDT_InstallCooperativeHandle'];
+begin
+  IDTHandles[AIndex]:= TIDTHandle(AHandle);
 end;
 
 procedure InstallPICHandler(AHandle: TPICHandle); stdcall; [public, alias: 'k_IDT_InstallPICHandle'];

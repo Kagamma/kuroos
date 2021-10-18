@@ -67,8 +67,3 @@ proc kwmSendMessage command, param1, param2
     int   0x69
     ret
 endp
-
-proc Yield
-    int   0x20
-    ret
-endp

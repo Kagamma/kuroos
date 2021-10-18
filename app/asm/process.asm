@@ -13,7 +13,7 @@ code_section:
     stdcall printf, str_lfcr
 
 iloop:
-    int   0x20
+    int   0x60
     jmp   iloop
 endprog:
     ret

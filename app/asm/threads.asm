@@ -10,7 +10,7 @@ code_section:
     stdcall ThreadCreate, thread_proc
     stdcall ThreadCreate, thread_proc
 iloop:
-    int   0x20
+    int   0x60
     jmp   iloop
 endprog:
     ret
@@ -23,7 +23,7 @@ thread_proc:
     stdcall printf, str_t2
     stdcall printf, str_lfcr
 tloop:
-    int   0x20
+    int   0x60
     jmp   tloop
     ret
 

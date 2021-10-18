@@ -26,6 +26,14 @@ func:
   jmp   irquserstub
 }
 
+macro IRQ_USERCOOP func,n {
+; ------------------------------
+public func
+; ------------------------------
+func:
+  jmp   irqusercoopstub
+}
+
 macro HAVE reg,have,value,nothavejmp,endjmp {
     mov   [tmp],reg
     mov   reg,[have]
@@ -61,6 +69,7 @@ IRQ k_IDT_IRQ15, 47
 IRQ k_IDT_IRQ20, 52
 IRQ k_IDT_IRQ21, 53
 
+IRQ_USERCOOP k_IDT_IRQ96, 0x60
 IRQ_USER k_IDT_IRQ97, 0x61
 IRQ_USER k_IDT_IRQ105, 0x69
 IRQ_USER k_IDT_IRQ113, 0x71
@@ -68,6 +77,7 @@ IRQ_USER k_IDT_IRQ113, 0x71
 ; ------------------------------
 extrn k_IDT_IRQ_FaultHandler                   ; External function from Pascal code
 extrn k_PIC_Handler                            ;
+extrn k_Coop_Handler                           ;
 public  IRQEAXHave
 public  IRQEAXValue
 public  IRQEBXHave
@@ -148,6 +158,34 @@ irqstub:
 irqstubend:
     iret                                   ; pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP
 
+irqusercoopstub:
+    pusha
+    push  ds
+    push  es
+    push  fs
+    push  gs
+
+    mov   ax,0x10                          ; load the kernel data segment descriptor
+    mov   ds,ax
+    mov   es,ax
+    mov   fs,ax
+    mov   gs,ax
+
+    mov   eax,esp
+    push  eax
+
+    call  k_Coop_Handler
+    mov   esp,eax
+
+    pop   gs
+    pop   fs
+    pop   es
+    pop   ds
+    popa
+
+irqusercoopstubend:
+    iret                                   ; pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP
+
 irqpicstub:
     pusha
     push  ds
@@ -170,7 +208,7 @@ irqpicstub:
     mov   eax,esp
     push  eax
 
-call  k_PIC_Handler
+    call  k_PIC_Handler
     mov   esp,eax
 
     mov   al,0x20                          ; ack IRQ

@@ -36,7 +36,16 @@ var
 
 function  Callback(AStack: KernelCardinal): KernelCardinal; stdcall;
 begin
-  Inc(_tickCount);
+  Inc(_tickCount, 4);
+  { We can perform task switching in here }
+  if EnableTaskSwitching and not Spinlock.IsLocked(Schedule.SLock) then
+    exit(Schedule.Run(AStack))
+  else
+    exit(AStack);
+end;
+
+function  CallbackCoop(AStack: KernelCardinal): KernelCardinal; stdcall;
+begin
   { We can perform task switching in here }
   if EnableTaskSwitching and not Spinlock.IsLocked(Schedule.SLock) then
     exit(Schedule.Run(AStack))
@@ -52,6 +61,7 @@ begin
 
   Console.WriteStr('Installing PIC (0x20)... ');
   IDT.InstallPICHandler(@PIC.Callback);
+  IDT.InstallCooperativeHandler($60, @PIC.CallbackCoop);
 
   divisor:= 1193180 div frequency;
 
